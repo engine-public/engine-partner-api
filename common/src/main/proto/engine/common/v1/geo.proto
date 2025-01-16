@@ -1,0 +1,83 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.common.v1;
+
+option go_package = "engine.com/engine-partner-api/common/v1";
+option java_package = "com.engine.common.v1";
+option java_multiple_files = true;
+
+import 'protoc-gen-openapiv2/options/annotations.proto';
+
+// A single geographic point, defined by latitude and longitude.
+message GeoPoint {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "GeoPoint_v1"
+    }
+  };
+
+  // The center-point latitude.
+  double latitude = 1;
+
+  // The center-point longitude.
+  double longitude = 2;
+}
+
+// An perfect-circle area surrounding a single geographic point.
+message GeoRadius {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "GeoRadius_v1"
+    }
+  };
+
+  // The center point of the circle.
+  .engine.common.v1.GeoPoint point = 1;
+
+  // The length of the radius of the circle.
+  .engine.common.v1.Distance radius = 2;
+}
+
+// The distance between two geographic points.
+message Distance {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Distance_v1"
+    }
+  };
+
+  // The distance quantity.
+  double value = 1;
+
+  // The unit of distance measurement.
+  .engine.common.v1.DistanceUnit unit = 2;
+}
+
+// The unit type for a distance measurement.
+enum DistanceUnit {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_enum) = {
+    title: "DistanceUnit_v1"
+  };
+
+  // A mile in the imperial system of units.
+  DISTANCE_UNIT_MILE = 0;
+
+  // A kilometer in the international system of units (metric).
+  DISTANCE_UNIT_KILOMETER = 1;
+}

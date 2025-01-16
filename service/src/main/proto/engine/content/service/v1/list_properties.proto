@@ -1,0 +1,173 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.content.service.v1;
+
+option go_package = "engine.com/engine-partner-api/v1/content/service";
+option java_package = "com.engine.content.v1.service";
+option java_multiple_files = true;
+
+import "engine/common/v1/geo.proto";
+import "engine/content/v1/lodging/property.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "engine/common/v1/postal_address.proto";
+
+// A request to retrieve one page of properties.
+message ListPropertiesRequest {
+
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "ListPropertiesRequest_v1"
+    }
+  };
+
+  oneof request_type {
+    //The definition of this `ListPropertiesRequest`.
+    .engine.content.service.v1.ListPropertiesRequestDetails request = 1;
+
+    // Optionally, a `next_page_token` retrieved from a `ListPropertiesResponse`.
+    string next_page_token = 2;
+  }
+}
+
+// A response to a `ContentServiceV1.ListProperties` request.
+message ListPropertiesResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "ListPropertiesResponse_v1"
+    }
+  };
+
+  // Up to `ListPropertiesRequest.page_size` responsive to
+  repeated .engine.content.service.v1.ResponsiveProperty properties = 1;
+
+  // Optionally, an opaque token to be passed into the next `ListPropertiesRequest` in order to retrieve the next page of results.
+  optional string next_page_token = 2;
+}
+
+// The request definition for a `ListPropertiesRequest`.
+message ListPropertiesRequestDetails {
+
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "ListPropertiesRequestDetails_v1"
+    }
+  };
+
+  // The criteria that defines responsive properties for a `ListPropertiesRequest`.
+  .engine.content.service.v1.ListPropertiesCriteria criteria = 1;
+
+  // The maximum number of search results to be returned in a page.
+  // Default: 100
+  // Minimum: 1
+  // Maximum: 500
+  optional int32 page_size = 11 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    default: "100",
+    minimum: 1,
+    maximum: 500
+  }];
+}
+
+// A search area in a perfect circle around a central point.
+message RadiusSearch {
+
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "RadiusSearch_v1"
+    }
+  };
+
+  oneof center_point_type {
+    // Latitude and Longitude coordinates to use as the center point of the search.
+    .engine.common.v1.GeoPoint coordinates = 1;
+
+    // A physical address to use as the center point of the search.
+    .engine.common.v1.PostalAddress physical_address = 2;
+
+    // A description of a point of interest, an unstructured address, etc.
+    // freeform input will make a "best effort" match to a point of interest and its corresponding geo coordinates.
+    // If available, using `coordinates` or `physical_address` will yield better results.
+    string freeform_search_text = 3;
+  }
+
+  // The size of the search area.
+  // Default: 10 miles
+  // Minimum: 1 mile (~1.6 kilometers)
+  // Maximum: 50 miles (~80 kilometers)
+  .engine.common.v1.Distance radius = 101;
+}
+
+
+// Criteria that define the properties that may be responsive to a `ContentServiceV1.ListProperties` request.
+message ListPropertiesCriteria {
+
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "ListPropertiesCriteria_v1"
+    }
+  };
+
+  // Defines the origin type for a `ContentServiceV1.ListProperties` request.
+  oneof search_type {
+    .engine.content.service.v1.RadiusSearch radius = 1;
+  }
+
+  // Optionally, if true, properties that do not have a `Property#hero_image_uri` will not be returned.
+  // Excluded properties will not count against the page size or limit.
+  optional bool exclude_properties_without_hero_image = 101 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    default: "false",
+  }];
+
+  // Optionally, if true, properties that do not have a `Property#description` will not be returned.
+  // Excluded properties will not count against the page size or limit.
+  optional bool exclude_properties_without_description = 102 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    default: "false",
+  }];
+
+  // The order in which the properties will be returned.
+  optional .engine.content.service.v1.ListPropertiesSortMode sort_mode = 201 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    default: "FIND_PROPERTIES_SORT_MODE_DISTANCE",
+    ref: ".engine.content.v1.service.ListPropertiesSortMode"
+  }];
+}
+
+// Controls the order in which `Property` results are returned from `ContentServiceV1.ListProperties`.
+enum ListPropertiesSortMode {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_enum) = {
+    title: "ListPropertiesSortMode_v1"
+  };
+
+  // Results are returned in ascending order from the center point of the `ListProperties.inclusion_type`.
+  PROPERTY_SORT_MODE_DISTANCE = 0;
+}
+
+// A `Property` that meets the criteria of a `ContentServiceV1.ListProperties` request.
+message ResponsiveProperty {
+
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "ResponsiveProperty_v1"
+    }
+  };
+
+  // The property details.
+  .engine.content.v1.lodging.Property property = 1;
+
+  // The distance between the center point of the `ListProperties.inclusion_type` and the property.
+  .engine.common.v1.Distance distance = 2;
+}

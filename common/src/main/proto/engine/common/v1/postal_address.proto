@@ -1,0 +1,67 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.common.v1;
+
+option go_package = "engine.com/engine-partner-api/common/v1";
+option java_package = "com.engine.common.v1";
+option java_multiple_files = true;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+
+// Represents a Postal Address.
+message PostalAddress {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "PostalAddress_v1"
+    }
+  };
+
+  // Optionally, any individual recipients.
+  // For example, "Alexander Hamilton", "Aaron Burr"
+  // May be empty.
+  repeated string recipients = 1;
+
+  // Optionally, any organization or company as a recipient.
+  // For example, "Hotel Engine".
+  optional string organization = 2;
+
+  // Optionally, any address lines, in order as they'd appear on an envelope.
+  // For example, "233 S Wacker Dr", "108th Floor".
+  // May be empty.
+  repeated string address_line = 3;
+
+  // Optionally, the State, province, prefecture, oblast, or area.
+  // For example, "Texas"
+  optional string administrative_area = 4;
+
+  // Optionally, the City, or Post Town
+  // For example, "Austin"
+  optional string locality = 5;
+
+  // Optionally, the postal code, if one exists, for the address.
+  // For example, "78757".
+  optional string postal_code = 6;
+
+  // Optionally, the ISO 3166-1 alpha-2 country code.
+  // For example, "US".
+  // See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+  // See https://www.iso.org/iso-3166-country-codes.html
+  optional string country_code = 7;
+}

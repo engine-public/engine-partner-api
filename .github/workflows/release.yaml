@@ -1,0 +1,78 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_version:
+        description: "The version to build.  It must be semver-compliant, and must not be for a tag that already exists."
+        required: true
+        type: string
+      pre_release:
+        description: "Is this a pre-release? (Changes the visibility on GitHub.)"
+        required: true
+        type: boolean
+concurrency:
+  group: all
+  cancel-in-progress: true
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yaml
+    secrets: inherit
+    with:
+      build_version: ${{ inputs.build_version }}
+      pre_release: ${{ inputs.pre_release }}
+      publish: true
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download Distribution Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: build/dist
+          pattern: dist-*
+          merge-multiple: true
+
+      - name: Download Staging Artifacts
+        uses: actions/download-artifacts@v4
+        with:
+          path: build/staging
+          pattern: staging-*
+          merge-multiple: true
+
+      - name: List Artifacts Directory
+        run: |
+          ls -alhR build/
+
+      - name: Gradle Publish
+        env:
+          ENGINE_BUILD_VERSION: ${{ inputs.build_version }}
+          JRELEASER_GPG_PASSPHRASE: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
+          JRELEASER_GPG_PUBLIC_KEY: ${{ vars.JRELEASER_GPG_PUBLIC_KEY }}
+          JRELEASER_GPG_SECRET_KEY: ${{ secrets.JRELEASER_GPG_SECRET_KEY }}
+          JRELEASER_MAVENCENTRAL_STAGE: upload # todo make this dynamic?
+          JRELEASER_MAVENCENTRAL_TOKEN: ${{ secrets.JRELEASER_MAVENCENTRAL_TOKEN }}
+          JRELEASER_MAVENCENTRAL_USERNAME: ${{ vars.JRELEASER_MAVENCENTRAL_USERNAME }}
+        if: success()
+        run: |
+          ./gradlew -xstageMavenCentral jreleaserDeploy
+
+      - name: Git Tag
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git tag --annotate "${{ inputs.build_version }}" --message="${{ inputs.build_version }}"
+          git push origin "${{ inputs.build_version }}"
+
+      - name: GitHub Release
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ inputs.build_version }}" --generate-notes --prerelease=${{ inputs.pre_release }} --verify-tag
+          find build/dist -depth 1 -exec gh release upload "${{ inputs.build_version }}" {} \;
+
+#      - name: Github Pages Publish
