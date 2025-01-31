@@ -1,0 +1,69 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.content.v1.lodging;
+
+option go_package = "engine.com/engine-partner-api/v1/content";
+option java_package = "com.engine.content.v1.lodging";
+option java_multiple_files = true;
+
+import "engine/common/v1/geo.proto";
+import "engine/common/v1/postal_address.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+//
+// An individual Lodging location identified by [Engine].
+//
+message Property {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Property_v1"
+    }
+  };
+
+  //
+  // The [Engine] identifier for this [Property].
+  //
+  string id = 1;
+
+  //
+  // The full name of this [Property].
+  //
+  string name = 11;
+
+  //
+  // The physical address of this [Property].
+  // This may differ from the mailing, billing, or other administrative addresses.
+  //
+  .engine.common.v1.PostalAddress physical_address = 21;
+
+  //
+  // The geographic location of this [Property].
+  //
+  .engine.common.v1.GeoPoint coordinates = 22;
+
+  //
+  // If available, A URI to the image to use as the primary image to identify this [Property].
+  //
+  optional string hero_image_uri = 31;
+
+  //
+  // If available, a brief textual description of this [Property].
+  //
+  optional string description = 41;
+}

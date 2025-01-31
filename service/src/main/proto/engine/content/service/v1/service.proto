@@ -1,0 +1,71 @@
+/*
+ * Copyright 2025 HotelEngine, Inc., d/b/a Engine
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+package engine.content.api.v1;
+
+import "engine/content/service/v1/list_properties.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/content/service";
+option java_package = "com.engine.content.v1.service";
+option java_multiple_files = true;
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Engine Partner API -- Content"
+    version: "1.0"
+    contact: {
+      name: "Engine Partner API"
+      url: "https://github.com/engine-public/partner-api"
+      email: "partner-api-support@engine.com"
+    }
+    license: {
+      name: "Apache License Version 2.0"
+      url: "https://github.com/engine-public/partner-api/blob/main/LICENSE"
+    }
+  }
+  external_docs: {
+    url: "https://github.com/engine-public/partner-api/docs/README.md"
+  }
+  host: "partner-api.engine.com"
+  schemes: HTTPS
+  consumes: "application/json"
+  produces: "application/json"
+};
+
+service ContentServiceV1 {
+  rpc ListProperties(.engine.content.service.v1.ListPropertiesRequest)
+      returns (.engine.content.service.v1.ListPropertiesResponse) {
+    option (google.api.http) = {
+      get: "/content/v1/property"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "List properties near a point of interest.",
+      responses: {
+        key: "200"
+        value: {
+          examples: {
+            key: "application/json"
+            value: "{\"properties\":[{\"property\":{\"id\":\"L00000000000000140124\",\"name\":\"Holiday Inn Express & Suites Austin Downtown - University\",\"physicalAddress\":{\"addressLine\":[\"805 Neches St\"],\"administrativeArea\":\"TX\",\"locality\":\"Austin\",\"postalCode\":\"78701\",\"countryCode\":\"US\"},\"coordinates\":{\"latitude\":30.2693,\"longitude\":-97.737122},\"heroImageUri\":\"https://i.travelapi.com/lodging/13000000/12310000/12303000/12302973/8299c3c9_z.jpg\",\"description\":\"Attractively located in the center of Austin, Holiday Inn Express Hotel & Suites Austin Downtown - University, an IHG Hotel has air-conditioned rooms, an outdoor swimming pool, free WiFi and a fitness center. This 3-star hotel offers a 24-hour front desk and an ATM. Private parking is available on site. The rooms at the hotel come with a seating area and a flat-screen TV with satellite channels. At Holiday Inn Express Hotel & Suites Austin Downtown - University, an IHG Hotel rooms contain a private bathroom with free toiletries and a hairdryer. Breakfast is available each morning, and includes buffet, continental and American options. The accommodation has a sun terrace. Guests can use the business center or relax in the snack bar. Popular points of interest near Holiday Inn Express Hotel & Suites Austin Downtown - University, an IHG Hotel include Shoal Beach, Capitol Building and Austin Convention Center. Austin-Bergstrom International Airport is 5.6 miles from the property.\"},\"distance\":{\"value\":5.2,\"unit\":\"DISTANCE_UNIT_MILE\"}},{\"property\":{\"id\":\"L00000000000000092817\",\"name\":\"Sonesta Select Austin North\",\"physicalAddress\":{\"addressLine\":[\"7522 N Interstate Hwy 35\"],\"administrativeArea\":\"TX\",\"locality\":\"Austin\",\"postalCode\":\"78752\",\"countryCode\":\"US\"},\"coordinates\":{\"latitude\":30.33843,\"longitude\":-97.703827},\"heroImageUri\":\"https://i.travelapi.com/lodging/1000000/50000/41300/41290/232ce1b7_z.jpg\",\"description\":\"Featuring an outdoor pool, Sonesta Select Austin North Central is 5 mi from Austin city center. This hotel offers free WiFi access. Rooms at Sonesta Select Austin North Central will provide you with a flat-screen TV with cable and an air-conditioned seating area. Complete with a refrigerator, the dining area also has a coffee machine. At Sonesta Select Austin North Central you will find a fitness center. Other facilities offered include meeting facilities, a shared lounge and dry cleaning. The hotel is 4.2 mi from University of Texas and 5.6 mi from Austin Convention Center. Bergstrom Airport is 8.7 mi away. The property offers free parking. When traveling with pets, please note that an extra charge of $75 per pet, per stay applies. A maximum of 2 pets per room is allowed\"},\"distance\":{\"value\":6.7,\"unit\":\"DISTANCE_UNIT_MILE\"}}]}"
+          }
+        }
+      }
+    };
+  }
+}

@@ -1,0 +1,112 @@
+---
+name: Build
+on:
+  workflow_call:
+    inputs:
+      build_version:
+        description: "The version to build.  It must be semver-compliant, and must not be for a tag that already exists."
+        required: false
+        type: string
+      pre_release:
+        description: "If true, marked as pre-release in the github release page.  Prevents publishing of site docs.  Does not affect publishing of packages."
+        type: boolean
+        default: true
+      publish:
+        description: "If true, artifacts will be published to Maven Central and a release will be created on Github."
+        required: true
+        type: boolean
+    secrets:
+      JRELEASER_GPG_SECRET_KEY:
+        required: false
+        description: "The GPG Secret Key used to sign produced artifacts."
+      JRELEASER_GPG_PASSPHRASE:
+        required: false
+        description: "The passphrase to the GPG Secret Key used to sign produced artifacts."
+      JRELEASER_MAVENCENTRAL_TOKEN:
+        required: false
+        description: "The maven central token provisioned to upload artifacts."
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: 'true'
+          fetch-depth: 0
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "${{ github.triggering_actor }}"
+          git config --global user.email 'actions.ci@engine.com'
+
+      - name: Setup golang
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.22.2
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+
+      - name: Setup gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Determine Build Version
+        env:
+          ENGINE_BUILD_VERSION: ${{ inputs.build_version }}
+        run: |
+          ./gradlew writeVersion
+
+      - name: Read Version File
+        id: getversion
+        run: |
+          test -f build/version.txt
+          echo "version=$(cat build/version.txt)" >> $GITHUB_OUTPUT
+
+      - name: Build
+        run: |
+          ./gradlew build
+
+      - name: Build and Stage
+        run: |
+          ./gradlew buildApiDefinitionDistribution buildDocumentationDistribution stageMavenCentral
+
+      - name: Upload Version
+        uses: actions/upload-artifact@v4
+        with:
+          name: version
+          path: build/version.txt
+          if-no-files-found: error
+
+      - name: Upload maven
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-maven
+          path: build/staging/maven-central
+          if-no-files-found: error
+
+      - name: Upload documentation distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-documentation
+          path: build/dist/documentation.zip
+          if-no-files-found: error
+          compression-level: 0
+
+      - name: Upload protoset distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-protoset
+          path: build/dist/descriptor_set.desc
+          if-no-files-found: error
+
+      - name: Upload swagger distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-swagger
+          path: build/dist/*.swagger.json
+          if-no-files-found: error
