@@ -90,6 +90,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create "${{ inputs.build_version }}" --generate-notes --prerelease=${{ inputs.pre_release }} --verify-tag
-          find build/dist -depth 1 -exec gh release upload "${{ inputs.build_version }}" {} \;
+          gh release upload "${{ inputs.build_version }}" build/dist/*;
 
 #      - name: GitHub Pages Publish
