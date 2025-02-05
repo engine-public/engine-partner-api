@@ -36,11 +36,6 @@ jobs:
           fetch-tags: 'true'
           fetch-depth: 0
 
-      - name: Setup Git
-        run: |
-          git config --global user.name "${{ github.triggering_actor }}"
-          git config --global user.email 'actions.ci@engine.com'
-
       - name: Setup golang
         uses: actions/setup-go@v5
         with:

@@ -180,8 +180,8 @@ allprojects {
     afterEvaluate {
         configurations.all {
             resolutionStrategy {
-                // https://github.com/engine-public/engine-partner-api/security/dependabot/1
-                // https://github.com/engine-public/engine-partner-api/security/dependabot/2
+                // CVE-2024-12798: https://github.com/engine-public/engine-partner-api/security/dependabot/1
+                // CVE-2024-12801: https://github.com/engine-public/engine-partner-api/security/dependabot/2
                 force("ch.qos.logback:logback-core:[1.3.15,1.4[")
             }
         }
