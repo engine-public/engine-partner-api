@@ -148,7 +148,7 @@ subprojects {
     }
 
     configure<KtlintExtension> {
-        version.set("1.1.1")
+        version.set("1.5.0")
         filter {
             /*
              * work around bug in the ktlint plugin that doesn't honor exclusions of
@@ -172,6 +172,18 @@ subprojects {
                 "Specification-Version" to version,
                 "Specification-Vendor" to "HotelEngine, Inc., d/b/a Engine",
             )
+        }
+    }
+}
+
+allprojects {
+    afterEvaluate {
+        configurations.all {
+            resolutionStrategy {
+                // https://github.com/engine-public/engine-partner-api/security/dependabot/1
+                // https://github.com/engine-public/engine-partner-api/security/dependabot/2
+                force("ch.qos.logback:logback-core:[1.3.15,1.4[")
+            }
         }
     }
 }
