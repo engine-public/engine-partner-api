@@ -52,10 +52,10 @@ jobs:
           pattern: dist-*
           merge-multiple: true
 
-      - name: Download Staging Artifacts
+      - name: Download Maven Staging Artifacts
         uses: actions/download-artifact@v4
         with:
-          path: build/staging
+          path: build/staging/maven-central
           pattern: staging-*
           merge-multiple: true
 
