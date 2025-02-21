@@ -25,9 +25,6 @@ grpcurl -protoset descriptor_set.desc -key /path/to/private.key -cert /path/to/c
                 "coordinates": {
                     "latitude": 30.361589,
                     "longitude": -97.747976
-                },
-                "radius": {
-                    "value": 10.0
                 }
             }
         },
@@ -92,7 +89,7 @@ HTTP/JSON provides a simpler integration at the cost of additional latency and i
 #### curl example
 
 ```bash
-curl --verbose --key /path/to/private.key --cert /path/to/cert.pem 'https://partner-api.engine.com/content/v1/property?request.criteria.radius.coordinates.latitude=30.361589&request.criteria.radius.coordinates.longitude=-97.747976&request.criteria.radius.radius.value=5&request.pageSize=1' -H 'accept: application/json'
+curl --verbose --key /path/to/private.key --cert /path/to/cert.pem 'https://partner-api.engine.com/content/v1/property?request.criteria.radius.coordinates.latitude=30.361589&request.criteria.radius.coordinates.longitude=-97.747976&request.pageSize=1' -H 'accept: application/json'
 ```
 ##### Headers
 ```
