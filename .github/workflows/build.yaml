@@ -63,10 +63,14 @@ jobs:
           echo "version=$(cat build/version.txt)" >> $GITHUB_OUTPUT
 
       - name: Build
+        env:
+          ENGINE_BUILD_VERSION: ${{ steps.getversion.outputs.version }}
         run: |
           ./gradlew build
 
       - name: Build and Stage
+        env:
+          ENGINE_BUILD_VERSION: ${{ steps.getversion.outputs.version }}
         run: |
           ./gradlew buildApiDefinitionDistribution buildDocumentationDistribution stageMavenCentral
 
