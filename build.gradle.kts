@@ -17,7 +17,12 @@ plugins {
 fun calculateVersion(): String {
     return System
         .getenv("ENGINE_BUILD_VERSION")
-        ?: "0.0.1-pre.2" // temporary fallback version
+        ?.let {
+            it.ifEmpty {
+                null
+            }
+        }
+        ?: "0.0.0-pre.0" // temporary fallback version
 }
 
 group = "com.engine"

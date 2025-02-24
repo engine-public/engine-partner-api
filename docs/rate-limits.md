@@ -11,8 +11,8 @@ The burst rate allows high throughput for shorter periods of time, but still cou
 
 Each request will have three headers populated:
 * `ratelimit-reset: S`, where S is the number of seconds remaining in the current reset period
-* `ratelimit-limit: N`, where T is the number of requests allowed within the reset period
-* `ratelimit-remaining: R`, where M is the number of requests you have left within the reset period
+* `ratelimit-limit: N`, where N is the number of requests allowed within the reset period
+* `ratelimit-remaining: R`, where R is the number of requests you have left within the reset period
 
 ## Default Rate Limits
 
