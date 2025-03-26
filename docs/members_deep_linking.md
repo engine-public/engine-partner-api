@@ -4,7 +4,7 @@
 ## Book a room for a given property
 
 ### URL
-`https://members.engine.com/property/:propertyid?checkIn=:checkin&checkOut=:checkout&roomCount=:roomcount&guestCount=:guestcount`
+`https://members.engine.com/properties/:propertyid?checkIn=:checkin&checkOut=:checkout&roomCount=:roomcount&guestCount=:guestcount`
 
 ### Path Parameters
 
