@@ -1,0 +1,69 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.common.v1;
+
+option go_package = "engine.com/engine-partner-api/common/v1";
+option java_package = "com.engine.common.v1";
+option java_multiple_files = true;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+// A traveler whose personal details have not yet been collected.
+message AnonymousTraveler {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Common_AnonymousTraveler_v1"
+    }
+  };
+
+  oneof traveler_type {
+    .engine.common.v1.AnonymousAdult adult = 1;
+    .engine.common.v1.AnonymousChild child = 2;
+  }
+}
+
+// An adult traveler whose personal details have not yet been collected.
+message AnonymousAdult {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Common_AnonymousAdult_v1"
+    }
+  };
+}
+
+// A child traveler whose personal details have not yet been collected.
+// A child's age is necessary to retrieve the correct prices.
+// Failure to provide an accurate age may result in loss of bookings or refusal to provide service to the traveler.
+message AnonymousChild {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Common_AnonymousChild_v1"
+    }
+  };
+
+  oneof age_definition_type {
+    // The child's age on the date of travel.
+    // If the child's birthday is during travel, use the age they will be at the end of travel.
+    int32 age = 1;
+
+    // An ISO-8601-compliant date representing the child's birthdate.
+    // See https://en.wikipedia.org/wiki/ISO_8601#Dates
+    string birthdate = 2;
+  }
+}

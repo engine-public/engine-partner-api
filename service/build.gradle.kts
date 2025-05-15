@@ -12,6 +12,7 @@ description = "The Engine Partner API gRPC and OpenAPI service definitions."
 
 dependencies {
     api(projects.enginePartnerApiContent)
+    api(projects.enginePartnerApiShopLodging)
 
     api(libs.grpc.core)
     api(libs.grpc.kotlin)

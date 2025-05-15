@@ -158,7 +158,6 @@ enum ListPropertiesSortMode {
 
 // A `Property` that meets the criteria of a `ContentServiceV1.ListProperties` request.
 message ResponsiveProperty {
-
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
       title: "ResponsiveProperty_v1"
