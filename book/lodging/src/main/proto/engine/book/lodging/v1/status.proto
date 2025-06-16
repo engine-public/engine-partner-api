@@ -21,7 +21,6 @@ package engine.book.lodging.v1;
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 import "engine/common/v1/loyalty.proto";
-import "engine/common/v1/sensitive.proto";
 
 option go_package = "engine.com/engine-partner-api/v1/book/lodging";
 option java_package = "com.engine.book.v1.lodging";
@@ -41,7 +40,7 @@ message BookingStatus {
 // A value representing the state of a [Booking].
 enum LodgingBookingStatusCode {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_enum) = {
-    title: "Book_Lodging_CancellationDetails_v1"
+    title: "Book_Lodging_LodgingBookingStatusCode_v1"
   };
 
   LODGING_BOOKING_STATUS_UNSPECIFIED = 0;

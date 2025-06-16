@@ -38,7 +38,7 @@ message Conditions {
   // If no modify_conditions exist, the [Booking] may not be modified.
   repeated .engine.common.v1.Condition modify_conditions = 1;
 
-  // Conditions that apply to cancellation of the ac.
+  // Conditions that apply to cancellation of a [Booking].
   // If no cancel_conditions exist, the [Booking] may not be canceled.
   repeated .engine.common.v1.Condition cancel_conditions = 2;
 }
