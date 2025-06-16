@@ -1,0 +1,80 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.shop.lodging.service.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "engine/shop/lodging/service/v1/find_availability.proto";
+import "engine/shop/lodging/service/v1/find_best_offers.proto";
+import "engine/shop/lodging/service/v1/find_best_offers_streaming.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/shop/lodging/service";
+option java_package = "com.engine.shop.lodging.v1.service";
+option java_multiple_files = true;
+
+
+// Service and methods to support shopping for lodging.
+service LodgingShoppingService {
+  // Identifies a set of candidate Properties that match the provided criteria.
+  // Once the appropriate properties have been identified, the Best Offer available for each property is selected and augmented with the details of other available Offers.
+  // Best Offers are not exhaustive of all available offers for a property.
+  rpc FindBestOffers(.engine.shop.lodging.service.v1.FindBestOffersRequest)
+      returns (.engine.shop.lodging.service.v1.FindBestOffersResponse) {
+    option (google.api.http) = {
+      post: "/shop/v1/lodging/best-offers",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Search for the Best Offer available for a set of Properties."
+      description: "Identifies a set of candidate properties that match the provided criteria.  Once the appropriate properties have been identified, the Best Offer available for each property is selected and augmented with the details of other available Offers."
+    };
+  };
+
+  // Identifies a set of candidate Properties that match the provided criteria.
+  // All ResponsiveProperties are returned regardless of availability.
+  // BestOffers for candidate Properties will be returned as soon as they are available.
+  // It is possible for there to be multiple BestOffers for a single candidate property if we discover a better Offer or additional available amenities after the first is sent.
+  // The last [BestOffer] received for a ResponsiveProperty always supersedes any previously received Offers.
+  //
+  // FindBestOffersStreaming is not offered via the HTTP/JSON API.
+  rpc FindBestOffersStreaming(.engine.shop.lodging.service.v1.FindBestOffersStreamingRequest)
+      returns (stream .engine.shop.lodging.service.v1.FindBestOffersStreamingResponse) {
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Unavailable via HTTP/JSON API."
+      deprecated: true
+    };
+  };
+
+  // Finds availability for a given property, broken down by individual room type.
+  // RoomGroups describe the various rooms available to book.
+  // Offers describe the cheapest [Offer] along various dimensions like refundability and loyalty eligible within the [RoomGroup].
+  rpc FindAvailability(.engine.shop.lodging.service.v1.FindAvailabilityPropertyRequest)
+      returns (.engine.shop.lodging.service.v1.FindAvailabilityResponse) {
+    option (google.api.http) = {
+      post: "/shop/v1/lodging/availability",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Search for Availability at a given Property."
+      description: "Finds availability for a given property, broken down by individual room type.  RoomGroups describe the various rooms available to book.  Offers describe the cheapest [Offer] along various dimensions like refundability and loyalty eligible within the [RoomGroup]."
+    };
+  };
+}

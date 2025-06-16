@@ -28,7 +28,7 @@ import 'protoc-gen-openapiv2/options/annotations.proto';
 message GeoPoint {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
-      title: "GeoPoint_v1"
+      title: "Common_GeoPoint_v1"
     }
   };
 
@@ -43,7 +43,7 @@ message GeoPoint {
 message GeoRadius {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
-      title: "GeoRadius_v1"
+      title: "Common_GeoRadius_v1"
     }
   };
 
@@ -58,7 +58,7 @@ message GeoRadius {
 message Distance {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
-      title: "Distance_v1"
+      title: "Common_Distance_v1"
     }
   };
 
@@ -72,7 +72,7 @@ message Distance {
 // The unit type for a distance measurement.
 enum DistanceUnit {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_enum) = {
-    title: "DistanceUnit_v1"
+    title: "Common_DistanceUnit_v1"
   };
 
   // A mile in the imperial system of units.

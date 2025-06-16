@@ -1,0 +1,84 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.book.lodging.service.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "engine/book/lodging/v1/booking.proto";
+import "engine/common/v1/actions.proto";
+import "engine/common/v1/refund.proto";
+import "engine/book/common/service/v1/error.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/book/lodging/service";
+option java_package = "com.engine.book.lodging.v1.service";
+option java_multiple_files = true;
+
+// Requests cancellation of a Booking.
+message SubmitCancellationRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Lodging_Service_SubmitCancellationRequest_v1"
+    }
+  };
+
+  string booking_id = 1;
+}
+
+// Returns the result of a requested cancellation.
+message SubmitCancellationResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Lodging_Service_SubmitCancellationResponse_v1"
+    }
+  };
+
+  // The timestamp and refund details.
+  .engine.book.lodging.v1.CancellationDetails details = 1;
+}
+
+/**
+ * Error information returned in the error details of failed SubmitCancellation calls.
+ */
+message SubmitCancellationError {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Lodging_Service_SubmitCancellationError_v1"
+    }
+  };
+
+  oneof error {
+    /**
+     * The cancellation action is not available for the booking.
+     */
+    .engine.book.common.service.v1.ActionNotAvailableError action_not_available = 1;
+
+    /**
+     * Defined when the operation returns with a status of INVALID_ARGUMENT and the
+     * requested booking is not cancellable.
+     */
+    .engine.book.common.service.v1.CannotCancelError cannot_cancel = 2;
+
+    /**
+     * Defined when the operation returns with a status of INVALID_ARGUMENT and the booking associated
+     * with the given booking ID is not in a valid state, e.g. It has not been booked, or is
+     * already cancelled.
+     */
+    .engine.book.common.service.v1.InvalidStateError invalid_state = 3;
+  }
+}

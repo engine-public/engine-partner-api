@@ -1,0 +1,160 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.common.v1;
+
+option go_package = "engine.com/engine-partner-api/common/v1";
+option java_package = "com.engine.common.v1";
+option java_multiple_files = true;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "engine/common/v1/currency.proto";
+
+
+// The details of the cost of an item or service.
+message Price {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Common_Price_v1"
+    }
+  };
+
+  // The sum total for the booking excluding taxes and fees.
+  // The subtotal includes all [Price.line_items].
+  .engine.common.v1.CurrencyValue sub_total = 1;
+
+  // The full liability to purchase the item.
+  // This is not necessarily the amount due at time of booking due to discounts, incentives, or postpaid items.
+  .engine.common.v1.CurrencyValue total = 2;
+
+  // Any taxes to be collected at time of payment.
+  repeated .engine.common.v1.Surcharge taxes = 3;
+
+  // Any fees applied to the item or service.
+  repeated .engine.common.v1.Surcharge fees = 4;
+
+  // The cost of the main item or service in the booking, less upgrades or additional services, fees, and taxes.
+  // The base is equivalent to:  [Price.sub_total] - sum([Price.line_items])
+  .engine.common.v1.CurrencyValue base = 5;
+
+  // Additional upgrades to an item or service added during the shopping experience.
+  // Line items are represented in the [Price.sub_total].
+  repeated .engine.common.v1.PriceLineItem line_items = 6;
+
+  // The sum of all individual [Price.taxes] and [Price.fees].
+  .engine.common.v1.CurrencyValue taxes_and_fees_total = 7;
+
+  // A representative market price for the item or service without any discounts applied.
+  .engine.common.v1.CurrencyValue strike = 8;
+
+  // The total amount due at time of booking.
+  .engine.common.v1.CurrencyValue total_due_now = 10;
+
+  // The total amount due at the time of the travel event.
+  .engine.common.v1.CurrencyValue total_due_later = 12;
+}
+
+// An additional charge, fee, or tax.
+message Surcharge {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Common_Surcharge_v1"
+    }
+  };
+
+  // A textual description of the purpose of the Surcharge.
+  string description = 1;
+
+  // The amount levied.
+  .engine.common.v1.CurrencyValue amount = 2;
+
+  // The type of surcharge
+  .engine.common.v1.SurchargeType type = 3;
+}
+
+// A programmatic classification of types of surcharges that could be levied.
+enum SurchargeType {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_enum) = {
+      title: "Common_SurchargeType_v1"
+  };
+
+  // A fee due at time of booking.
+  SURCHARGE_TYPE_PREPAID_FEE = 0;
+
+  // A fee due at time of travel.
+  SURCHARGE_TYPE_POSTPAID_FEE = 1;
+
+  // Taxes due at time of booking.
+  SURCHARGE_TYPE_TAX = 2;
+}
+
+// A individual service or upgrade added to an item during the shopping experience.
+message PriceLineItem {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Common_PriceLineItem_v1"
+    }
+  };
+
+  // A textual description of the individual charge.
+  string description = 1;
+
+  // The price of this line item.
+  .engine.common.v1.CurrencyValue price = 2;
+
+  // Optionally, an identifier to group line items for visual display.
+  // For example, "Extras" or "Loyalty Benefits".
+  optional string group = 3;
+}
+
+// The total price, along with a breakdown by a given unit.
+// For example, the total stay cost and the per-night cost.
+message PriceWithPerUnit {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Common_PriceWithPerUnit_v1"
+    }
+  };
+
+  // The total price for the item.
+  .engine.common.v1.Price price = 1;
+
+  // The total price broken into per-unit costs
+  repeated .engine.common.v1.PerUnitPrice per_unit_price = 2;
+}
+
+// A price representing the cost of a single unit in a multi-unit breakdown.
+// For example, price per night.
+message PerUnitPrice {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Common_PerUnitPrice_v1"
+    }
+  };
+
+  // A key to distinguish which unit is represented by this price.
+  // For example, which date, or which passenger.
+  string key = 1;
+
+  // The type of unit.
+  // For example, "night" or "person".
+  string unit = 2;
+
+  // The cost for this unit.
+  .engine.common.v1.Price price = 3;
+}

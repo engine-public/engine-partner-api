@@ -32,7 +32,7 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 message Property {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
-      title: "Property_v1"
+      title: "Content_Property_v1"
     }
   };
 

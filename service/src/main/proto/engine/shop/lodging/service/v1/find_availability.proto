@@ -1,0 +1,135 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.shop.lodging.service.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "engine/common/v1/sales_channel.proto";
+import "engine/common/v1/traveler.proto";
+import "engine/shop/lodging/v1/offer.proto";
+import "engine/shop/lodging/v1/room.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/shop/lodging/service";
+option java_package = "com.engine.shop.lodging.v1.service";
+option java_multiple_files = true;
+
+message FindAvailabilityRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Shop_Lodging_Service_FindAvailabilityRequest_v1"
+    }
+  };
+
+  oneof type {
+    // A continuation_token from a [BestOffer].
+    // Passing a continuation_token allows you to continue the shopping flow from a BestOffers search with the necessary search context preserved.
+    string continuation_token = 1;
+
+    // A request to find availability for a [Property] directly, skipping the BestOffers search.
+    .engine.shop.lodging.service.v1.FindAvailabilityPropertyRequest single_property = 2;
+  }
+}
+
+// A request to find availability for a single [Property].
+message FindAvailabilityPropertyRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Shop_Lodging_Service_FindAvailabilityPropertyRequest_v1"
+    }
+  };
+
+  // The Engine [Property] ID
+  string property_id = 1;
+
+  // An ISO-8601-compliant date on which you will check in to the property.
+  // See https://en.wikipedia.org/wiki/ISO_8601#Dates
+  string check_in_date = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    pattern: "^(?<year>[0-9]{4})-(?<month>(?:0[1-9])|(?:1[0-2]))-(?<day>(?:0[1-9])|(?:[1-2][0-9])|(?:3[0-1]))$"
+  }];
+
+  // An ISO-8601-compliant date on which you will check out of the property.
+  // See https://en.wikipedia.org/wiki/ISO_8601#Dates
+  string check_out_date = 3 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    pattern: "^(?<year>[0-9]{4})-(?<month>(?:0[1-9])|(?:1[0-2]))-(?<day>(?:0[1-9])|(?:[1-2][0-9])|(?:3[0-1]))$"
+  }];
+
+  // The number of rooms to book.
+  // May not exceed 8
+  int32 num_rooms = 4 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    minimum: 1,
+    maximum: 8,
+    default: "1",
+  }];
+
+  // The 3-character ISO-4217 alphabetic currency code to be used to convey pricing information.
+  // https://www.iso.org/iso-4217-currency-codes.html
+  string currency_code = 5 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    pattern: "^[A-Z]{3}$"
+  }];
+
+  // Describes the travelers for whom you are searching.
+  // Changes to the quantity or age of travelers has an impact on the Offer price.
+  // Failure to properly identify your travelers may incur additional charges at checkin or cancellation of the booking.
+  repeated .engine.common.v1.AnonymousTraveler travelers = 6;
+
+  // If available, the sales channel for the customer
+  optional .engine.common.v1.SalesChannel sales_channel = 7;
+}
+
+// A response to a [engine.shop.lodging.service.v1.LodgingSearchService#FindBestOffers] call.
+message FindAvailabilityResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Shop_Lodging_Service_FindAvailabilityResponse_v1"
+    }
+  };
+
+  // A list of available Offers, grouped by RoomDescriptions.
+  repeated .engine.shop.lodging.service.v1.RoomGroup room_groups = 1;
+}
+
+// A grouping of bookable Offers, collected by the [RoomDescription] to which they apply.
+message RoomGroup {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Shop_Lodging_Service_RoomGroup_v1"
+    }
+  };
+
+  // A description of the rooms for which the Offer applies.
+  // For example, "Standard 1 King Bed", "Standard 2 Queen Beds", or "Suite 1 King Bed".
+  .engine.shop.lodging.v1.RoomDescription room_description = 1;
+
+  // A list of bookable Offers for the room.
+  repeated .engine.shop.lodging.service.v1.Offer offer = 2;
+}
+
+// A bookable Offer representing a set of amenities and a price for the booking.
+message Offer {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Shop_Lodging_Service_Offer_v1"
+    }
+  };
+
+  // An opaque token that may be passed to [engine.book.lodging.service.v1.LodgingBookingService#ConfirmOffer] to begin the booking process.
+  string continuation_token = 1;
+
+  // The details of the Offer to book.
+  .engine.shop.lodging.v1.OfferSummary summary = 2;
+}

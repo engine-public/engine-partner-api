@@ -1,0 +1,60 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.book.lodging.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "engine/common/v1/actions.proto";
+import "engine/shop/lodging/v1/offer.proto";
+import "engine/shop/lodging/v1/room.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/book/lodging";
+option java_package = "com.engine.book.v1.lodging";
+option java_multiple_files = true;
+
+// The full details of the item to be Booked.
+message Quote {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Lodging_Quote_v1"
+    }
+  };
+
+  // An ISO-8601-compliant date on which the stay begins.
+  // See https://en.wikipedia.org/wiki/ISO_8601#Calendar_dates
+  string check_in_date = 1;
+
+  // An ISO-8601-compliant date on which the stay ends.
+  // See https://en.wikipedia.org/wiki/ISO_8601#Calendar_dates
+  string check_out_date = 2;
+
+  // The details of the [Offer] to be Booked.
+  .engine.shop.lodging.v1.OfferSummary offer_summary = 3;
+
+  // The number of rooms to be Booked.
+  int32 room_count = 4;
+
+  // The details of the [Room] to be booked.
+  .engine.shop.lodging.v1.RoomDescription room_description = 5;
+
+  // Optionally, the actions (such as cancellation) that are available for the [Booking] if they are known.
+  // Not every action will be available through the API for every reservation.
+  // Some may be available but the availability is not known at the point of the [LodgingBookingService.ConfirmOffer] or the [LodgingBookingService.Book] request.
+  .engine.common.v1.AvailableActions available_actions = 6;
+}

@@ -1,0 +1,44 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.common.v1;
+
+option go_package = "engine.com/engine-partner-api/common/v1";
+option java_package = "com.engine.common.v1";
+option java_multiple_files = true;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+// Describes the source of client
+enum SalesChannel {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_enum) = {
+    title: "Common_SalesChannel_v1"
+  };
+
+  // The sales channel cannot be determined.
+  SALES_CHANNEL_UNKNOWN = 0;
+
+  // The customer is shopping via a mobile application.
+  SALES_CHANNEL_MOBILE_NATIVE = 1;
+
+  // The customer is shopping via a mobile web browser.
+  SALES_CHANNEL_MOBILE_WEB = 2;
+
+  // The customer is shopping via a web browser on a desktop or laptop computer.
+  SALES_CHANNEL_WEB = 3;
+}

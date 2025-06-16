@@ -1,0 +1,66 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.shop.lodging.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "engine/shop/lodging/v1/offer.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/shop/lodging";
+option java_package = "com.engine.shop.v1.lodging";
+option java_multiple_files = true;
+
+// Generalized details of the room to which an Offer applies.
+message RoomDescription {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Shop_Lodging_RoomDescription_v1"
+    }
+  };
+
+  // The title of a room.
+  // For example, "Standard 1 King Bed", or "Suite 1 King Bed", "The Canary Suite".
+  string title = 1;
+
+  // A textual marketing description of the room.
+  // For example, "SKYLINE VIEW KING ROOM -CITY OR RIVER VIEW 1 KING -430 SQF"
+  string description = 2;
+
+  // The available bedding for the room.
+  repeated .engine.shop.lodging.v1.Bedding beds = 3;
+
+  // URIs to photos of this room.
+  repeated string photos = 4;
+}
+
+// A description of the quantity and type of beds in the room.
+message Bedding {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Shop_Lodging_Bedding_v1"
+    }
+  };
+
+  // The number of this bed type in the room.
+  int32 count = 1;
+
+  // A textual description of the type of this bed in the room.
+  // For example, "KING", "QUEEN", or "SLEEPER".
+  string description = 2;
+}

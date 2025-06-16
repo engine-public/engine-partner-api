@@ -1,0 +1,87 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.book.common.service.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "engine/common/v1/actions.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/book/common/service";
+option java_package = "com.engine.book.common.v1.service";
+option java_multiple_files = true;
+
+/**
+ * An error indicating that the [Offer] is no longer available. This is likely due to the [Offer] being sold out.
+ */
+message OfferNoLongerAvailableError {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Common_Service_OfferNoLongerAvailableError_v1"
+    }
+  };
+}
+
+/**
+ * An error indicating that the requested [Booking] is not in a valid state to perform the operation.
+ */
+message InvalidStateError {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Common_Service_InvalidStateError_v1"
+    }
+  };
+}
+
+/**
+ * An error that indicates a [Booking] failed in an unknown state and needs to be manually reviewed to determine if it was completed successfully.
+ */
+message BookingNeedsReviewError {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Common_Service_BookingNeedsReviewError_v1"
+    }
+  };
+}
+
+/**
+ * An error indicating that an action attempted by the client is unavailable for the given [Booking].
+ */
+message ActionNotAvailableError {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Common_Service_ActionNotAvailableError_v1"
+    }
+  };
+
+  /**
+   * The availability of the attempted action.
+   */
+  .engine.common.v1.ActionAvailability action_availability = 1;
+}
+
+/**
+ * An error indicating that a [Booking] cannot be canceled.
+ */
+message CannotCancelError {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Common_Service_CannotCancelError_v1"
+    }
+  };
+}

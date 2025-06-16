@@ -1,0 +1,230 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.shop.lodging.service.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "engine/common/v1/geo.proto";
+import "engine/common/v1/sales_channel.proto";
+import "engine/common/v1/traveler.proto";
+import "engine/content/v1/lodging/property.proto";
+import "engine/shop/lodging/v1/offer.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/shop/lodging/service";
+option java_package = "com.engine.shop.lodging.v1.service";
+option java_multiple_files = true;
+
+// A request that defines the criteria of a "Best Offers" search.
+// See [engine.shop.lodging.service.v1.LodgingSearchService#FindBestOffers]
+message FindBestOffersRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Shop_Lodging_Service_FindBestOffersRequest_v1",
+    }
+  };
+
+  // The criteria to be used to identify and filter Properties and Offers.
+  .engine.shop.lodging.service.v1.FindBestOffersRequestCriteria criteria = 1;
+
+  // By default, only Properties that have rooms matching your criteria will be returned.
+  // This differs from [engine.shop.lodging.service.v1.LodgingSearchService#FindBestOffersStreaming] which returns all considered properties.
+  // You may wish to set this to true if you are building a shopping experience that indicates availability may differ with different criteria, such as dates, but streaming is not viable.
+  bool include_properties_with_no_availability = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    default: "false",
+  }];
+
+  // The order in which the results will be returned.
+  .engine.shop.lodging.service.v1.FindBestOffersSortMode sort_mode = 3;
+}
+
+
+// Defines the base criteria used in a "Best Offers" search.
+message FindBestOffersRequestCriteria {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Shop_Lodging_Service_FindBestOffersRequestCriteria_v1",
+    }
+  };
+
+  // Defines the criteria used to identify Candidate properties for which we will retrieve "Best Offers".
+  oneof inclusion_type {
+    // Check the availability of up to [max_property_candidates] hotels nearest the center of the provided radius.
+    .engine.shop.lodging.service.v1.RadiusSearch point_and_radius = 1;
+  }
+
+  // An ISO-8601-compliant date on which you will check in to the property.
+  // See https://en.wikipedia.org/wiki/ISO_8601#Dates
+  string check_in_date = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    pattern: "^(?<year>[0-9]{4})-(?<month>(?:0[1-9])|(?:1[0-2]))-(?<day>(?:0[1-9])|(?:[1-2][0-9])|(?:3[0-1]))$"
+  }];
+
+  // An ISO-8601-compliant date on which you will check out of the property.
+  // See https://en.wikipedia.org/wiki/ISO_8601#Dates
+  string check_out_date = 3 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    pattern: "^(?<year>[0-9]{4})-(?<month>(?:0[1-9])|(?:1[0-2]))-(?<day>(?:0[1-9])|(?:[1-2][0-9])|(?:3[0-1]))$"
+  }];
+
+  // The number of rooms to book.
+  // May not exceed 8
+  int32 num_rooms = 4 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    minimum: 1,
+    maximum: 8,
+    default: "1",
+  }];
+
+  // The 3-character ISO-4217 alphabetic currency code to be used to convey pricing information.
+  // https://www.iso.org/iso-4217-currency-codes.html
+  string currency_code = 5 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    pattern: "^[A-Z]{3}$"
+  }];
+
+  // Describes the travelers for whom you are searching.
+  // Changes to the quantity or age of travelers has an impact on the Offer price.
+  // Failure to properly identify your travelers may incur additional charges at checkin or cancellation of the booking.
+  repeated .engine.common.v1.AnonymousTraveler travelers = 6;
+
+  // If available, the sales channel for the customer
+  optional .engine.common.v1.SalesChannel sales_channel = 7;
+
+  // The maximum number of properties to be considered for Offers.
+  // Properties with no availability will count against this limit, but may not be returned if there is no availability.
+  // May not exceed 250.
+  optional int32 max_property_candidates = 98 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    minimum: 1,
+    maximum: 250,
+    default: "100",
+  }];
+}
+
+
+// Describes the various ways a [engine.shop.lodging.service.v1.LodgingSearchService#FindBestOffers] search maybe sorted.
+enum FindBestOffersSortMode {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_enum) = {
+    title: "Shop_Lodging_Service_FindBestOffersSortMode_v1"
+  };
+
+  // No specific sort criteria will be used.
+  FIND_BEST_OFFERS_SORT_MODE_UNSPECIFIED = 0;
+
+  // Properties are returned in order of increasing distance.
+  // In case of ties, Property names are sorted lexically.
+  FIND_BEST_OFFERS_SORT_MODE_DISTANCE = 1;
+}
+
+
+// A search area in a perfect circle around a central point.
+message RadiusSearch {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Shop_Lodging_Service_RadiusSearch_v1"
+    }
+  };
+
+  // Defines the type of radius search to be executed.
+  oneof center_point_type {
+    // Latitude and Longitude coordinates to use as the center point of the search.
+    .engine.common.v1.GeoPoint coordinates = 1;
+  }
+
+  // The size of the search area.
+  // Default: 10 miles
+  // Minimum: 1 mile (~1.6 kilometers)
+  // Maximum: 50 miles (~80 kilometers)
+  .engine.common.v1.Distance radius = 101;
+}
+
+
+// The results of a [engine.shop.lodging.service.v1.LodgingSearchService#FindBestOffers] search.
+message FindBestOffersResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Shop_Lodging_Service_FindBestOffersResponse_v1"
+    }
+  };
+
+  // The full list of offers responsive your search.
+  repeated .engine.shop.lodging.service.v1.PropertyBestOffer offers = 1;
+}
+
+
+// A Property and the BestOffer available for that Property given the provided search criteria.
+message PropertyBestOffer {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Shop_Lodging_Service_PropertyBestOffer_v1"
+    }
+  };
+
+  // Details of the Property for which this [BestOffer] applies.
+  .engine.shop.lodging.service.v1.ResponsiveProperty property = 1;
+
+  // The details of the available [BestOffer].
+  .engine.shop.lodging.service.v1.BestOffer best_offer = 2;
+}
+
+
+// A Property that is responsive to the current shopping search.
+message ResponsiveProperty {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Shop_Lodging_Service_ResponsiveProperty_v1"
+    }
+  };
+
+  // The details of the returned property.
+  .engine.content.v1.lodging.Property property = 1;
+
+  // The distance from the center point of the search area, if appropriate.
+  .engine.common.v1.Distance distance = 2;
+}
+
+
+// The details of the Best Offer available for a property given the search criteria and aggregated data about other Offers that are available at the same property.
+// A [BestOffer] is not an exhaustive representation of all amenities and options available at a Property.
+// For example, it is possible that a [BestOffer] might indicate no loyalty is available because it cannot be known until full availability has been pulled.
+// To retrieve the full availability for a Property, see [engine.shop.lodging.service.v1.LodgingSearchService#FindAvailability].
+message BestOffer {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Shop_Lodging_Service_BestOffer_v1"
+    }
+  };
+
+  // An opaque token that may be used to see all available Offers for the property, or to book the [best_offer] directly.
+  // See [engine.shop.lodging.service.v1.LodgingSearchService#FindAvailability]
+  // See [engine.book.lodging.service.v1.LodgingBookingService#ConfirmOffer]
+  string continuation_token = 1;
+
+  // The specific details of the Best Offer available for a Property.
+  .engine.shop.lodging.v1.OfferSummary best_offer = 2;
+
+  // True if it is known that at least one refundable Offer is available for the property.
+  bool is_refundable_available = 3;
+
+  // True if it is known that at least one Offer is available that earns loyalty points.
+  bool is_loyalty_available = 4;
+
+  // True if it is known that at least one Offer is available that has free parking included.
+  // Please note: this value will be false if it is known that the Property offers free parking to all guests.
+  bool is_free_parking_available = 5;
+
+  // True if it is known that at least one Offer is available that has free breakfast included.
+  // Please note: this value will be false if it is known that the Property offers free breakfast to all guests.
+  bool is_free_breakfast_available = 6;
+}

@@ -1,18 +1,18 @@
-/*
- * Copyright 2025 HotelEngine, Inc., d/b/a Engine
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at:
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
 
 syntax = "proto3";
 
@@ -26,30 +26,8 @@ option go_package = "engine.com/engine-partner-api/v1/content/service";
 option java_package = "com.engine.content.v1.service";
 option java_multiple_files = true;
 
-option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
-  info: {
-    title: "Engine Partner API -- Content"
-    version: "1.0"
-    contact: {
-      name: "Engine Partner API"
-      url: "https://github.com/engine-public/partner-api"
-      email: "partner-api-support@engine.com"
-    }
-    license: {
-      name: "Apache License Version 2.0"
-      url: "https://github.com/engine-public/partner-api/blob/main/LICENSE"
-    }
-  }
-  external_docs: {
-    url: "https://github.com/engine-public/partner-api/docs/README.md"
-  }
-  host: "partner-api.engine.com"
-  schemes: HTTPS
-  consumes: "application/json"
-  produces: "application/json"
-};
 
-service ContentServiceV1 {
+service ContentService {
   rpc ListProperties(.engine.content.service.v1.ListPropertiesRequest)
       returns (.engine.content.service.v1.ListPropertiesResponse) {
     option (google.api.http) = {
