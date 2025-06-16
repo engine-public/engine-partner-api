@@ -12,6 +12,8 @@ description = "The Engine Partner API gRPC and OpenAPI service definitions."
 
 dependencies {
     api(projects.enginePartnerApiContent)
+    api(projects.enginePartnerApiShopLodging)
+    api(projects.enginePartnerApiBookLodging)
 
     api(libs.grpc.core)
     api(libs.grpc.kotlin)
@@ -86,7 +88,7 @@ protobuf {
                 create("grpc")
                 create("grpckt")
                 create("doc") {
-                    option("html,${project.name}-${version}.html")
+                    option("markdown,${project.name}-${version}.md")
                 }
                 create("openapiv2")
             }

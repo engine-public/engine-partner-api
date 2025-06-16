@@ -1,0 +1,92 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.book.lodging.service.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "engine/book/common/service/v1/error.proto";
+import "engine/book/lodging/v1/quote.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/book/lodging/service";
+option java_package = "com.engine.book.lodging.v1.service";
+option java_multiple_files = true;
+
+// A request to confirm final pricing and availability of an [Offer].
+message ConfirmOfferRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Lodging_Service_ConfirmOfferRequest_v1"
+    }
+  };
+
+  // A `continuation_token` from [engine.shop.lodging.service.v1.LodgingShoppingService#FindBestOffers], [engine.shop.lodging.service.v1.LodgingShoppingService#FindBestOffersStreaming], or [engine.shop.lodging.service.v1.LodgingShoppingService#FindAvailability].
+  string continuation_token = 1;
+
+  // The currency code for this request.
+  // This field specifies the currency in which the requester expects to see prices.
+  // It must adhere to the ISO 4217 three-character alphabetic currency code ("USD", "EUR", etc.).
+  // https://www.iso.org/iso-4217-currency-codes.html
+  string currency_code = 2;
+}
+
+// The result of a price and availability check.
+message ConfirmOfferResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Lodging_Service_ConfirmOfferRequest_v1"
+    }
+  };
+
+  // An opaque token that may be used to book the stay via [engine.shop.lodging.service.v1.LodgingBookingService#Book].
+  // See [LodgingBookingService#ConfirmOffer]
+  string continuation_token = 1;
+
+  // The full details of the [Offer], Room, Dates of Travel, and any notices required for display during the confirmation process.
+  .engine.book.lodging.v1.Quote quote = 2;
+}
+
+/**
+ * Error details of a failed [LodgingBookingService#ConfirmOffer] call.
+ */
+message ConfirmOfferError {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Lodging_Service_ConfirmOfferError_v1"
+    }
+  };
+
+  oneof error {
+    /**
+     * Defined when the operation returns with a status of INVALID_ARGUMENT and the requested offer
+     * is no longer available for sale.
+     */
+    .engine.book.common.service.v1.OfferNoLongerAvailableError offer_no_longer_available = 1;
+
+    /**
+     * Defined when the operation returns with a status of INVALID_ARGUMENT and the booking associated
+     * with the given continuation token is not in a valid state, e.g. It has already been booked or needs CS review.
+     */
+    .engine.book.common.service.v1.InvalidStateError invalid_state = 2;
+  }
+
+  /**
+   * Optionally, the unique identifier for this booking if it is known when the error occurs.
+   */
+  optional string booking_id = 3;
+}

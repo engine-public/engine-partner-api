@@ -18,6 +18,9 @@ dependencyResolutionManagement {
     val grpc = "1.60.0"
     val grpc_kotlin = "1.4.1"
     versionCatalogs {
+        create("buildscript") {
+            library("gson", "com.google.code.gson:gson:2.13.1")
+        }
         create("libs") {
             version("protoc-gen-openapi", "v2.25.1")
             val grpc = version("grpc", grpc)

@@ -1,0 +1,90 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.common.v1;
+
+option go_package = "engine.com/engine-partner-api/common/v1";
+option java_package = "com.engine.common.v1";
+option java_multiple_files = true;
+
+import 'protoc-gen-openapiv2/options/annotations.proto';
+
+import 'engine/common/v1/currency.proto';
+
+// Conditions that describe the availability, penalty, and timing constraints on modification to a booked item.
+message Conditions {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Common_Conditions_v1"
+    }
+  };
+
+  // Conditions that apply to modification of a [Booking].
+  // If no modify_conditions exist, the [Booking] may not be modified.
+  repeated .engine.common.v1.Condition modify_conditions = 1;
+
+  // Conditions that apply to cancellation of a [Booking].
+  // If no cancel_conditions exist, the [Booking] may not be canceled.
+  repeated .engine.common.v1.Condition cancel_conditions = 2;
+}
+
+// An individual condition to be applied to an interaction with a booked item.
+// For example, to cancel, or extend a Lodging [Booking].
+message Condition {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Common_Condition_v1"
+    }
+  };
+
+  // If present, this condition applies before and up to this ISO-8601-compliant timestamp.
+  // For example, Changing this flight is free before May 30th.
+  // This field may interact with [Condition.after_timestamp].
+  // See https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations
+  optional string before_timestamp = 1;
+
+  // If present, this condition applies on or after this ISO-8601-compliant timestamp.
+  // For example, Canceling this flight incurs a $75 fee after June 1st.
+  // This field may interact with [Condition.before_timestamp] and [Condition.before_event].
+  // See https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations
+  optional string after_timestamp = 2;
+
+  // If present, this condition applies up until the described event occurs.
+  // For example, Cancelling this flight is free until departure.
+  optional .engine.common.v1.ConditionEventType before_event = 3;
+
+  // Optionally, any charge incurred as a result of the intended action within the constraints of
+  // [Condition.before_timestamp], [Condition.after_timestamp], and [Condition.before_event].
+  // penalty may be absent if the penalty is unknown. A missing penalty does not imply that there is no penalty.
+  // If the penalty is known to be zero, penalty will be present with a value of 0.
+  .engine.common.v1.CurrencyValue penalty = 5;
+
+  // If false, the intended operation is not allowed.
+  optional bool is_allowed = 6;
+}
+
+// Events that affect the availability of an action when a specific timestamp is not available.
+enum ConditionEventType {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_enum) = {
+    title: "Common_ConditionEventType_v1"
+  };
+
+  CONDITION_EVENT_TYPE_UNKNOWN = 0;
+  CONDITION_EVENT_TYPE_DEPARTURE = 1;
+  CONDITION_EVENT_TYPE_CHECKIN = 2;
+}

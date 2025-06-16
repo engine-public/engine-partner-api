@@ -1,7 +1,7 @@
 services:
   swagger:
     environment:
-      SWAGGER_JSON: /var/specs/content.swagger.json
+      SWAGGER_JSON: /var/specs/engine-public-api.swagger.json
     image: swaggerapi/swagger-ui
     ports:
       - target: 8080

@@ -1,0 +1,93 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.book.lodging.service.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "engine/book/lodging/v1/guests.proto";
+import "engine/book/lodging/v1/metadata.proto";
+import "engine/book/lodging/v1/booking.proto";
+import "engine/book/common/service/v1/error.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/book/lodging/service";
+option java_package = "com.engine.book.lodging.v1.service";
+option java_multiple_files = true;
+
+// A request to purchase and reserve an [Offer].
+message BookRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Lodging_Service_BookRequest_v1"
+    }
+  };
+
+  // An `continuation_token` from [LodgingBookingService.ConfirmOffer].
+  string continuation_token = 2;
+
+  // The details of the guests staying on the [Reservation].
+  // The number of provided RoomGuests entries must match the number of rooms requested during shopping.
+  // Some Properties may not retain all of the provided guest names and may not honor more than one guest's loyalty per [Booking].
+  repeated .engine.book.lodging.v1.RoomGuests guests = 3;
+
+  // Metadata to be stored and retrieved along with this [Booking].
+  repeated .engine.book.lodging.v1.BookingMetadata metadata = 4;
+}
+
+// The result of an attempt to purchase and reserve an [Offer].
+message BookResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Lodging_Service_BookResponse_v1"
+    }
+  };
+
+  // The recorded details of the [Booking] and [Reservation].
+  .engine.book.lodging.v1.BookingDetails details = 1;
+}
+
+/**
+ * Error details of a failed [LodgingBookingService#Book] call.
+ */
+message BookError {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Lodging_Service_BookError_v1"
+    }
+  };
+
+  oneof error {
+    /**
+     * Defined when the operation returns with a status of INVALID_ARGUMENT and the requested offer
+     * is no longer available for sale.
+     */
+    .engine.book.common.service.v1.OfferNoLongerAvailableError offer_no_longer_available = 1;
+
+    /**
+     * Defined when the operation returns with a status of INVALID_ARGUMENT and the booking associated
+     * with the given continuation token is not in a valid state, e.g. It has already been booked or needs CS review.
+     */
+    .engine.book.common.service.v1.InvalidStateError invalid_state = 2;
+
+    /**
+     * Defined when the operation returns with a status of INTERNAL and the booking is in a non-retriable state
+     * that requires manual review to determine if it was completed successfully.
+     */
+    .engine.book.common.service.v1.BookingNeedsReviewError needs_review = 3;
+  }
+}

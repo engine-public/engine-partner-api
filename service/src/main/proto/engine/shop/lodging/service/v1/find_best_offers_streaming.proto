@@ -1,0 +1,66 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.shop.lodging.service.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "engine/shop/lodging/service/v1/find_best_offers.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/shop/lodging/service";
+option java_package = "com.engine.shop.lodging.v1.service";
+option java_multiple_files = true;
+
+// A request that defines the criteria of a "Best Offers" streaming search.
+// See [engine.shop.lodging.service.v1.LodgingSearchService#FindBestOffersStreaming].
+message FindBestOffersStreamingRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Shop_Lodging_Service_FindBestOffersStreamingRequest_v1",
+      description: "Unavailable in the HTTP/JSON API."
+      read_only: true,
+    }
+  };
+
+  // The criteria to be used to identify and filter Properties and Offers.
+  .engine.shop.lodging.service.v1.FindBestOffersRequestCriteria criteria = 1;
+}
+
+// An alternation to support multi-message-type streaming of BestOffers.
+message FindBestOffersStreamingResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Shop_Lodging_Service_FindBestOffersStreamingResponse_v1",
+      description: "Unavailable in the HTTP/JSON API."
+      read_only: true,
+    }
+  };
+
+  oneof message_type {
+    // A property that will be used as a candidate for Offer retrieval.
+    // Not every property sent will have a BestOffer associated with it if there is no availability within your specified parameters.
+    // While it is possible for Properties and BestOffers to be interleaved, the [ResponsiveProperty] for a [BestOffer] will always be sent and received first.
+    .engine.shop.lodging.service.v1.ResponsiveProperty property = 1;
+
+    // A [BestOffer] candidate for a Property.
+    // A [BestOffer] will never be sent for a property before its responsive property is sent.
+    // A single property may have multiple BestOffers returned if a better offer is encountered after the first has already been sent.
+    // If multiple BestOffers are received for a single Property, the last always wins.
+    .engine.shop.lodging.service.v1.BestOffer offer = 2;
+  }
+}

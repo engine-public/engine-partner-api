@@ -1,0 +1,189 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.book.lodging.service.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "engine/book/lodging/service/v1/confirm_offer.proto";
+import "engine/book/lodging/service/v1/book.proto";
+import "engine/book/lodging/service/v1/get_bookings.proto";
+import "engine/book/lodging/service/v1/get_bookings_streaming.proto";
+import "engine/book/lodging/service/v1/preview_cancellation.proto";
+import "engine/book/lodging/service/v1/submit_cancellation.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/book/lodging/service";
+option java_package = "com.engine.book.lodging.v1.service";
+option java_multiple_files = true;
+
+
+// A service to support transactions on offer [Offer] or one or more [BookingDetails].
+service LodgingBookingService {
+
+  // Given a `continuation_token` from [LodgingShoppingService.FindBestOffers], [LodgingShoppingService.FindBestOffersStreaming], or [LodgingShoppingService.FindAvailability], confirm the availability of the offer and retrieve any additional information necessary to Book.
+  //
+  // In case of error, the status will contain a [ConfirmOfferError] within the [Status.details] field.
+  rpc ConfirmOffer(.engine.book.lodging.service.v1.ConfirmOfferRequest)
+      returns (.engine.book.lodging.service.v1.ConfirmOfferResponse) {
+    option (google.api.http) = {
+      post: "/book/v1/lodging/confirm-offer"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Confirm the availability, pricing, and details of an Offer prior to booking."
+      responses: [
+        {
+          key: "400",
+          value: {
+            description: "Error details for gRPC Status of INVALID_ARGUMENT(3)."
+            schema: {
+              json_schema: {
+                ref: ".engine.book.lodging.service.v1.ConfirmOfferError"
+              }
+            }
+          }
+        }
+      ]
+    };
+  };
+
+  // Given a `continuation_token` from [LodgingBookingService.ConfirmOffer], purchase and reserve the Offer.
+  //
+  // In case of error, the status will contain a [BookError] within the [Status.details] field.
+  rpc Book(.engine.book.lodging.service.v1.BookRequest)
+      returns (.engine.book.lodging.service.v1.BookResponse) {
+    option (google.api.http) = {
+      put: "/book/v1/lodging/booking"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Purchase and reserve an Offer."
+      responses: [
+        {
+          key: "400"
+          value: {
+            description: "Error details for gRPC Status of INVALID_ARGUMENT(3)."
+            schema: {
+              json_schema: {
+                ref: ".engine.book.lodging.service.v1.BookError"
+              }
+            }
+          }
+        }
+      ]
+    };
+  };
+
+  // Retrieve multiple [BookingDetails] given provided one or more [BookingDetails.booking_id].
+  //
+  // In case of error, the status will contain a [GetBookingsError] within the [Status.details] field.
+  rpc GetBookings(.engine.book.lodging.service.v1.GetBookingsRequest)
+      returns (.engine.book.lodging.service.v1.GetBookingsResponse) {
+    option (google.api.http) = {
+      post: "/book/v1/lodging/booking",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Retrieve bookings given the provided Booking IDs."
+      responses: [
+        {
+          key: "400",
+          value: {
+            description: "Error details for gRPC Status of INVALID_ARGUMENT(3)."
+            schema: {
+              json_schema: {
+                ref: ".engine.book.lodging.service.v1.GetBookingsError"
+              }
+            }
+          }
+        }
+      ]
+    };
+  };
+
+  // Stream a set of [BookingDetails] given a set of streamed [BookingDetails.booking_id].
+  //
+  // In case of fatal error that interrupts the stream, the status will contain a [GetBookingsStreamingError] within the [Status.details] field.
+  // In the case of non-fatal errors (such as an individual booking not found), the error details will be found in the response object.
+  //
+  // GetBookingsStreaming is not offered via the HTTP/JSON API.
+  rpc GetBookingsStreaming(stream .engine.book.lodging.service.v1.GetBookingsStreamingRequest)
+      returns (stream .engine.book.lodging.service.v1.GetBookingsStreamingResponse) {
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Unavailable via HTTP/JSON API."
+      deprecated: true
+    };
+  };
+
+  // Get the availability, means, and expected refund for a booking cancellation.
+  //
+  // In case of error, the status will contain a [PreviewCancellationError] within the [Status.details] field.
+  rpc PreviewCancellation(.engine.book.lodging.service.v1.PreviewCancellationRequest)
+      returns (.engine.book.lodging.service.v1.PreviewCancellationResponse) {
+
+    option (google.api.http) = {
+      post: "/book/v1/lodging/booking/preview-cancellation",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Get the availability, means, and expected refund for a booking cancellation."
+      responses: [
+        {
+          key: "400",
+          value: {
+            description: "Error details for gRPC Status of INVALID_ARGUMENT(3)."
+            schema: {
+              json_schema: {
+                ref: ".engine.book.lodging.service.v1.PreviewCancellationError"
+              }
+            }
+          }
+        }
+      ]
+    };
+  };
+
+  // Submit a cancellation for a specific booking.
+  //
+  // In case of error, the status will contain a [SubmitCancellationError] within the [Status.details] field.
+  rpc SubmitCancellation(.engine.book.lodging.service.v1.SubmitCancellationRequest)
+      returns (.engine.book.lodging.service.v1.SubmitCancellationResponse) {
+    option (google.api.http) = {
+      post: "/book/v1/lodging/booking/submit-cancellation",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Attempt to cancel a booking."
+      responses: [
+        {
+          key: "400",
+          value: {
+            description: "Error details for gRPC Status of INVALID_ARGUMENT(3)."
+            schema: {
+              json_schema: {
+                ref: ".engine.book.lodging.service.v1.SubmitCancellationError"
+              }
+            }
+          }
+        }
+      ]
+    };
+  };
+}

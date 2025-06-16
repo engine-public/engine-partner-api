@@ -1,0 +1,56 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.book.lodging.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "engine/common/v1/loyalty.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/book/lodging";
+option java_package = "com.engine.book.v1.lodging";
+option java_multiple_files = true;
+
+// Details describing the observed state of the [Booking].
+message BookingStatus {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Lodging_BookingStatus_v1"
+    }
+  };
+
+  .engine.book.lodging.v1.LodgingBookingStatusCode code = 1;
+}
+
+// A value representing the state of a [Booking].
+enum LodgingBookingStatusCode {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_enum) = {
+    title: "Book_Lodging_LodgingBookingStatusCode_v1"
+  };
+
+  LODGING_BOOKING_STATUS_UNSPECIFIED = 0;
+
+  // The Booking has been submitted, but has not yet been confirmed.
+  LODGING_BOOKING_STATUS_PENDING = 1;
+
+  // The Booking has been confirmed.
+  LODGING_BOOKING_STATUS_CONFIRMED = 2;
+
+  // The Booking has been canceled and is no longer active.
+  LODGING_BOOKING_STATUS_CANCELED = 3;
+}

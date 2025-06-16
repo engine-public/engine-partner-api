@@ -113,7 +113,7 @@ protobuf {
             }
             task.plugins {
                 create("doc") {
-                    option("html,${project.name}-$version.html")
+                    option("markdown,${project.name}-$version.md")
                 }
             }
         }

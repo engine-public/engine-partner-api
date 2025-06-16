@@ -1,0 +1,52 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.book.lodging.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "engine/book/lodging/v1/guests.proto";
+import "engine/book/lodging/v1/metadata.proto";
+import "engine/book/lodging/v1/quote.proto";
+import "engine/common/v1/refund.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/book/lodging";
+option java_package = "com.engine.book.v1.lodging";
+option java_multiple_files = true;
+
+// Details of the Reservation made with the [Property].
+message ReservationDetails {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Lodging_ReservationDetails_v1"
+    }
+  };
+
+  // The confirmation numbers provided by the [Property] after a successful [Reservation].
+  // Confirmation numbers may not be available immediately after booking.
+  // The quantity of confirmation numbers may vary by the [Property] booked.
+  repeated string confirmation_numbers = 1;
+
+  // An ISO-8601-compliant date and time at which the [Reservation] was booked.
+  // See https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations
+  string created_at = 2;
+
+  // The details of the [Quote] that was purchased.
+  .engine.book.lodging.v1.Quote quote = 3;
+}
+
