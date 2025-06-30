@@ -57,7 +57,7 @@ message PreviewCancellationResponse {
 }
 
 /**
- * Error details of a failed [LodgingBookingService#PreviewCancellation] call.
+ * Error details of a failed [LodgingBookingService.PreviewCancellation] call.
  */
 message PreviewCancellationError {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {

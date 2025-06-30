@@ -14,6 +14,7 @@ import kotlin.io.path.isSymbolicLink
 
 plugins {
     id("org.jreleaser")
+
     id("com.google.protobuf").apply(false)
     kotlin("jvm").apply(false)
     id("org.jlleitschuh.gradle.ktlint").apply(false)
@@ -205,7 +206,7 @@ allprojects {
     }
 }
 
-tasks.register("clean", Delete::class) {
+val clean = tasks.register("clean", Delete::class) {
     group = "build"
     delete(rootProject.layout.buildDirectory)
 }
@@ -233,13 +234,6 @@ afterEvaluate {
                 include("**/*.proto")
             }.isEmpty
         }
-
-    val protosets = copySpec {
-        // copy the descriptor set from the service project
-        from(projects.enginePartnerApiService.dependencyProject.layout.buildDirectory.dir("generated/source/proto/main")) {
-            include("**/*.desc")
-        }
-    }
 
     val swaggerFiles = fileTree(projects.enginePartnerApiService.dependencyProject.layout.buildDirectory.dir("generated/source/proto/main/openapiv2")) {
         include("**/service.swagger.json")
@@ -282,7 +276,7 @@ afterEvaluate {
                                         "url" to "https://github.com/engine-public/engine-partner-api/blob/main/LICENSE"
                                     )
                                 ),
-                                "externalDocs" to "https://github.com/engine-public/engine-partner-api/docs/README.md",
+                                "externalDocs" to "https://github.com/engine-public/engine-partner-api/releases/download/$version/documentation.zip",
                                 "host" to "partner-api.engine.com",
                                 "schemes" to listOf("https"),
                                 "consumes" to listOf("application/json"),
@@ -324,29 +318,6 @@ afterEvaluate {
         }
     }
 
-    fun resolveCommand(command: String): String {
-        val originalPath = ProcessBuilder().command("which", command).start().let { process ->
-            process.inputReader(Charsets.UTF_8).use { reader ->
-                Path(reader.readText().trim())
-            }
-        }
-        if (!originalPath.isSymbolicLink()) {
-            return command
-        }
-        var resolvedPath = originalPath
-        while (resolvedPath.isSymbolicLink()) {
-            Files.readSymbolicLink(resolvedPath).let {
-                resolvedPath = if (it.isAbsolute) it else resolvedPath.parent.resolve(it)
-            }
-        }
-        return resolvedPath.absolutePathString().also {
-            logger.info("Resolved command $command to $resolvedPath")
-        }
-    }
-
-
-    val npxCommand = resolveCommand("npx")
-
     val mergeSwagger = tasks.register("mergeSwagger") {
         group = "swagger"
         description = "Merges all of the generated swagger service files into a single Engine Partner API swagger definition."
@@ -362,11 +333,12 @@ afterEvaluate {
         inputs.files(swaggerFiles)
         outputs.file(enginePartnerApiSwaggerJson)
 
+        @Suppress("UNCHECKED_CAST")
         doLast {
             val services: List<Map<String, Any>> = swaggerFiles.map { gson.get().fromJson(it.readText(), Map::class.java) as Map<String, Any> }
 
             val allTags: Set<String> = services.flatMap { service ->
-                (service["paths"] as Map<String, Map<String, Map<String, *>>>).flatMap { (path, methods) -> methods.flatMap { (method, keys) -> (keys["tags"] as List<String>)}}
+                (service["paths"] as Map<String, Map<String, Map<String, *>>>).flatMap { (_, methods) -> methods.flatMap { (_, keys) -> (keys["tags"] as List<String>)}}
             }.toSet()
 
             val allPaths: MutableMap<String, MutableMap<String, Any>> = mutableMapOf()
@@ -420,18 +392,24 @@ afterEvaluate {
         includeEmptyDirs = false
     }
 
-    val stageProtoContent = tasks.register<Copy>("stageProtoContent") {
+    val protosets = copySpec {
+        // copy the descriptor set from the service project
+        from(projects.enginePartnerApiService.dependencyProject.layout.buildDirectory.dir("generated/source/proto/main")) {
+            include("**/*.desc")
+        }
+    }
+
+    val protoStagingDir = project.layout.buildDirectory.dir("proto")
+
+    val copyProtos = tasks.register<Copy>("copyProtos") {
         protoProjects.forEach { p ->
             dependsOn(p.tasks["generateProto"])
         }
 
-        // copy all protos and docs from all subprojects, maintaining namespace
+        // copy all protos from all subprojects, maintaining namespace
         protoProjects.forEach { p ->
             from(p.layout.projectDirectory.dir("src/main/proto")) {
                 include("**/*.proto")
-            }
-            from(p.layout.buildDirectory.dir("generated/source/proto/main/doc")) {
-                include("**/*.html", "**/*.md")
             }
         }
 
@@ -443,19 +421,199 @@ afterEvaluate {
             }
         }
 
-        with(protosets)
-
-        into(documentationStagingDir.map { it.dir("gRPC") })
+        into(protoStagingDir)
         fileMode = "0666".toInt(8)
         dirMode = "0777".toInt(8)
         includeEmptyDirs = false
     }
 
+    tasks.jreleaserDeploy {
+        dependsOn(stageMavenCentral)
+    }
+
+    val buildMarkdown = project.layout.buildDirectory.dir("markdown")
+    val buildMarkdownStatic = buildMarkdown.map{ it.dir("static") }
+    val buildMarkdownGenerated = buildMarkdown.map{ it.dir("generated") }
+
+    val copyGeneratedMarkdown = tasks.register<Copy>("copyGeneratedMarkdown") {
+        protoProjects.forEach { p ->
+            dependsOn(p.tasks["generateProto"])
+            from(p.layout.buildDirectory.dir("generated/source/proto/main/doc")) {
+                include("**/*.html", "**/*.md")
+            }
+        }
+        into(buildMarkdownGenerated.map { it.dir("gRPC") })
+        fileMode = "0666".toInt(8)
+        dirMode = "0777".toInt(8)
+        includeEmptyDirs = false
+    }
+
+    val copyStaticMarkdown = tasks.register<Copy>("copyStaticMarkdown") {
+        from("src/main/markdown") {
+            include("**/*.md")
+            exclude("**/_*.md")
+        }
+        into(buildMarkdownStatic)
+        fileMode = "0666".toInt(8)
+        dirMode = "0777".toInt(8)
+        includeEmptyDirs = false
+    }
+
+    val addLinkFooters = tasks.register("addLinkFooters") {
+        val linkFooter = project.layout.projectDirectory.file("src/main/markdown/_link_footer.md")
+        dependsOn(copyStaticMarkdown, copyGeneratedMarkdown)
+        inputs.file(linkFooter)
+        inputs.dir(buildMarkdown)
+        doLast {
+            val footerText = linkFooter.asFile.readText().replace("{version}", project.version.toString())
+            listOf(buildMarkdownStatic, buildMarkdownGenerated)
+                .forEach { root ->
+                    fileTree(root)
+                        .filterNot { it.name.startsWith("_") }
+                        .filter { it.isFile }
+                        .forEach {
+                            val relpath = root.get().asFile.relativeTo(it.parentFile).path.ifEmpty { "." }
+                            it.appendText(footerText.replace("{relpath}", "$relpath/"))
+                        }
+                }
+        }
+    }
+
+    fun resolveCommand(command: String): String {
+        val originalPath = ProcessBuilder().command("which", command).start().let { process ->
+            process.inputReader(Charsets.UTF_8).use { reader ->
+                Path(reader.readText().trim())
+            }
+        }
+        if (!originalPath.isSymbolicLink()) {
+            return command
+        }
+        var resolvedPath = originalPath
+        while (resolvedPath.isSymbolicLink()) {
+            Files.readSymbolicLink(resolvedPath).let {
+                resolvedPath = if (it.isAbsolute) it else resolvedPath.parent.resolve(it)
+            }
+        }
+        return resolvedPath.absolutePathString().also {
+            logger.info("Resolved command $command to $resolvedPath")
+        }
+    }
+
+    val fixGeneratedMarkdown = tasks.register("fixGeneratedMarkdown") {
+        dependsOn(addLinkFooters)
+        inputs.dir(buildMarkdownGenerated)
+        outputs.dir(buildMarkdownGenerated)
+        doLast {
+            val patterns = mapOf(
+                "engine-partner-api-book-lodging-$version.md" to Regex("""\[(engine\.book\.lodging\.v1\.(?:.*?))\]\((#.*?)\)"""),
+                "engine-partner-api-common-$version.md" to Regex("""\[(engine\.common\.v1\.(?:.*?))\]\((#.*?)\)"""),
+                "engine-partner-api-content-$version.md" to Regex("""\[(engine\.content\.v1\.(?:.*?))\]\((#.*?)\)"""),
+                "engine-partner-api-service-$version.md" to Regex("""\[(engine\.service\.v1\.(?:.*?))\]\((#.*?)\)"""),
+                "engine-partner-api-shop-lodging-$version.md" to Regex("""\[(engine\.shop\.lodging\.v1\.(?:.*?))\]\((#.*?)\)"""),
+            )
+
+            buildMarkdownGenerated.get().asFileTree.forEach {
+                val oldText = it.readText()
+
+                val newText = patterns
+                    .entries
+                    .fold(oldText
+                        // fix bad table headers for "go" which is only two - instead of a minimum of 3
+                        .replace(
+                            Regex(""" -{1,2} \|"""),
+                            " --- |"
+                        )
+                        // fix missing links out to google rpc models
+                        .replace(
+                            Regex("""\[google\.rpc\.Status\]\(#.*?\)"""),
+                            "[google.rpc.Status](https://cloud.google.com/tasks/docs/reference/rpc/google.rpc#google.rpc.Status)"
+                        )
+                        // fix missing links out to google protobuf well known types
+                        .replace(
+                            Regex("""\[google\.protobuf\.Value\]\(#.*?\)"""),
+                            "[google.protobuf.Value](https://protobuf.dev/reference/protobuf/google.protobuf/#value)"
+                        )
+                        // fix broken tables caused by line breaks within a cell
+                        .replace(Regex("""\| ([^|]*?)\n+([^|]*?) \|""", RegexOption.MULTILINE), "| <p>$1</p><p>$2</p> |")
+                    ) { acc, (fileName, pattern) ->
+                        if (it.name == fileName) {
+                            logger.info("No changes necessary to ${it.name}")
+                            acc
+                        } else {
+                            logger.info("Changes are necessary for ${it.name}")
+                            acc.replace(pattern, "[$1](./$fileName$2)")
+                        }
+                    }
+
+                if (oldText != newText) {
+                    // TODO show diff
+                    it.writeText(newText)
+                }
+            }
+        }
+    }
+
+    val npxCommand = resolveCommand("npx")
+
+    val mdlUlIndent = "MD007"
+    val mdlNoTrailingSpaces = "MD009"
+    val mdlNoMultipleBlanks = "MD012"
+    val mdlLineLength = "MD013"
+    val mdlBlanksAroundHeadings = "MD022"
+    val mdlNoDuplicateHeading = "MD024"
+    val mdlNoInlineHtml = "MD033"
+    val mdlNoBareUrls = "MD034"
+    val mdlLinkImageReferenceDefinitions = "MD053"
+    val mdlBlanksAroundTables = "MD058"
+
+    val runMarkdownLinterOnStatic = tasks.register<Exec>("runMarkdownLinterOnStatic") {
+        dependsOn(addLinkFooters)
+        commandLine(
+            npxCommand,
+            "markdownlint-cli",
+            "--disable",
+            mdlLineLength,
+            mdlLinkImageReferenceDefinitions,
+            "--",
+            buildMarkdownStatic.get().asFile.absolutePath
+        )
+    }
+
+    val runMarkdownLinterOnGenerated = tasks.register<Exec>("runMarkdownLinterOnGenerated") {
+        dependsOn(fixGeneratedMarkdown)
+        commandLine(
+            npxCommand,
+            "markdownlint-cli",
+            "--disable",
+            mdlUlIndent,
+            mdlNoMultipleBlanks,
+            mdlLineLength,
+            mdlBlanksAroundHeadings,
+            mdlNoInlineHtml,
+            mdlNoTrailingSpaces,
+            mdlLinkImageReferenceDefinitions,
+            mdlNoBareUrls,
+            mdlNoDuplicateHeading,
+            mdlBlanksAroundTables,
+            "--",
+            buildMarkdown.map{ it.dir("generated") }.get().asFile.absolutePath
+        )
+    }
+
     val stageDocContent = tasks.register<Copy>("stageDocContent") {
-        from("docs/")
+        dependsOn(runMarkdownLinterOnStatic, runMarkdownLinterOnGenerated, copyProtos)
+
+        from("src/main/compose")
+        from(protoStagingDir) {
+            into("gRPC/proto")
+        }
+        from(buildMarkdownStatic)
+        from(buildMarkdownGenerated)
         from("LICENSE")
         from("README.md")
+
         into(documentationStagingDir)
+
         fileMode = "0666".toInt(8)
         dirMode = "0777".toInt(8)
         includeEmptyDirs = false
@@ -466,7 +624,18 @@ afterEvaluate {
         archiveFileName.set("documentation.zip")
         destinationDirectory.set(distDir)
         from(documentationStagingDir)
-        dependsOn(stageProtoContent, stageJsonContent, stageDocContent)
+        dependsOn(copyProtos, stageJsonContent, stageDocContent)
+    }
+
+    val buildProtoDistribution = tasks.register<Zip>("buildProtoDistribution") {
+        group = "publishing"
+        archiveFileName.set("proto.zip")
+        destinationDirectory.set(distDir)
+        from(protoStagingDir)
+        from(project.layout.projectDirectory.file("LICENSE")) {
+            into("engine")
+        }
+        dependsOn(copyProtos)
     }
 
     tasks.register<Copy>("buildApiDefinitionDistribution") {
@@ -474,14 +643,11 @@ afterEvaluate {
         protoProjects.forEach {
             dependsOn(it.tasks.findByName("generateProto"))
         }
-        dependsOn(mergeSwagger)
+        // copy protos, too
+        dependsOn(mergeSwagger, buildProtoDistribution)
         from(enginePartnerApiSwaggerJson)
         with(protosets)
         into(distDir)
         includeEmptyDirs = false
-    }
-
-    tasks.jreleaserDeploy {
-        dependsOn(stageMavenCentral)
     }
 }

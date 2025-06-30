@@ -34,17 +34,17 @@ message Conditions {
     }
   };
 
-  // Conditions that apply to modification of a [Booking].
-  // If no modify_conditions exist, the [Booking] may not be modified.
+  // Conditions that apply to modification of a [BookingDetails].
+  // If no modify_conditions exist, the [BookingDetails] may not be modified.
   repeated .engine.common.v1.Condition modify_conditions = 1;
 
-  // Conditions that apply to cancellation of a [Booking].
-  // If no cancel_conditions exist, the [Booking] may not be canceled.
+  // Conditions that apply to cancellation of a [BookingDetails].
+  // If no cancel_conditions exist, the [BookingDetails] may not be canceled.
   repeated .engine.common.v1.Condition cancel_conditions = 2;
 }
 
 // An individual condition to be applied to an interaction with a booked item.
-// For example, to cancel, or extend a Lodging [Booking].
+// For example, to cancel, or extend a Lodging [BookingDetails].
 message Condition {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {

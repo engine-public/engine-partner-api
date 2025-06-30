@@ -57,7 +57,7 @@ message GetBookingsResponse {
   repeated .engine.book.lodging.v1.BookingDetails bookings = 1;
 }
 
-// Error details of a failed [LodgingBookingService.ConfirmOffer] call.
+// Error details of a failed [LodgingBookingService.GetBookings] call.
 message GetBookingsError {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {

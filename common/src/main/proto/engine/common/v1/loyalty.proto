@@ -26,7 +26,7 @@ import 'protoc-gen-openapiv2/options/annotations.proto';
 
 // An identifier signifying a traveler's membership in a Loyalty Program.
 // Loyalty Program Identifiers are provided by the administrator of that program.
-// Not all [Offer]s will grant loyalty rewards.
+// Not all [OfferSummary] will grant loyalty rewards.
 message LodgingLoyaltyProgramIdentifier {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {

@@ -27,7 +27,7 @@ option go_package = "engine.com/engine-partner-api/v1/book/lodging/service";
 option java_package = "com.engine.book.lodging.v1.service";
 option java_multiple_files = true;
 
-// A request to confirm final pricing and availability of an [Offer].
+// A request to confirm final pricing and availability of an [OfferSummary].
 message ConfirmOfferRequest {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
@@ -35,7 +35,7 @@ message ConfirmOfferRequest {
     }
   };
 
-  // A `continuation_token` from [engine.shop.lodging.service.v1.LodgingShoppingService#FindBestOffers], [engine.shop.lodging.service.v1.LodgingShoppingService#FindBestOffersStreaming], or [engine.shop.lodging.service.v1.LodgingShoppingService#FindAvailability].
+  // A `continuation_token` from [LodgingShoppingService.FindBestOffers], [LodgingShoppingService.FindBestOffersStreaming], or [LodgingShoppingService.FindAvailability].
   string continuation_token = 1;
 
   // The currency code for this request.
@@ -53,16 +53,16 @@ message ConfirmOfferResponse {
     }
   };
 
-  // An opaque token that may be used to book the stay via [engine.shop.lodging.service.v1.LodgingBookingService#Book].
-  // See [LodgingBookingService#ConfirmOffer]
+  // An opaque token that may be used to book the stay via [LodgingBookingService.Book].
+  // See [LodgingBookingService.ConfirmOffer]
   string continuation_token = 1;
 
-  // The full details of the [Offer], Room, Dates of Travel, and any notices required for display during the confirmation process.
+  // The full details of the [OfferSummary], [RoomDescription], Dates of Travel, and any notices required for display during the confirmation process.
   .engine.book.lodging.v1.Quote quote = 2;
 }
 
 /**
- * Error details of a failed [LodgingBookingService#ConfirmOffer] call.
+ * Error details of a failed [LodgingBookingService.ConfirmOffer] call.
  */
 message ConfirmOfferError {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {

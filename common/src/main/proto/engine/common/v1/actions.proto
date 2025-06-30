@@ -24,7 +24,7 @@ option java_multiple_files = true;
 
 import 'protoc-gen-openapiv2/options/annotations.proto';
 
-// Describes the availability of actions on a [Booking].
+// Describes the availability of actions on a [BookingDetails].
 message AvailableActions {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
@@ -39,7 +39,7 @@ message AvailableActions {
   .engine.common.v1.ActionAvailability modify = 2;
 }
 
-// Describes the means by which an action may be taken on a [Booking].
+// Describes the means by which an action may be taken on a [BookingDetails].
 enum ActionAvailability {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_enum) = {
     title: "Common_ActionAvailability_v1"

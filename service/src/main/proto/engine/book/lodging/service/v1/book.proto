@@ -29,7 +29,7 @@ option go_package = "engine.com/engine-partner-api/v1/book/lodging/service";
 option java_package = "com.engine.book.lodging.v1.service";
 option java_multiple_files = true;
 
-// A request to purchase and reserve an [Offer].
+// A request to purchase and reserve an [OfferSummary].
 message BookRequest {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
@@ -40,16 +40,16 @@ message BookRequest {
   // An `continuation_token` from [LodgingBookingService.ConfirmOffer].
   string continuation_token = 2;
 
-  // The details of the guests staying on the [Reservation].
+  // The details of the guests staying on the [ReservationDetails].
   // The number of provided RoomGuests entries must match the number of rooms requested during shopping.
-  // Some Properties may not retain all of the provided guest names and may not honor more than one guest's loyalty per [Booking].
+  // Some Properties may not retain all of the provided guest names and may not honor more than one guest's loyalty per [BookingDetails].
   repeated .engine.book.lodging.v1.RoomGuests guests = 3;
 
-  // Metadata to be stored and retrieved along with this [Booking].
+  // Metadata to be stored and retrieved along with this [BookingDetails].
   repeated .engine.book.lodging.v1.BookingMetadata metadata = 4;
 }
 
-// The result of an attempt to purchase and reserve an [Offer].
+// The result of an attempt to purchase and reserve an [OfferSummary].
 message BookResponse {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
@@ -57,12 +57,12 @@ message BookResponse {
     }
   };
 
-  // The recorded details of the [Booking] and [Reservation].
+  // The recorded details of the [BookingDetails] and [ReservationDetails].
   .engine.book.lodging.v1.BookingDetails details = 1;
 }
 
 /**
- * Error details of a failed [LodgingBookingService#Book] call.
+ * Error details of a failed [LodgingBookingService.Book] call.
  */
 message BookError {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {

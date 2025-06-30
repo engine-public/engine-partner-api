@@ -36,7 +36,7 @@ message FindAvailabilityRequest {
   };
 
   oneof type {
-    // A continuation_token from a [BestOffer].
+    // A [BestOffer.continuation_token].
     // Passing a continuation_token allows you to continue the shopping flow from a BestOffers search with the necessary search context preserved.
     string continuation_token = 1;
 
@@ -91,7 +91,7 @@ message FindAvailabilityPropertyRequest {
   optional .engine.common.v1.SalesChannel sales_channel = 7;
 }
 
-// A response to a [engine.shop.lodging.service.v1.LodgingSearchService#FindBestOffers] call.
+// A response to a [LodgingShoppingService.FindBestOffers] call.
 message FindAvailabilityResponse {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
@@ -99,7 +99,7 @@ message FindAvailabilityResponse {
     }
   };
 
-  // A list of available Offers, grouped by RoomDescriptions.
+  // A list of available [OfferSummary], grouped by [RoomDescription].
   repeated .engine.shop.lodging.service.v1.RoomGroup room_groups = 1;
 }
 
@@ -116,7 +116,7 @@ message RoomGroup {
   .engine.shop.lodging.v1.RoomDescription room_description = 1;
 
   // A list of bookable Offers for the room.
-  repeated .engine.shop.lodging.service.v1.Offer offer = 2;
+  repeated .engine.shop.lodging.service.v1.Offer offers = 2;
 }
 
 // A bookable Offer representing a set of amenities and a price for the booking.
@@ -127,7 +127,7 @@ message Offer {
     }
   };
 
-  // An opaque token that may be passed to [engine.book.lodging.service.v1.LodgingBookingService#ConfirmOffer] to begin the booking process.
+  // An opaque token that may be passed to [LodgingBookingService.ConfirmOffer] to begin the booking process.
   string continuation_token = 1;
 
   // The details of the Offer to book.

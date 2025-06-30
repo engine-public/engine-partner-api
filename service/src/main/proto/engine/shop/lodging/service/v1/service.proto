@@ -65,8 +65,8 @@ service LodgingShoppingService {
 
   // Finds availability for a given property, broken down by individual room type.
   // RoomGroups describe the various rooms available to book.
-  // Offers describe the cheapest [Offer] along various dimensions like refundability and loyalty eligible within the [RoomGroup].
-  rpc FindAvailability(.engine.shop.lodging.service.v1.FindAvailabilityPropertyRequest)
+  // Offers describe the cheapest [OfferSummary] along various dimensions like refundability and loyalty eligible within the [RoomGroup].
+  rpc FindAvailability(.engine.shop.lodging.service.v1.FindAvailabilityRequest)
       returns (.engine.shop.lodging.service.v1.FindAvailabilityResponse) {
     option (google.api.http) = {
       post: "/shop/v1/lodging/availability",
@@ -74,7 +74,7 @@ service LodgingShoppingService {
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       summary: "Search for Availability at a given Property."
-      description: "Finds availability for a given property, broken down by individual room type.  RoomGroups describe the various rooms available to book.  Offers describe the cheapest [Offer] along various dimensions like refundability and loyalty eligible within the [RoomGroup]."
+      description: "Finds availability for a given property, broken down by individual room type.  RoomGroups describe the various rooms available to book.  Offers describe the cheapest [OfferSummary] along various dimensions like refundability and loyalty eligible within the [RoomGroup]."
     };
   };
 }

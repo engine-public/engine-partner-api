@@ -37,12 +37,12 @@ message ReservationDetails {
     }
   };
 
-  // The confirmation numbers provided by the [Property] after a successful [Reservation].
+  // The confirmation numbers provided by the [Property] after a successful reservation.
   // Confirmation numbers may not be available immediately after booking.
   // The quantity of confirmation numbers may vary by the [Property] booked.
   repeated string confirmation_numbers = 1;
 
-  // An ISO-8601-compliant date and time at which the [Reservation] was booked.
+  // An ISO-8601-compliant date and time at which the [ReservationDetails] was booked.
   // See https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations
   string created_at = 2;
 

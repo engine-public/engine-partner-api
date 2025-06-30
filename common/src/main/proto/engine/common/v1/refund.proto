@@ -25,7 +25,7 @@ option java_multiple_files = true;
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "engine/common/v1/currency.proto";
 
-// Details that describe any refund due or granted related to a modification or cancellation of a [Booking].
+// Details that describe any refund due or granted related to a modification or cancellation of a [BookingDetails].
 message Refund {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
