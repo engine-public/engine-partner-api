@@ -29,7 +29,7 @@ option go_package = "engine.com/engine-partner-api/v1/book/lodging";
 option java_package = "com.engine.book.v1.lodging";
 option java_multiple_files = true;
 
-// The details of an Engine Lodging [Booking] and the Property [Reservation] it describes.
+// An Engine Lodging [BookingDetails] and the Property [ReservationDetails] it describes.
 message BookingDetails {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
@@ -37,26 +37,26 @@ message BookingDetails {
     }
   };
 
-  // A unique identifier for the [Booking].
+  // A unique identifier for the [BookingDetails].
   string booking_id = 1;
 
-  // Details of the state of the [Booking].
+  // Details of the state of the [BookingDetails].
   .engine.book.lodging.v1.BookingStatus status = 2;
 
-  // Details of the Property [Reservation]
+  // Details of the Property [ReservationDetails]
   .engine.book.lodging.v1.ReservationDetails reservation_details = 3;
 
-  // Optionally, the details of the cancellation action taken for the [Booking].
+  // Optionally, the details of the cancellation action taken for the [BookingDetails].
   .engine.book.lodging.v1.CancellationDetails cancellation_details = 4;
 
-  // Any metadata provided while [Booking].
+  // Any metadata provided while booking.
   // Maximum length: 10
   repeated .engine.book.lodging.v1.BookingMetadata metadata = 5 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     max_items: 10;
   }];
 }
 
-// Details of the cancellation of a [Booking].
+// Details of the cancellation of a [BookingDetails].
 message CancellationDetails {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
@@ -64,7 +64,7 @@ message CancellationDetails {
     }
   };
 
-  // An ISO-8601-compliant date and time at which the [Booking] was canceled.
+  // An ISO-8601-compliant date and time at which the [BookingDetails] was canceled.
   // See https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations
   string canceled_at = 1;
 

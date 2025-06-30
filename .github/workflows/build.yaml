@@ -73,7 +73,7 @@ jobs:
         run: |
           ./gradlew build
 
-      - name: Build and Stage
+      - name: Stage Artifacts
         env:
           ENGINE_BUILD_VERSION: ${{ steps.getversion.outputs.version }}
         run: |
@@ -112,5 +112,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dist-swagger
-          path: build/dist/*.swagger.json
+          path: build/dist/engine-partner-api.swagger.json
+          if-no-files-found: error
+
+      - name: Upload proto distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-proto
+          path: build/dist/proto.zip
           if-no-files-found: error

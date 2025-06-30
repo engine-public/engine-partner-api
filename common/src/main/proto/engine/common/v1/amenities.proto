@@ -25,7 +25,7 @@ option java_multiple_files = true;
 import 'protoc-gen-openapiv2/options/annotations.proto';
 
 
-// Describes the condition of an amenity's inclusion on a [Property], [Room], [Offer], or [Booking].
+// Describes the condition of an amenity's inclusion on a [Property], [RoomDescription], [OfferSummary], or [BookingDetails].
 enum AmenityAvailability {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_enum) = {
     title: "Common_AmenityAvailability_v1"

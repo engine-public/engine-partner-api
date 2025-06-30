@@ -33,7 +33,7 @@ option java_package = "com.engine.book.lodging.v1.service";
 option java_multiple_files = true;
 
 
-// A service to support transactions on offer [Offer] or one or more [BookingDetails].
+// A service to support transactions on offer [OfferSummary] or one or more [BookingDetails].
 service LodgingBookingService {
 
   // Given a `continuation_token` from [LodgingShoppingService.FindBestOffers], [LodgingShoppingService.FindBestOffersStreaming], or [LodgingShoppingService.FindAvailability], confirm the availability of the offer and retrieve any additional information necessary to Book.
@@ -121,8 +121,6 @@ service LodgingBookingService {
   //
   // In case of fatal error that interrupts the stream, the status will contain a [GetBookingsStreamingError] within the [Status.details] field.
   // In the case of non-fatal errors (such as an individual booking not found), the error details will be found in the response object.
-  //
-  // GetBookingsStreaming is not offered via the HTTP/JSON API.
   rpc GetBookingsStreaming(stream .engine.book.lodging.service.v1.GetBookingsStreamingRequest)
       returns (stream .engine.book.lodging.service.v1.GetBookingsStreamingResponse) {
 

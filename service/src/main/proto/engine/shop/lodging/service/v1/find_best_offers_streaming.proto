@@ -27,7 +27,7 @@ option java_package = "com.engine.shop.lodging.v1.service";
 option java_multiple_files = true;
 
 // A request that defines the criteria of a "Best Offers" streaming search.
-// See [engine.shop.lodging.service.v1.LodgingSearchService#FindBestOffersStreaming].
+// See [LodgingShoppingService.FindBestOffersStreaming].
 message FindBestOffersStreamingRequest {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
