@@ -44,16 +44,16 @@ message Quote {
   // See https://en.wikipedia.org/wiki/ISO_8601#Calendar_dates
   string check_out_date = 2;
 
-  // The details of the [Offer] to be Booked.
+  // The details of the [OfferSummary] to be Booked.
   .engine.shop.lodging.v1.OfferSummary offer_summary = 3;
 
   // The number of rooms to be Booked.
   int32 room_count = 4;
 
-  // The details of the [Room] to be booked.
+  // The details of the [RoomDescription] to be booked.
   .engine.shop.lodging.v1.RoomDescription room_description = 5;
 
-  // Optionally, the actions (such as cancellation) that are available for the [Booking] if they are known.
+  // Optionally, the actions (such as cancellation) that are available for the [BookingDetails] if they are known.
   // Not every action will be available through the API for every reservation.
   // Some may be available but the availability is not known at the point of the [LodgingBookingService.ConfirmOffer] or the [LodgingBookingService.Book] request.
   .engine.common.v1.AvailableActions available_actions = 6;

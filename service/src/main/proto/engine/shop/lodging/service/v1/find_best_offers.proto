@@ -31,7 +31,7 @@ option java_package = "com.engine.shop.lodging.v1.service";
 option java_multiple_files = true;
 
 // A request that defines the criteria of a "Best Offers" search.
-// See [engine.shop.lodging.service.v1.LodgingSearchService#FindBestOffers]
+// See [LodgingShoppingService.FindBestOffers]
 message FindBestOffersRequest {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
@@ -43,7 +43,7 @@ message FindBestOffersRequest {
   .engine.shop.lodging.service.v1.FindBestOffersRequestCriteria criteria = 1;
 
   // By default, only Properties that have rooms matching your criteria will be returned.
-  // This differs from [engine.shop.lodging.service.v1.LodgingSearchService#FindBestOffersStreaming] which returns all considered properties.
+  // This differs from [LodgingShoppingService.FindBestOffersStreaming] which returns all considered properties.
   // You may wish to set this to true if you are building a shopping experience that indicates availability may differ with different criteria, such as dates, but streaming is not viable.
   bool include_properties_with_no_availability = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     default: "false",
@@ -64,7 +64,7 @@ message FindBestOffersRequestCriteria {
 
   // Defines the criteria used to identify Candidate properties for which we will retrieve "Best Offers".
   oneof inclusion_type {
-    // Check the availability of up to [max_property_candidates] hotels nearest the center of the provided radius.
+    // Check the availability of up to `max_property_candidates` hotels nearest the center of the provided radius.
     .engine.shop.lodging.service.v1.RadiusSearch point_and_radius = 1;
   }
 
@@ -113,7 +113,7 @@ message FindBestOffersRequestCriteria {
 }
 
 
-// Describes the various ways a [engine.shop.lodging.service.v1.LodgingSearchService#FindBestOffers] search maybe sorted.
+// Describes the various ways a [LodgingShoppingService.FindBestOffers] search maybe sorted.
 enum FindBestOffersSortMode {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_enum) = {
     title: "Shop_Lodging_Service_FindBestOffersSortMode_v1"
@@ -150,7 +150,7 @@ message RadiusSearch {
 }
 
 
-// The results of a [engine.shop.lodging.service.v1.LodgingSearchService#FindBestOffers] search.
+// The results of a [LodgingShoppingService.FindBestOffers] search.
 message FindBestOffersResponse {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
@@ -196,9 +196,9 @@ message ResponsiveProperty {
 
 
 // The details of the Best Offer available for a property given the search criteria and aggregated data about other Offers that are available at the same property.
-// A [BestOffer] is not an exhaustive representation of all amenities and options available at a Property.
+// A [BestOffer] is not an exhaustive representation of all amenities and options available at a [Property].
 // For example, it is possible that a [BestOffer] might indicate no loyalty is available because it cannot be known until full availability has been pulled.
-// To retrieve the full availability for a Property, see [engine.shop.lodging.service.v1.LodgingSearchService#FindAvailability].
+// To retrieve the full availability for a Property, see [LodgingShoppingService.FindAvailability].
 message BestOffer {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
@@ -206,9 +206,9 @@ message BestOffer {
     }
   };
 
-  // An opaque token that may be used to see all available Offers for the property, or to book the [best_offer] directly.
-  // See [engine.shop.lodging.service.v1.LodgingSearchService#FindAvailability]
-  // See [engine.book.lodging.service.v1.LodgingBookingService#ConfirmOffer]
+  // An opaque token that may be used to see all available Offers for the property, or to book the offer directly.
+  // See [LodgingShoppingService.FindAvailability]
+  // See [LodgingBookingService.ConfirmOffer]
   string continuation_token = 1;
 
   // The specific details of the Best Offer available for a Property.

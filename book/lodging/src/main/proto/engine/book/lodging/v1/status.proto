@@ -26,7 +26,7 @@ option go_package = "engine.com/engine-partner-api/v1/book/lodging";
 option java_package = "com.engine.book.v1.lodging";
 option java_multiple_files = true;
 
-// Details describing the observed state of the [Booking].
+// Details describing the observed state of the [BookingDetails].
 message BookingStatus {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
@@ -37,7 +37,7 @@ message BookingStatus {
   .engine.book.lodging.v1.LodgingBookingStatusCode code = 1;
 }
 
-// A value representing the state of a [Booking].
+// A value representing the state of a [BookingDetails].
 enum LodgingBookingStatusCode {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_enum) = {
     title: "Book_Lodging_LodgingBookingStatusCode_v1"

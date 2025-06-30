@@ -100,7 +100,7 @@ message RadiusSearch {
     .engine.common.v1.PostalAddress physical_address = 2;
 
     // A description of a point of interest, an unstructured address, etc.
-    // freeform input will make a "best effort" match to a point of interest and its corresponding geo coordinates.
+    // Freeform input will make a "best effort" match to a point of interest and its corresponding geo coordinates.
     // If available, using `coordinates` or `physical_address` will yield better results.
     string freeform_search_text = 3;
   }

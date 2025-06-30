@@ -63,6 +63,14 @@ jobs:
         run: |
           ls -alhR build/
 
+      - name: Git Tag
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git tag --annotate "${{ inputs.build_version }}" --message="${{ inputs.build_version }}"
+          git push origin "${{ inputs.build_version }}"
+
       - name: Gradle Publish
         env:
           ENGINE_BUILD_VERSION: ${{ inputs.build_version }}
@@ -75,14 +83,6 @@ jobs:
         if: success()
         run: |
           ./gradlew -xstageMavenCentral jreleaserDeploy
-
-      - name: Git Tag
-        if: success()
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git tag --annotate "${{ inputs.build_version }}" --message="${{ inputs.build_version }}"
-          git push origin "${{ inputs.build_version }}"
 
       - name: GitHub Release
         if: success()

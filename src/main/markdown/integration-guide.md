@@ -1,6 +1,25 @@
+---
+title: Integration Guide
+permalink: /integration-guide.html
+---
+
+<!-- markdownlint-disable-next-line MD025 -->
 # Integration Guide
 
+<!-- markdownlint-capture -->
+<!-- markdownlint-disable MD033 -->
+<details markdown="block">
+  <summary>
+    Table of contents
+  </summary>
+  {: .text-delta }
+1. TOC
+{:toc}
+</details>
+<!-- markdownlint-restore -->
+
 ## Authentication
+
 Authentication to the Engine Partner APIs is managed via [Mutual TLS (mTLS)](https://en.wikipedia.org/wiki/Mutual_authentication#mTLS).
 Please contact the Engine Partner Integration team to have a private key provisioned for access to the APIs.
 
@@ -9,14 +28,21 @@ Please contact the Engine Partner Integration team to have a private key provisi
 ---
 
 ### gRPC
+
 The Engine Partner APIs are available via [gRPC](https://grpc.io).
 The proto definitions are available to compile any of the supported language bindings.
 Engine publishes pre-compiled client bindings for the following language:
-* JVM (Java/Kotlin)
+
+* [JVM](https://central.sonatype.com/artifact/com.engine/engine-partner-api-service) (Java/Kotlin)
 
 Please contact the Engine Partner Integration team to request new client bindings libraries.
 
+For more information:
+
+* [gRPC API Definition]
+
 #### grpcurl example
+
 ```bash
 grpcurl -protoset descriptor_set.desc -key /path/to/private.key -cert /path/to/cert.pem -d '{
     "request": {
@@ -33,8 +59,9 @@ grpcurl -protoset descriptor_set.desc -key /path/to/private.key -cert /path/to/c
 }' partner-api.engine.com:443 engine.content.api.v1.ContentServiceV1.ListProperties
 ```
 
-#### Headers
-```
+#### gRPC Response Headers
+
+```text
 com-engine-request-id: 5e80f344-09b9-92f3-bdec-1db632f4a75e
 content-type: application/grpc
 date: Fri, 21 Feb 2025 16:41:08 GMT
@@ -46,7 +73,8 @@ server: istio-envoy
 x-envoy-upstream-service-time: 80
 ```
 
-##### Body
+#### gRPC Response Body (formatted as JSON)
+
 ```json
 {
   "properties": [
@@ -79,27 +107,34 @@ x-envoy-upstream-service-time: 80
 }
 ```
 
-
 ---
 
 ### HTTP/JSON
+
 A subset of the Engine Partner APIs have REST-inspired HTTP/JSON implementations as defined in our published [Swagger Definitions](./HTTP/content-service-swagger.json).
 HTTP/JSON provides a simpler integration at the cost of additional latency and increased payload sizes.
+
+For more information:
+
+* [Swagger API Definition]
 
 #### curl example
 
 ```bash
 curl --verbose --key /path/to/private.key --cert /path/to/cert.pem 'https://partner-api.engine.com/content/v1/property?request.criteria.radius.coordinates.latitude=30.361589&request.criteria.radius.coordinates.longitude=-97.747976&request.pageSize=1' -H 'accept: application/json'
 ```
-##### Headers
-```
+
+#### HTTP Headers
+
+```text
 < ratelimit-limit: 400
 < ratelimit-remaining: 399
 < ratelimit-reset: 48
 < com-engine-request-id: 0833dc12-5347-9938-bb61-7d74bc264c9e
 ```
 
-##### Body
+#### HTTP Response Body
+
 ```json
 {
   "properties": [

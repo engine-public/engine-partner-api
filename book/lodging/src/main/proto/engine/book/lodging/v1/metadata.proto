@@ -26,8 +26,8 @@ option go_package = "engine.com/engine-partner-api/v1/book/lodging";
 option java_package = "com.engine.book.v1.lodging";
 option java_multiple_files = true;
 
-// Custom Metadata attached to a [Booking].
-// Metadata values allow a Partner API customer to carry a small amount of context on a [Booking] for their own use.
+// Custom Metadata attached to a [BookingDetails].
+// Metadata values allow a Partner API customer to carry a small amount of context on a [BookingDetails] for their own use.
 message BookingMetadata {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
@@ -36,7 +36,7 @@ message BookingMetadata {
   };
 
   // A textual key to represent the purpose of the metadata, for example, "Contract ID".
-  // Keys must be unique within a [Booking].
+  // Keys must be unique within a [BookingDetails].
   // Maximum length: 40 characters
   string key = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     max_length: 40;

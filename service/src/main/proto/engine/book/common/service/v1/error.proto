@@ -27,7 +27,7 @@ option java_package = "com.engine.book.common.v1.service";
 option java_multiple_files = true;
 
 /**
- * An error indicating that the [Offer] is no longer available. This is likely due to the [Offer] being sold out.
+ * An error indicating that the [OfferSummary] is no longer available. This is likely due to the [OfferSummary] being sold out.
  */
 message OfferNoLongerAvailableError {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
@@ -38,7 +38,7 @@ message OfferNoLongerAvailableError {
 }
 
 /**
- * An error indicating that the requested [Booking] is not in a valid state to perform the operation.
+ * An error indicating that the requested [BookingDetails] is not in a valid state to perform the operation.
  */
 message InvalidStateError {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
@@ -49,7 +49,7 @@ message InvalidStateError {
 }
 
 /**
- * An error that indicates a [Booking] failed in an unknown state and needs to be manually reviewed to determine if it was completed successfully.
+ * An error that indicates a [BookingDetails] failed in an unknown state and needs to be manually reviewed to determine if it was completed successfully.
  */
 message BookingNeedsReviewError {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
@@ -60,7 +60,7 @@ message BookingNeedsReviewError {
 }
 
 /**
- * An error indicating that an action attempted by the client is unavailable for the given [Booking].
+ * An error indicating that an action attempted by the client is unavailable for the given [BookingDetails].
  */
 message ActionNotAvailableError {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
@@ -76,7 +76,7 @@ message ActionNotAvailableError {
 }
 
 /**
- * An error indicating that a [Booking] cannot be canceled.
+ * An error indicating that a [BookingDetails] cannot be canceled.
  */
 message CannotCancelError {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
