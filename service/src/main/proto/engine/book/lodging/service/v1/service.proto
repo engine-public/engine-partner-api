@@ -121,6 +121,8 @@ service LodgingBookingService {
   //
   // In case of fatal error that interrupts the stream, the status will contain a [GetBookingsStreamingError] within the [Status.details] field.
   // In the case of non-fatal errors (such as an individual booking not found), the error details will be found in the response object.
+  //
+  // This rpc is unavailable via the HTTP/JSON API.
   rpc GetBookingsStreaming(stream .engine.book.lodging.service.v1.GetBookingsStreamingRequest)
       returns (stream .engine.book.lodging.service.v1.GetBookingsStreamingResponse) {
 
