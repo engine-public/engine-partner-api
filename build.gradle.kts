@@ -397,12 +397,17 @@ afterEvaluate {
                     )
                     // fix missing links out to google rpc models
                     .replace(
-                        Regex("""\[google\.rpc\.Status\]\(#.*?\)"""),
+                        Regex("""\[\.?google\.rpc\.Status\]\(#.*?\)"""),
                         "[google.rpc.Status](https://cloud.google.com/tasks/docs/reference/rpc/google.rpc#google.rpc.Status)"
+                    )
+                    // fix missing links out to google api well known types
+                    .replace(
+                        Regex("""\[\.?google\.api\.HttpBody\]\(#.*?\)"""),
+                        "[google.api.HttpBody](https://cloud.google.com/tasks/docs/reference/rpc/google.api#google.api.HttpBody)"
                     )
                     // fix missing links out to google protobuf well known types
                     .replace(
-                        Regex("""\[google\.protobuf\.Value\]\(#.*?\)"""),
+                        Regex("""\[\.?google\.protobuf\.Value\]\(#.*?\)"""),
                         "[google.protobuf.Value](https://protobuf.dev/reference/protobuf/google.protobuf/#value)"
                     )
             }
