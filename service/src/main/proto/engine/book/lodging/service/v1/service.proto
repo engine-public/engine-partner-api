@@ -19,10 +19,12 @@ syntax = "proto3";
 package engine.book.lodging.service.v1;
 
 import "google/api/annotations.proto";
+import "google/api/httpbody.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 import "engine/book/lodging/service/v1/confirm_offer.proto";
 import "engine/book/lodging/service/v1/book.proto";
+import "engine/book/lodging/service/v1/generate_folio.proto";
 import "engine/book/lodging/service/v1/get_bookings.proto";
 import "engine/book/lodging/service/v1/get_bookings_streaming.proto";
 import "engine/book/lodging/service/v1/preview_cancellation.proto";
@@ -179,6 +181,34 @@ service LodgingBookingService {
             schema: {
               json_schema: {
                 ref: ".engine.book.lodging.service.v1.SubmitCancellationError"
+              }
+            }
+          }
+        }
+      ]
+    };
+  };
+
+
+  // Generate a folio for a specific booking.
+  //
+  // In case of error, the status will contain a [GenerateFolioError] within the [Status.details] field.
+  rpc GenerateFolio(.engine.book.lodging.service.v1.GenerateFolioRequest)
+      returns (.google.api.HttpBody) {
+    option (google.api.http) = {
+      post: "/book/v1/lodging/booking/generate-folio"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Generate a folio."
+      responses: [
+        {
+          key: "400",
+          value: {
+            description: "Error details for gRPC Status of FAILED_PRECONDITION(9)."
+            schema: {
+              json_schema: {
+                ref: ".engine.book.lodging.service.v1.GenerateFolioError"
               }
             }
           }
