@@ -147,9 +147,19 @@ subprojects {
             }
         }
         repositories {
+            val mavenUser = System.getenv("MAVEN_USERNAME")
+            val mavenPassword = System.getenv("MAVEN_PASSWORD")
+            val mavenUrl = System.getenv("MAVEN_DEPLOY_URL")
             maven {
-                url = mavenStagingDir.get().asFile.toURI()
+                url = mavenUrl?.let { uri(it) } ?: mavenStagingDir.get().asFile.toURI()
+                if (mavenUser != null) {
+                    credentials {
+                        username = mavenUser
+                        password = mavenPassword
+                    }
+                }
             }
+
         }
     }
 
