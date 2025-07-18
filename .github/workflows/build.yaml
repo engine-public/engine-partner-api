@@ -7,14 +7,6 @@ on:
         description: "The version to build.  It must be semver-compliant, and must not be for a tag that already exists."
         required: false
         type: string
-      pre_release:
-        description: "If true, marked as pre-release in the github release page.  Prevents publishing of site docs.  Does not affect publishing of packages."
-        type: boolean
-        default: true
-      publish:
-        description: "If true, artifacts will be published to Maven Central and a release will be created on Github."
-        required: true
-        type: boolean
     secrets:
       JRELEASER_GPG_SECRET_KEY:
         required: false

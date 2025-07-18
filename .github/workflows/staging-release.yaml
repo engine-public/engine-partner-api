@@ -1,10 +1,10 @@
-name: Release
+name: Staging Release
 
 on:
   workflow_dispatch:
     inputs:
       build_version:
-        description: "The version to build.  It must be semver-compliant, and must not be for a tag that already exists."
+        description: "The version to build.  It must be semver-compliant, and must not be for a tag that already exists. This requires a '-staging.X' suffix.. like 0.0.1-staging.2"
         required: true
         type: string
       pre_release:
@@ -16,7 +16,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  pre-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check version
+        run: |
+          echo ${{ inputs.build_version }} | grep -E '[0-9]+\.[0-9]+\.[0-9]+-staging\.[0-9]+' || (echo "Invalid version format. Must be semver-compliant with '-staging.X' suffix." && exit 1)
+
   build:
+    needs: pre-check
     uses: ./.github/workflows/build.yaml
     secrets: inherit
     with:
@@ -50,17 +58,6 @@ jobs:
           pattern: dist-*
           merge-multiple: true
 
-      - name: Download Maven Staging Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: build/staging/maven-central
-          pattern: staging-*
-          merge-multiple: true
-
-      - name: List Artifacts Directory
-        run: |
-          ls -alhR build/
-
       - name: Git Tag
         if: success()
         env:
@@ -72,15 +69,12 @@ jobs:
       - name: Gradle Publish
         env:
           ENGINE_BUILD_VERSION: ${{ inputs.build_version }}
-          JRELEASER_GPG_PASSPHRASE: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
-          JRELEASER_GPG_PUBLIC_KEY: ${{ vars.JRELEASER_GPG_PUBLIC_KEY }}
-          JRELEASER_GPG_SECRET_KEY: ${{ secrets.JRELEASER_GPG_SECRET_KEY }}
-          JRELEASER_MAVENCENTRAL_STAGE: upload # todo make this dynamic?
-          JRELEASER_MAVENCENTRAL_TOKEN: ${{ secrets.JRELEASER_MAVENCENTRAL_TOKEN }}
-          JRELEASER_MAVENCENTRAL_USERNAME: ${{ vars.JRELEASER_MAVENCENTRAL_USERNAME }}
+          MAVEN_USERNAME: ${{ vars.JF_USER }}
+          MAVEN_PASSWORD: ${{ secrets.JF_PASSWORD }}
+          MAVEN_DEPLOY_URL: https://hotelengine.jfrog.io/artifactory/release-gradle
         if: success()
         run: |
-          ./gradlew -xstageMavenCentral jreleaserDeploy
+          ./gradlew publish
 
       - name: GitHub Release
         if: success()
