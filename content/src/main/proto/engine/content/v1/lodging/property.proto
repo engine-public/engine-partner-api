@@ -66,4 +66,10 @@ message Property {
   // If available, a brief textual description of this [Property].
   //
   optional string description = 41;
+
+  //
+  // If available, an E.164-compliant primary phone number for this [Property].
+  // See https://en.wikipedia.org/wiki/E.164
+  //
+  optional string phone_number = 51;
 }

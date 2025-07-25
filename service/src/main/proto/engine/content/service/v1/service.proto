@@ -19,6 +19,7 @@ syntax = "proto3";
 package engine.content.api.v1;
 
 import "engine/content/service/v1/list_properties.proto";
+import "engine/content/service/v1/get_properties.proto";
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
@@ -44,6 +45,27 @@ service ContentService {
           }
         }
       }
+    };
+  }
+
+  // Retrieves details for the set of properties specified in the request.
+  rpc GetProperties(.engine.content.service.v1.GetPropertiesRequest)
+      returns (.engine.content.service.v1.GetPropertiesResponse) {
+    option (google.api.http) = {
+      post: "/content/v1/properties"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Retrieves details for specific properties."
+      description: "Retrieves details for the set of properties specified in the request"
+      responses: [
+        {
+          key: "400"
+          value: {
+            description: "Invalid request parameters."
+          }
+        }
+      ]
     };
   }
 }
