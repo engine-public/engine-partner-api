@@ -56,7 +56,7 @@ grpcurl -protoset descriptor_set.desc -key /path/to/private.key -cert /path/to/c
         },
         "page_size": 1
     }
-}' partner-api.engine.com:443 engine.content.api.v1.ContentServiceV1.ListProperties
+}' partner-api.engine.com:443 engine.content.api.v1.ContentService.ListProperties
 ```
 
 #### gRPC Response Headers

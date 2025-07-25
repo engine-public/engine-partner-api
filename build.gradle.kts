@@ -9,10 +9,13 @@ import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import org.jreleaser.gradle.plugin.JReleaserExtension
 import org.jreleaser.model.Active
 import java.nio.file.Files
+import java.time.Instant
 import java.util.*
+import kotlin.apply
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.isSymbolicLink
+import kotlin.io.writeText
 
 plugins {
     id("org.jreleaser")
@@ -234,6 +237,20 @@ val writeVersion = tasks.register("writeVersion") {
             .asFile
             .apply { parentFile.mkdirs() }
             .writeText(version.toString())
+    }
+}
+
+val writeDateGenerated = tasks.register("writeDateGenerated") {
+    val dateGeneratedFile = project.layout.buildDirectory.map { it.file("date_generated.txt") }
+    group = "build"
+    outputs.file(dateGeneratedFile)
+    outputs.upToDateWhen { false }
+    doFirst {
+        dateGeneratedFile
+            .get()
+            .asFile
+            .apply { parentFile.mkdirs() }
+            .writeText(Instant.now().epochSecond.toString())
     }
 }
 
@@ -642,6 +659,7 @@ afterEvaluate {
     val stageSiteLiquidIncludes = tasks.register<Copy>("stageSiteLiquidIncludes") {
         group = "site"
         from(writeVersion)
+        from(writeDateGenerated)
         into(stagingSiteDir.map { it.dir("_includes") })
     }
 

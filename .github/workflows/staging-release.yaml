@@ -71,7 +71,7 @@ jobs:
           ENGINE_BUILD_VERSION: ${{ inputs.build_version }}
           MAVEN_USERNAME: ${{ vars.JF_USER }}
           MAVEN_PASSWORD: ${{ secrets.JF_PASSWORD }}
-          MAVEN_DEPLOY_URL: https://hotelengine.jfrog.io/artifactory/release-gradle
+          MAVEN_DEPLOY_URL: ${{ vars.MAVEN_DEPLOY_URL }}
         if: success()
         run: |
           ./gradlew publish
@@ -83,7 +83,6 @@ jobs:
         run: |
           gh release create "${{ inputs.build_version }}" --generate-notes --prerelease=${{ inputs.pre_release }} --verify-tag
           gh release upload "${{ inputs.build_version }}" build/dist/*
-
 
   pages:
     permissions:
