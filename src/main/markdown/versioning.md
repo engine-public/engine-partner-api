@@ -1,10 +1,16 @@
-# Versioning
+---
+title: Versioning
+permalink: /versioning.html
+---
 
-Engine's Partner APIs follow [Semantic Versioning 2.0.0](https://semver.org).
+<!-- markdownlint-disable-next-line MD025 -->
+# API Versioning
+
+The Engine Partner API follows [Semantic Versioning 2.0.0](https://semver.org).
 
 ## Breaking Changes
 
-When required, breaking changes to the [Engine Partner API] will be released along with a major version number increase.
+When required, breaking changes to the Engine Partner API will be released along with a major version number increase.
 Upon introduction of the breaking change, the API will be forked by version number such that the prior version will be available until the support window expires.
 Please see the [Deprecation Policy] for full details.
 
@@ -24,7 +30,8 @@ When it is necessary to remove Messages, Fields, Enums, or Enum constants, a min
 
 Minor and Patch changes will be introduced by the [Engine] team to add new features and functionality to our [Engine Partner API].
 
-::interrobang:: Minor changes will always be wire compatible with all prior minor revisions of the current Major version.
+{: .attention}
+Minor changes will always be wire compatible with all prior minor revisions of the current Major version.
 However, depending on the language implementation in use, changes may be necessary for compilation to succeed when updating to new API clients.
 For example, the addition of a new enum constant may violate branch completeness (kotlin, scala), and nullability changes may violate compilation checks for specific languages (kotlin, typescript).
 

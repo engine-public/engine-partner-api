@@ -7,14 +7,6 @@ on:
         description: "The version to build.  It must be semver-compliant, and must not be for a tag that already exists."
         required: false
         type: string
-      pre_release:
-        description: "If true, marked as pre-release in the github release page.  Prevents publishing of site docs.  Does not affect publishing of packages."
-        type: boolean
-        default: true
-      publish:
-        description: "If true, artifacts will be published to Maven Central and a release will be created on Github."
-        required: true
-        type: boolean
     secrets:
       JRELEASER_GPG_SECRET_KEY:
         required: false
@@ -45,6 +37,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
 
       - name: Setup JDK
         uses: actions/setup-java@v4
@@ -77,7 +73,7 @@ jobs:
         env:
           ENGINE_BUILD_VERSION: ${{ steps.getversion.outputs.version }}
         run: |
-          ./gradlew buildApiDefinitionDistribution buildDocumentationDistribution stageMavenCentral
+          ./gradlew buildApiDefinitionDistribution buildSite stageMavenCentral
 
       - name: Upload Version
         uses: actions/upload-artifact@v4
@@ -93,31 +89,29 @@ jobs:
           path: build/staging/maven-central
           if-no-files-found: error
 
-      - name: Upload documentation distribution
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-documentation
-          path: build/dist/documentation.zip
-          if-no-files-found: error
-          compression-level: 0
-
       - name: Upload protoset distribution
         uses: actions/upload-artifact@v4
         with:
           name: dist-protoset
-          path: build/dist/descriptor_set.desc
+          path: build/dist/*descriptor_set*.desc
           if-no-files-found: error
 
       - name: Upload swagger distribution
         uses: actions/upload-artifact@v4
         with:
           name: dist-swagger
-          path: build/dist/engine-partner-api.swagger.json
+          path: build/dist/engine-partner-api*.swagger.json
           if-no-files-found: error
 
       - name: Upload proto distribution
         uses: actions/upload-artifact@v4
         with:
           name: dist-proto
-          path: build/dist/proto.zip
+          path: build/dist/*protos*.zip
           if-no-files-found: error
+
+      - name: Upload Github Pages Artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'build/dist/site'

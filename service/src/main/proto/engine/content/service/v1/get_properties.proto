@@ -1,0 +1,57 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.content.service.v1;
+
+option go_package = "engine.com/engine-partner-api/v1/content/service";
+option java_package = "com.engine.content.v1.service";
+option java_multiple_files = true;
+
+import "engine/content/v1/lodging/property.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+// A request to retrieve specific Properties by their IDs.
+message GetPropertiesRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "GetPropertiesRequest_v1"
+    }
+  };
+
+  // The list of Engine [Property] IDs.
+  // Maximum of 50 property IDs per request.
+  repeated string property_ids = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    min_items: 1;
+    max_items: 50;
+  }];
+}
+
+// A response containing [Property] information.
+message GetPropertiesResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "GetPropertiesResponse_v1"
+    }
+  };
+
+  // The list of available [Property] objects including phone numbers.
+  repeated .engine.content.v1.lodging.Property properties = 1;
+
+  // The list of [Property] IDs that were requested but not found.
+  repeated string inaccessible_property_ids = 2;
+} 
