@@ -727,12 +727,20 @@ afterEvaluate {
         commandLine(bundleCommand, "install")
     }
 
+    val baseUrl = System.getenv("JEKYLL_BASE_URL") ?: "/engine-partner-api"
+
     tasks.register<Exec>("serveSite") {
         group = "jekyll"
         dependsOn(bundleInstall)
         dependsOn(stageSite)
         workingDir(stagingSiteDir)
-        commandLine(bundleCommand, "exec", "jekyll", "serve")
+        commandLine(
+            bundleCommand,
+            "exec",
+            "jekyll",
+            "serve",
+            "--baseurl", baseUrl,
+        )
     }
 
     tasks.register<Exec>("buildSite") {
@@ -746,6 +754,8 @@ afterEvaluate {
             "jekyll",
             "build",
             "--destination",
-            distDir.map { it.dir("site") }.get().asFile.absolutePath)
+            distDir.map { it.dir("site") }.get().asFile.absolutePath,
+            "--baseurl", baseUrl,
+        )
     }
 }

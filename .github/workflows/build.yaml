@@ -66,12 +66,14 @@ jobs:
       - name: Build
         env:
           ENGINE_BUILD_VERSION: ${{ steps.getversion.outputs.version }}
+          JEKYLL_BASE_URL: ${{ vars.JEKYLL_BASE_URL }}
         run: |
           ./gradlew build
 
       - name: Stage Artifacts
         env:
           ENGINE_BUILD_VERSION: ${{ steps.getversion.outputs.version }}
+          JEKYLL_BASE_URL: ${{ vars.JEKYLL_BASE_URL }}
         run: |
           ./gradlew buildApiDefinitionDistribution buildSite stageMavenCentral
 
