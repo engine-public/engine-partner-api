@@ -292,7 +292,7 @@ afterEvaluate {
                                     "version" to project.version.toString(),
                                     "contact" to mapOf(
                                         "name" to "Engine Partner API Support",
-                                        "url" to "https://engine.com",
+                                        "url" to "https://engine-public.github.io/engine-partner-api",
                                         "email" to "partner-api-support@engine.com"
                                     ),
                                     "license" to mapOf(
@@ -300,7 +300,7 @@ afterEvaluate {
                                         "url" to "https://github.com/engine-public/engine-partner-api/blob/main/LICENSE"
                                     )
                                 ),
-                                "externalDocs" to "https://github.com/engine-public/engine-partner-api/releases/download/$version/documentation.zip",
+                                "externalDocs" to "https://engine-public.github.io/engine-partner-api",
                                 "host" to "partner-api.engine.com",
                                 "schemes" to listOf("https"),
                                 "consumes" to listOf("application/json"),
@@ -469,9 +469,32 @@ afterEvaluate {
         includeEmptyDirs = false
     }
 
+    val baseUrl = System.getenv("JEKYLL_BASE_URL") ?: "/engine-partner-api"
+
+    val baseUrlCacheBuster = tasks.register("baseUrlCacheBuster") {
+        val file = project.layout.buildDirectory.file("base_url")
+        group = "site"
+        outputs.file(file)
+        outputs.upToDateWhen {
+            file.get().asFile.run {
+                exists() && readText().trim() == baseUrl
+            }
+        }
+        doFirst {
+            file.get().asFile.apply {
+                parentFile.mkdirs()
+                writeText(baseUrl)
+            }
+        }
+    }
+
     val appendFootersTaskConfig: Copy.(contentType: String, dependsOnTask: TaskProvider<Copy>) -> Unit = { contentType, dependsOnTask ->
         group = "markdown"
         dependsOn(dependsOnTask)
+        dependsOn(baseUrlCacheBuster)
+
+        inputs.file(project.layout.projectDirectory.dir("src/main/markdown/partials").file("_link_footer.md"))
+
         from(dependsOnTask)
         into(project.layout.buildDirectory.dir("markdown/$contentType/footers"))
         includeEmptyDirs = false
@@ -479,6 +502,10 @@ afterEvaluate {
             mapOf(
                 "append" to project.layout.projectDirectory.dir("src/main/markdown/partials").file("_link_footer.md").asFile
             ), ConcatFilter::class.java
+        )
+        filter(
+            ReplaceTokens::class,
+            "tokens" to mapOf("JEKYLL_BASE_URL" to baseUrl)
         )
     }
 
@@ -493,6 +520,8 @@ afterEvaluate {
     val prependFrontMatterToGeneratedMarkdown = tasks.register<Copy>("writeFrontMatterToGenerated") {
         group = "markdown"
         dependsOn(appendFootersToGeneratedMarkdown)
+        inputs.file(project.layout.projectDirectory.dir("src/main/markdown/templates").file("_front_matter.md"))
+
         from(appendFootersToGeneratedMarkdown)
         into(project.layout.buildDirectory.dir("markdown/generated/frontmatter"))
         eachFile {
@@ -660,6 +689,7 @@ afterEvaluate {
         group = "site"
         from(writeVersion)
         from(writeDateGenerated)
+        from(project.layout.projectDirectory.file("README.md"))
         into(stagingSiteDir.map { it.dir("_includes") })
     }
 
@@ -675,6 +705,8 @@ afterEvaluate {
     val stageSiteGrpcDocRedirects = tasks.register<Copy>("stageSiteGrpcDocRedirects") {
         group = "site"
         dependsOn(copyGeneratedMarkdown)
+        inputs.file(project.layout.projectDirectory.dir("src/main/html/templates").file("_redirect.html"))
+
         from(copyGeneratedMarkdown)
         into(stagingSiteDir.map { it.dir("content") })
         eachFile {
@@ -705,7 +737,6 @@ afterEvaluate {
         from(project.layout.projectDirectory.dir("src/main/jekyll"))
         into(stagingSiteDir)
         includeEmptyDirs = false
-
     }
 
     val stageSite = tasks.register("stageSite") {
@@ -726,8 +757,6 @@ afterEvaluate {
         workingDir(stagingSiteDir)
         commandLine(bundleCommand, "install")
     }
-
-    val baseUrl = System.getenv("JEKYLL_BASE_URL") ?: "/engine-partner-api"
 
     tasks.register<Exec>("serveSite") {
         group = "jekyll"

@@ -1,9 +1,11 @@
 ---
+nav_exclude: true
 ---
 window.onload = function() {
   window.ui = SwaggerUIBundle({
     // relative link to swagger file
-    url: "/downloads/engine-partner-api-{% include version.txt %}.swagger.json",
+    // {% capture version %}{% include version.txt %}{% endcapture %}
+    url: '{{ "/downloads/engine-partner-api-" | append: version | append: ".swagger.json" | relative_url  }}',
     dom_id: '#swagger-ui',
     deepLinking: true,
     presets: [

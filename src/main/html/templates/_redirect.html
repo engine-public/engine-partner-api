@@ -8,11 +8,15 @@ permalink: @PERMALINK@
 <meta charset="utf-8">
 <title>Redirecting…</title>
 <link rel="canonical" href="@PERMALINK@">
-<meta http-equiv="refresh" content="0; url=@REDIRECT_URL@">
+<!--
+{% capture redirect_target %}@REDIRECT_URL@{% endcapture %}
+{% capture redirect_url %}{{ redirect_target | relative_url }}{% endcapture %}
+ -->
+<meta http-equiv="refresh" content="0; url={{ redirect_url }}">
 <h1>Redirecting…</h1>
-<a href="@REDIRECT_URL@">Click here if you are not redirected.</a>
+<a href="{{ redirect_url }}">Click here if you are not redirected.</a>
 <script>
-    let url = '@REDIRECT_URL@';
+    let url = '{{ redirect_url }}';
     if (location.search && url.indexOf('?') === -1) {
         url = url.replace(/($|#)/, location.search + '$1');
     }

@@ -50,5 +50,10 @@ For the purposes of the [Engine Partner API], patch releases will include update
 
 ## Support for deprecated versions
 
+Older version of the [Engine Partner API] may be deprecated when new versions are announced.
+A minimum of 6-month notice will be given prior to deprecation.
+
+There are currently no deprecated versions of the API.
+
 [Engine Partner API]: https://github.com/engine-public/engine-partner-api
 [Deprecation Policy]: #support-for-deprecated-versions
