@@ -20,6 +20,7 @@ package engine.book.lodging.v1;
 
 import "protoc-gen-openapiv2/options/annotations.proto";
 
+import "engine/book/lodging/v1/guests.proto";
 import "engine/book/lodging/v1/metadata.proto";
 import "engine/book/lodging/v1/reservation.proto";
 import "engine/book/lodging/v1/status.proto";
@@ -54,6 +55,11 @@ message BookingDetails {
   repeated .engine.book.lodging.v1.BookingMetadata metadata = 5 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     max_items: 10;
   }];
+
+  // The details of the guests as provided in the [BookRequest] that created the [BookingDetails].
+  // The number of RoomGuests will match the number of rooms on the [ReservationDetails].
+  // Some Properties may not retain all of the provided guest names or honor all of the provided loyalty information.
+  repeated .engine.book.lodging.v1.RoomGuests guests = 6;
 }
 
 // Details of the cancellation of a [BookingDetails].

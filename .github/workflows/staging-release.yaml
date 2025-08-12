@@ -4,35 +4,85 @@ on:
   workflow_dispatch:
     inputs:
       build_version:
-        description: "The version to build.  It must be semver-compliant, and must not be for a tag that already exists. This requires a '-staging.X' suffix.. like 0.0.1-staging.2"
+        description: "The semver-compliant version with no label (e.g. 2.0.0)"
         required: true
         type: string
+      release_type:
+        description: Is this an internal release shared between deployed services, or a development release used only for development?
+        required: true
+        type: choice
+        options:
+          - "development release"
+          - "internal release"
+      dev_release_label:
+        description: |
+          Dev release label (e.g. BOOK-3242.1).
+          Only used for development releases.
+        required: false
+        type: string
       pre_release:
-        description: "Is this a pre-release? (Changes the visibility on GitHub.)"
+        description: |
+          Is this a pre-release? (Changes the visibility on GitHub.)
+          Only used for internal releases.
         required: true
         type: boolean
 concurrency:
-  group: all
+  group: staging-release-${{ inputs.release_type == 'internal release' && 'internal' || inputs.dev_release_label }}
   cancel-in-progress: true
 
 jobs:
   pre-check:
     runs-on: ubuntu-latest
+    outputs:
+      build_version: ${{ steps.check-version.outputs.build_version }}
     steps:
+      - name: Checkout
+        if: ${{ inputs.release_type == 'internal release' }}
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: 'true'
+          fetch-depth: 0
+
       - name: Check version
+        id: check-version
+        env:
+          BUILD_VERSION: ${{ inputs.build_version }}
+          RELEASE_TYPE: ${{ inputs.release_type }}
+          DEV_RELEASE_LABEL: ${{ inputs.dev_release_label }}
         run: |
-          echo ${{ inputs.build_version }} | grep -E '[0-9]+\.[0-9]+\.[0-9]+-staging\.[0-9]+' || (echo "Invalid version format. Must be semver-compliant with '-staging.X' suffix." && exit 1)
+          if [ "$RELEASE_TYPE" = "internal release" ]; then
+            git fetch --tags
+            # Existing tags use the format `2.0.0-staging.1`, match those versions and the new format `2.0.0-staging-pre.2`
+            LATEST_TAG=$(git tag --list --sort="version:refname" "$BUILD_VERSION-staging*" | sed -E 's/.*-staging(-pre)?\.([0-9]+)$/\2/' | tail -n1)
+            if [ -n "$LATEST_TAG" ]; then
+              NEXT_INTERNAL_VERSION=$((LATEST_TAG + 1))
+            else
+              NEXT_INTERNAL_VERSION=1
+            fi
+            BUILD_VERSION="$BUILD_VERSION-staging-pre.$NEXT_INTERNAL_VERSION"
+            echo "$BUILD_VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+-staging-pre\.[0-9]+$' || (echo "Generated internal release version '$BUILD_VERSION' has invalid format." && exit 1)
+          else
+            if [ -z "$DEV_RELEASE_LABEL" ]; then
+              echo "dev_release_label is required for development releases." && exit 1
+            fi
+            BUILD_VERSION="$BUILD_VERSION-staging-dev-$DEV_RELEASE_LABEL"
+            echo "$BUILD_VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+-staging-dev-[a-zA-Z0-9._-]+$' || (echo "Generated dev release version '$BUILD_VERSION' has invalid format." && exit 1)
+          fi
+          echo "Generated build version: $BUILD_VERSION"
+          echo "build_version=$BUILD_VERSION" >> $GITHUB_OUTPUT
 
   build:
     needs: pre-check
     uses: ./.github/workflows/build.yaml
     secrets: inherit
     with:
-      build_version: ${{ inputs.build_version }}
+      build_version: ${{ needs.pre-check.outputs.build_version }}
 
   release:
     runs-on: ubuntu-latest
-    needs: build
+    needs:
+      - pre-check
+      - build
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -63,12 +113,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git tag --annotate "${{ inputs.build_version }}" --message="${{ inputs.build_version }}"
-          git push origin "${{ inputs.build_version }}"
+          git tag --annotate "${{ needs.pre-check.outputs.build_version }}" --message="${{ needs.pre-check.outputs.build_version }}"
+          git push origin "${{ needs.pre-check.outputs.build_version }}"
 
       - name: Gradle Publish
         env:
-          ENGINE_BUILD_VERSION: ${{ inputs.build_version }}
+          ENGINE_BUILD_VERSION: ${{ needs.pre-check.outputs.build_version }}
           MAVEN_USERNAME: ${{ vars.JF_USER }}
           MAVEN_PASSWORD: ${{ secrets.JF_PASSWORD }}
           MAVEN_DEPLOY_URL: ${{ vars.MAVEN_DEPLOY_URL }}
@@ -81,10 +131,17 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "${{ inputs.build_version }}" --generate-notes --prerelease=${{ inputs.pre_release }} --verify-tag
-          gh release upload "${{ inputs.build_version }}" build/dist/*
+          # Development releases are always pre-releases.
+          if [ "${{ inputs.release_type }}" = "development release" ]; then
+            PRERELEASE="true"
+          else
+            PRERELEASE="${{ inputs.pre_release }}"
+          fi
+          gh release create "${{ needs.pre-check.outputs.build_version }}" --generate-notes --prerelease="$PRERELEASE" --verify-tag
+          gh release upload "${{ needs.pre-check.outputs.build_version }}" build/dist/*
 
   pages:
+    if: ${{ github.ref_name == 'main' }}
     permissions:
       id-token: write
       pages: write
