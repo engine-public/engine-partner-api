@@ -24,6 +24,7 @@ import "engine/book/lodging/v1/guests.proto";
 import "engine/book/lodging/v1/metadata.proto";
 import "engine/book/lodging/v1/quote.proto";
 import "engine/common/v1/refund.proto";
+import "engine/content/v1/lodging/property.proto";
 
 option go_package = "engine.com/engine-partner-api/v1/book/lodging";
 option java_package = "com.engine.book.v1.lodging";
@@ -48,5 +49,8 @@ message ReservationDetails {
 
   // The details of the [Quote] that was purchased.
   .engine.book.lodging.v1.Quote quote = 3;
+
+  // The details of the [Property] at the time of the reservation.
+  .engine.content.v1.lodging.Property property = 4;
 }
 
