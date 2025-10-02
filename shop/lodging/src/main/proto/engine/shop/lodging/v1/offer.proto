@@ -54,6 +54,9 @@ message OfferSummary {
 
   // If true, this Offer may earn loyalty points.
   bool is_loyalty_eligible = 6;
+
+  // If true, this offer requires a loyalty membership id to book. 
+  bool is_loyalty_membership_id_required = 7;
 }
 
 // OfferAmenities represent the value added by the individual offer to be evaluated against other offers.

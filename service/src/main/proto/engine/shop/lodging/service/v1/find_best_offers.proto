@@ -227,4 +227,7 @@ message BestOffer {
   // True if it is known that at least one Offer is available that has free breakfast included.
   // Please note: this value will be false if it is known that the Property offers free breakfast to all guests.
   bool is_free_breakfast_available = 6;
+
+  // True if it is known that at least one Offer is available that requires a loyalty membership id to book.
+  bool is_loyalty_membership_rate_available = 7;
 }
