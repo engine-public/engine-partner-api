@@ -22,7 +22,9 @@ option go_package = "engine.com/engine-partner-api/v1/content";
 option java_package = "com.engine.content.v1.lodging";
 option java_multiple_files = true;
 
+import "engine/common/v1/contact.proto";
 import "engine/common/v1/geo.proto";
+import "engine/common/v1/media.proto";
 import "engine/common/v1/postal_address.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
@@ -72,4 +74,81 @@ message Property {
   // See https://en.wikipedia.org/wiki/E.164
   //
   optional string phone_number = 51;
+
+  //
+  // Contact email addresses for this property.
+  // May include general contact, billing, or reservation emails.
+  //
+  repeated .engine.common.v1.ContactEmail emails = 61;
+
+  //
+  // Star rating for this property.
+  // Represents the official star rating classification system.
+  // See https://en.wikipedia.org/wiki/Hotel_rating
+  // Examples: "4", "5", "3.5"
+  //
+  optional string star_rating = 71;
+
+  //
+  // Property amenities for this property.
+  // List of amenity names describing features and services available to guests.
+  // Examples: "Free WiFi", "Pool", "Fitness Center", "Free Breakfast"
+  //
+  repeated PropertyAmenity amenities = 81;
+
+  //
+  // Media items for property gallery.
+  // Collection of media URIs for detailed property viewing and marketing.
+  //
+  repeated .engine.common.v1.MediaItem media_items = 91;
+
+  //
+  // External catalog identifiers for this property.
+  // Used for integration with external booking systems.
+  //
+  .engine.content.v1.lodging.ExternalCatalogIdentifiers catalog = 101;
+  
+  // Check-in time in local time HH:MM 24-hour format (e.g., "15:00").
+  //
+  optional string check_in_time = 102;
+
+  //
+  // Check-out time in local time HH:MM 24-hour format (e.g., "11:00").
+  //
+  optional string check_out_time = 103;
+}
+
+
+
+//
+// Property amenity containing name for property features and services.
+//
+message PropertyAmenity {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Content_PropertyAmenity_v1"
+    }
+  };
+
+  //
+  // Amenity name describing property features and services.
+  // Examples: "Free WiFi", "Free Breakfast"
+  //
+  string amenity_name = 1;
+}
+
+//
+// External catalog identifiers for property mapping.
+//
+message ExternalCatalogIdentifiers {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Content_ExternalCatalogIdentifiers_v1"
+    }
+  };
+
+//
+// GIATA identifier for this property.
+//
+  optional string giata_identifier = 1;
 }
