@@ -574,6 +574,7 @@ afterEvaluate {
     val mdlNoBareUrls = "MD034"
     val mdlLinkImageReferenceDefinitions = "MD053"
     val mdlBlanksAroundTables = "MD058"
+    val mdlTableColumnStyle = "MD060"
 
     val runMarkdownLinterOnStaticMarkdown = tasks.register<Exec>("runMarkdownLinterOnStaticMarkdown") {
         group = "formatting"
@@ -609,6 +610,7 @@ afterEvaluate {
             mdlNoBareUrls,
             mdlNoDuplicateHeading,
             mdlBlanksAroundTables,
+            mdlTableColumnStyle,
             "--",
             *appendFootersToGeneratedMarkdown.get().outputs.files.map { it.absolutePath }.toTypedArray()
         )
