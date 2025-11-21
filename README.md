@@ -9,7 +9,6 @@ This API is ideal for businesses looking to:
 * **Build a brand-new travel product** that leverages Engine's extensive hotel inventory.
 
 To begin integrating, please [review our documentation](https://engine-public.github.io/engine-partner-api).
-Once you're ready, contact partnerships@engine.com to discuss a partnership agreement, gain access to your sandbox environment, and start the development process.
+Once you’re ready, please complete this [form](https://forms.gle/ir8fFYLaTkSwkih1A) and contact [partnerships@engine.com](mailto:partnerships@engine.com) to discuss a partnership agreement, gain access to your sandbox environment, and start the development process.
 
 _Note: Engine reviews requests as they are submitted, and our team will work with you to align on development timelines._
-
