@@ -22,6 +22,7 @@ option go_package = "engine.com/engine-partner-api/common/v1";
 option java_package = "com.engine.common.v1";
 option java_multiple_files = true;
 
+import "engine/common/v1/image.proto";
 import 'protoc-gen-openapiv2/options/annotations.proto';
 
 // A media item for visual or marketing context.
@@ -36,6 +37,18 @@ message MediaItem {
   oneof media_type {
     // URI of an image.
     // Contains an HTTPS URI pointing to image content (e.g., JPEG, PNG).
-    string image_uri = 1;
+    // @deprecated see image field
+    string image_uri = 1 [deprecated = true];
+
+    // An [Image] this media item represents
+    .engine.common.v1.Image image = 2;
   }
+
+  // A description of this media item
+  // Example: "A large restaurant"
+  optional string description = 20;
+
+  // Tags categorizing the content of this media item
+  // Example: ["outdoor", "pool"]
+  repeated string tags = 21;
 }

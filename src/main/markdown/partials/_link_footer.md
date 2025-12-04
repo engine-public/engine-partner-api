@@ -17,6 +17,7 @@
 [GetBookingsStreamingError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-book-lodging-service-v1-GetBookingsStreamingError
 [GenerateFolioError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#generatefolioerror
 [GeoPoint]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#geopoint
+[Image]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#image
 [LodgingBookingService.Book]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#lodgingbookingservice
 [LodgingBookingService.ConfirmOffer]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#lodgingbookingservice
 [LodgingBookingService.GenerateFolio]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#lodgingbookingservice

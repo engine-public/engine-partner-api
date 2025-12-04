@@ -22,10 +22,14 @@ option go_package = "engine.com/engine-partner-api/v1/content";
 option java_package = "com.engine.content.v1.lodging";
 option java_multiple_files = true;
 
+import "engine/common/v1/amenities.proto";
 import "engine/common/v1/contact.proto";
 import "engine/common/v1/geo.proto";
+import "engine/common/v1/image.proto";
+import "engine/common/v1/loyalty.proto";
 import "engine/common/v1/media.proto";
 import "engine/common/v1/postal_address.proto";
+import "engine/content/v1/lodging/lodging_amenity_code.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 //
@@ -90,11 +94,11 @@ message Property {
   optional string star_rating = 71;
 
   //
-  // Property amenities for this property.
+  // Property amenities for this [Property].
   // List of amenity names describing features and services available to guests.
   // Examples: "Free WiFi", "Pool", "Fitness Center", "Free Breakfast"
   //
-  repeated PropertyAmenity amenities = 81;
+  repeated .engine.content.v1.lodging.PropertyAmenity amenities = 81;
 
   //
   // Media items for property gallery.
@@ -107,21 +111,34 @@ message Property {
   // Used for integration with external booking systems.
   //
   .engine.content.v1.lodging.ExternalCatalogIdentifiers catalog = 101;
-  
-  // Check-in time in local time HH:MM 24-hour format (e.g., "15:00").
+
+  //
+  // Check-in time in local time HH:MM 24-hour format (e.g., "15:00") for the [Property].
   //
   optional string check_in_time = 102;
 
   //
-  // Check-out time in local time HH:MM 24-hour format (e.g., "11:00").
+  // Check-out time in local time HH:MM 24-hour format (e.g., "11:00") for the [Property].
   //
   optional string check_out_time = 103;
+
+  //
+  // The loyalty rewards program associated with the [Property].
+  //
+  optional .engine.common.v1.LoyaltyRewardsProgram loyalty_rewards_program = 104;
+
+  //
+  // The time zone for the [Property] in the IANA format.
+  // See https://www.iana.org/time-zones
+  // Examples: "America/Denver", "Atlantic/Madeira"
+  //
+  optional string time_zone = 105;
 }
 
 
 
 //
-// Property amenity containing name for property features and services.
+// [Property] amenity containing name for property features and services.
 //
 message PropertyAmenity {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
@@ -131,10 +148,16 @@ message PropertyAmenity {
   };
 
   //
-  // Amenity name describing property features and services.
+  // Amenity name describing a [Property] feature or service.
   // Examples: "Free WiFi", "Free Breakfast"
   //
   string amenity_name = 1;
+
+  //
+  // Amenity code, providing an easily machine readable representation of a [Property] feature or
+  // service, if mapped.
+  //
+  optional .engine.content.v1.lodging.LodgingAmenityCode amenity_code = 2;
 }
 
 //
