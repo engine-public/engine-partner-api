@@ -20,6 +20,7 @@ package engine.shop.lodging.v1;
 
 import "protoc-gen-openapiv2/options/annotations.proto";
 
+import "engine/content/v1/lodging/room.proto";
 import "engine/shop/lodging/v1/offer.proto";
 
 option go_package = "engine.com/engine-partner-api/v1/shop/lodging";
@@ -47,6 +48,9 @@ message RoomDescription {
 
   // URIs to photos of this room.
   repeated string photos = 4;
+
+  // A list of amenities that are available in the room.
+  repeated .engine.content.v1.lodging.RoomAmenity amenities = 5;
 }
 
 // A description of the quantity and type of beds in the room.
