@@ -24,32 +24,20 @@ option java_multiple_files = true;
 
 import 'protoc-gen-openapiv2/options/annotations.proto';
 
-// An identifier signifying a traveler's membership in a Loyalty Program.
-// Loyalty Program Identifiers are provided by the administrator of that program.
-// Not all [OfferSummary] will grant loyalty rewards.
-message LodgingLoyaltyProgramIdentifier {
+//
+// Represents an [Image] with optional metadata.
+//
+message Image {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
-      title: "Common_LodgingLoyaltyProgramIdentifier_v1"
-    }
-  };
-
-  // The identifier provided to the travel by the program administrator.
-  string member_id = 1;
-}
-
-//
-// Represents a single loyalty rewards program.
-//
-message LoyaltyRewardsProgram {
-  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
-    json_schema: {
-      title: "Common_LoyaltyRewardsProgram_v1"
+      title: "Common_Image_v1"
     }
   };
 
   //
-  // Name of the loyalty reward program.
+  // The URI of the [Image].
+  // For example, "https://example.com/image.jpg"
   //
-  string name = 2;
+  string uri = 1;
 }
+
