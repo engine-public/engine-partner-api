@@ -35,11 +35,6 @@ message MediaItem {
 
   // Media content reference.
   oneof media_type {
-    // URI of an image.
-    // Contains an HTTPS URI pointing to image content (e.g., JPEG, PNG).
-    // @deprecated see image field
-    string image_uri = 1 [deprecated = true];
-
     // An [Image] this media item represents
     .engine.common.v1.Image image = 2;
   }
