@@ -2,6 +2,9 @@
 nav_exclude: true
 ---
 window.onload = function() {
+  //<editor-fold desc="Changeable Configuration Block">
+
+  // the following lines will be replaced by docker/configurator, when it runs in a docker-container
   window.ui = SwaggerUIBundle({
     // relative link to swagger file
     // {% capture version %}{% include version.txt %}{% endcapture %}
@@ -18,4 +21,6 @@ window.onload = function() {
     ],
     layout: "StandaloneLayout"
   });
+
+  //</editor-fold>
 };
