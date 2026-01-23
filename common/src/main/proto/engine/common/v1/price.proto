@@ -43,10 +43,12 @@ message Price {
   .engine.common.v1.CurrencyValue total = 2;
 
   // Any taxes to be collected at time of payment.
-  repeated .engine.common.v1.Surcharge taxes = 3;
+  // This field is deprecated. Use [Price.taxes_and_fees] instead.
+  repeated .engine.common.v1.Surcharge taxes = 3 [deprecated = true];
 
   // Any fees applied to the item or service.
-  repeated .engine.common.v1.Surcharge fees = 4;
+  // This field is deprecated. Use [Price.taxes_and_fees] instead.
+  repeated .engine.common.v1.Surcharge fees = 4 [deprecated = true];
 
   // The cost of the main item or service in the booking, less upgrades or additional services, fees, and taxes.
   // The base is equivalent to:  [Price.sub_total] - sum([Price.line_items])
@@ -67,6 +69,9 @@ message Price {
 
   // The total amount due at the time of the travel event.
   .engine.common.v1.CurrencyValue total_due_later = 12;
+
+  // Any taxes and fees to be collected at time of payment. This includes all taxes and fees due at time of booking.
+  repeated .engine.common.v1.Surcharge taxes_and_fees = 13;
 }
 
 // An additional charge, fee, or tax.
