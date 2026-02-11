@@ -53,7 +53,9 @@ For the purposes of the [Engine Partner API], patch releases will include update
 Older version of the [Engine Partner API] may be deprecated when new versions are announced.
 A minimum of 6-month notice will be given prior to deprecation.
 
-There are currently no deprecated versions of the API.
+| Deprecated Versions           | End Of Life Date  | Changelog                                                                       |
+|-------------------------------|-------------------|---------------------------------------------------------------------------------|
+| `0.*.*`, `1.*.*`, `2.*-pre.*` | September 1, 2026 | [2.0.0](https://github.com/engine-public/engine-partner-api/releases/tag/2.0.0) |
 
 [Engine Partner API]: https://github.com/engine-public/engine-partner-api
 [Deprecation Policy]: #support-for-deprecated-versions
