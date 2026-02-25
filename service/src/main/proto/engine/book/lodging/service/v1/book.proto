@@ -23,6 +23,7 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 import "engine/book/lodging/v1/guests.proto";
 import "engine/book/lodging/v1/metadata.proto";
 import "engine/book/lodging/v1/booking.proto";
+import "engine/common/v1/payment_info.proto";
 import "engine/book/common/service/v1/error.proto";
 
 option go_package = "engine.com/engine-partner-api/v1/book/lodging/service";
@@ -47,6 +48,9 @@ message BookRequest {
 
   // Metadata to be stored and retrieved along with this [BookingDetails].
   repeated .engine.book.lodging.v1.BookingMetadata metadata = 4;
+
+  // Optionally, the [PaymentInfo] to be used for this booking.
+  .engine.common.v1.PaymentInfo payment_info = 5;
 }
 
 // The result of an attempt to purchase and reserve an [OfferSummary].
@@ -61,9 +65,8 @@ message BookResponse {
   .engine.book.lodging.v1.BookingDetails details = 1;
 }
 
-/**
- * Error details of a failed [LodgingBookingService.Book] call.
- */
+
+// Error details of a failed [LodgingBookingService.Book] call.
 message BookError {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
@@ -72,22 +75,23 @@ message BookError {
   };
 
   oneof error {
-    /**
-     * Defined when the operation returns with a status of INVALID_ARGUMENT and the requested offer
-     * is no longer available for sale.
-     */
+    // Defined when the operation returns with a status of INVALID_ARGUMENT and the requested offer
+    // is no longer available for sale.
     .engine.book.common.service.v1.OfferNoLongerAvailableError offer_no_longer_available = 1;
 
-    /**
-     * Defined when the operation returns with a status of INVALID_ARGUMENT and the booking associated
-     * with the given continuation token is not in a valid state, e.g. It has already been booked or needs CS review.
-     */
+    // Defined when the operation returns with a status of INVALID_ARGUMENT and the booking associated
+    // with the given continuation token is not in a valid state, e.g. It has already been booked or needs CS review.
     .engine.book.common.service.v1.InvalidStateError invalid_state = 2;
 
-    /**
-     * Defined when the operation returns with a status of INTERNAL and the booking is in a non-retriable state
-     * that requires manual review to determine if it was completed successfully.
-     */
+    // Defined when the operation returns with a status of INTERNAL and the booking is in a non-retriable state
+    // that requires manual review to determine if it was completed successfully.
     .engine.book.common.service.v1.BookingNeedsReviewError needs_review = 3;
+
+    // Defined when the operation returns with a status of INVALID_ARGUMENT and the provided payment information
+    // is invalid or insufficient to complete the booking.
+    .engine.book.common.service.v1.InvalidPaymentError invalid_payment = 4;
+
+    // Defined when the operation returns with a status of INTERNAL and the payment failed to process.
+    .engine.book.common.service.v1.PaymentProcessingError payment_processing = 5;
   }
 }

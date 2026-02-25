@@ -52,9 +52,7 @@ message SubmitCancellationResponse {
   .engine.book.lodging.v1.CancellationDetails details = 1;
 }
 
-/**
- * Error information returned in the error details of failed SubmitCancellation calls.
- */
+// Error information returned in the error details of failed SubmitCancellation calls.
 message SubmitCancellationError {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
@@ -63,22 +61,16 @@ message SubmitCancellationError {
   };
 
   oneof error {
-    /**
-     * The cancellation action is not available for the booking.
-     */
+    // The cancellation action is not available for the booking.
     .engine.book.common.service.v1.ActionNotAvailableError action_not_available = 1;
 
-    /**
-     * Defined when the operation returns with a status of INVALID_ARGUMENT and the
-     * requested booking is not cancellable.
-     */
+    // Defined when the operation returns with a status of INVALID_ARGUMENT and the
+    // requested booking is not cancellable.
     .engine.book.common.service.v1.CannotCancelError cannot_cancel = 2;
 
-    /**
-     * Defined when the operation returns with a status of INVALID_ARGUMENT and the booking associated
-     * with the given booking ID is not in a valid state, e.g. It has not been booked, or is
-     * already cancelled.
-     */
+    // Defined when the operation returns with a status of INVALID_ARGUMENT and the booking associated
+    // with the given booking ID is not in a valid state, e.g. It has not been booked, or is
+    // already cancelled.
     .engine.book.common.service.v1.InvalidStateError invalid_state = 3;
   }
 }

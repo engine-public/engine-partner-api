@@ -4,14 +4,10 @@ plugins {
     id("com.google.protobuf")
 }
 
-description = "Models comprising the Lodging Book and Manage functionality in the Engine Partner API."
+description = "Models comprising the Book and Manage functionality shared between use-cases in the Engine Partner API."
 
 dependencies {
     api(projects.grpcEcosystemProtocGenOpenapiv2)
-    api(projects.enginePartnerApiCommon)
-    api(projects.enginePartnerApiContent)
-    api(projects.enginePartnerApiShopLodging)
-    api(projects.enginePartnerApiBookCommon)
     api(libs.protobuf.java)
     api(libs.protobuf.kotlin)
 }

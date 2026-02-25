@@ -23,6 +23,7 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 import "engine/book/lodging/v1/guests.proto";
 import "engine/book/lodging/v1/metadata.proto";
 import "engine/book/lodging/v1/quote.proto";
+import "engine/book/common/v1/applied_payment_info.proto";
 import "engine/common/v1/refund.proto";
 import "engine/content/v1/lodging/property.proto";
 
@@ -52,5 +53,8 @@ message ReservationDetails {
 
   // The details of the [Property] at the time of the reservation.
   .engine.content.v1.lodging.Property property = 4;
+
+  // The details of the [AppliedPaymentInfo] for the reservation.
+  .engine.book.common.v1.AppliedPaymentInfo applied_payment_info = 5;
 }
 

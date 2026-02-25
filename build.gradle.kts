@@ -407,6 +407,7 @@ afterEvaluate {
         includeEmptyDirs = false
 
         val patterns = mapOf(
+            "engine-partner-api-book-common-$version.md" to Regex("""\[(engine\.book\.common\.v1\.(?:.*?))\]\((#.*?)\)"""),
             "engine-partner-api-book-lodging-$version.md" to Regex("""\[(engine\.book\.lodging\.v1\.(?:.*?))\]\((#.*?)\)"""),
             "engine-partner-api-common-$version.md" to Regex("""\[(engine\.common\.v1\.(?:.*?))\]\((#.*?)\)"""),
             "engine-partner-api-content-$version.md" to Regex("""\[(engine\.content\.v1\.(?:.*?))\]\((#.*?)\)"""),

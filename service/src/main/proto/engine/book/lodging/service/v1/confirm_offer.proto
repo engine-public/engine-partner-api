@@ -61,9 +61,7 @@ message ConfirmOfferResponse {
   .engine.book.lodging.v1.Quote quote = 2;
 }
 
-/**
- * Error details of a failed [LodgingBookingService.ConfirmOffer] call.
- */
+// Error details of a failed [LodgingBookingService.ConfirmOffer] call.
 message ConfirmOfferError {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
@@ -72,21 +70,15 @@ message ConfirmOfferError {
   };
 
   oneof error {
-    /**
-     * Defined when the operation returns with a status of INVALID_ARGUMENT and the requested offer
-     * is no longer available for sale.
-     */
+    // Defined when the operation returns with a status of INVALID_ARGUMENT and the requested offer
+    // is no longer available for sale.
     .engine.book.common.service.v1.OfferNoLongerAvailableError offer_no_longer_available = 1;
 
-    /**
-     * Defined when the operation returns with a status of INVALID_ARGUMENT and the booking associated
-     * with the given continuation token is not in a valid state, e.g. It has already been booked or needs CS review.
-     */
+    // Defined when the operation returns with a status of INVALID_ARGUMENT and the booking associated
+    // with the given continuation token is not in a valid state, e.g. It has already been booked or needs CS review.
     .engine.book.common.service.v1.InvalidStateError invalid_state = 2;
   }
 
-  /**
-   * Optionally, the unique identifier for this booking if it is known when the error occurs.
-   */
+  // Optionally, the unique identifier for this booking if it is known when the error occurs.
   optional string booking_id = 3;
 }

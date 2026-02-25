@@ -26,9 +26,7 @@ option go_package = "engine.com/engine-partner-api/v1/book/common/service";
 option java_package = "com.engine.book.common.v1.service";
 option java_multiple_files = true;
 
-/**
- * An error indicating that the [OfferSummary] is no longer available. This is likely due to the [OfferSummary] being sold out.
- */
+// An error indicating that the [OfferSummary] is no longer available. This is likely due to the [OfferSummary] being sold out.
 message OfferNoLongerAvailableError {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
@@ -37,9 +35,7 @@ message OfferNoLongerAvailableError {
   };
 }
 
-/**
- * An error indicating that the requested [BookingDetails] is not in a valid state to perform the operation.
- */
+// An error indicating that the requested [BookingDetails] is not in a valid state to perform the operation.
 message InvalidStateError {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
@@ -48,9 +44,7 @@ message InvalidStateError {
   };
 }
 
-/**
- * An error that indicates a [BookingDetails] failed in an unknown state and needs to be manually reviewed to determine if it was completed successfully.
- */
+// An error that indicates a [BookingDetails] failed in an unknown state and needs to be manually reviewed to determine if it was completed successfully.
 message BookingNeedsReviewError {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
@@ -59,9 +53,7 @@ message BookingNeedsReviewError {
   };
 }
 
-/**
- * An error indicating that an action attempted by the client is unavailable for the given [BookingDetails].
- */
+// An error indicating that an action attempted by the client is unavailable for the given [BookingDetails].
 message ActionNotAvailableError {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
@@ -69,19 +61,33 @@ message ActionNotAvailableError {
     }
   };
 
-  /**
-   * The availability of the attempted action.
-   */
+  // The availability of the attempted action.
   .engine.common.v1.ActionAvailability action_availability = 1;
 }
 
-/**
- * An error indicating that a [BookingDetails] cannot be canceled.
- */
+// An error indicating that a [BookingDetails] cannot be canceled.
 message CannotCancelError {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
       title: "Book_Common_Service_CannotCancelError_v1"
+    }
+  };
+}
+
+// An error indicating that a Booking payment failed due to invalid [PaymentInfo].
+message InvalidPaymentError {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Common_Service_InvalidPaymentError_v1"
+    }
+  };}
+
+// An error indicating that a Booking payment failed during processing.
+// These errors are not safe to retry. Contact Member Support for assistance.
+message PaymentProcessingError {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Common_Service_PaymentProcessingError_v1"
     }
   };
 }

@@ -16,39 +16,42 @@
 
 syntax = "proto3";
 
-package engine.book.lodging.service.v1;
+package engine.book.common.v1;
 
 import "protoc-gen-openapiv2/options/annotations.proto";
 
-import "engine/book/common/service/v1/error.proto";
-
-option go_package = "engine.com/engine-partner-api/v1/book/lodging/service";
-option java_package = "com.engine.book.lodging.v1.service";
+option go_package = "engine.com/engine-partner-api/book/common/v1";
+option java_package = "com.engine.book.common.v1";
 option java_multiple_files = true;
 
-// Generates a folio HTTP response for a Booking.
-message GenerateFolioRequest {
+// Information about the form of payment used in a request.
+message AppliedPaymentInfo {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
-      title: "Book_Lodging_Service_GenerateFolioRequest_v1"
+      title: "Book_Common_AppliedPaymentInfo_v1"
     }
   };
 
-  // The booking ID for which to generate the folio.
-  string booking_id = 1;
+  oneof method {
+    AppliedEngineDirectBill engine_direct_bill = 1;
+    AppliedCardPayment card = 2;
+  }
 }
 
-// Error information returned in the error details of failed GenerateFolio calls.
-message GenerateFolioError {
+// Indicates that Engine Direct Bill was used.
+message AppliedEngineDirectBill {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
-      title: "Book_Lodging_Service_GenerateFolioError_v1"
+      title: "Book_Common_AppliedEngineDirectBill_v1"
     }
   };
+}
 
-  oneof error {
-    // Defined when the operation returns with a status of FAILED_PRECONDITION and the booking associated
-    // with the given booking ID is not in a valid state, e.g. it has not been booked
-    .engine.book.common.service.v1.InvalidStateError invalid_state = 1;
-  }
+// Indicates a card payment was used.
+message AppliedCardPayment {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Common_AppliedCardPayment_v1"
+    }
+  };
 }
