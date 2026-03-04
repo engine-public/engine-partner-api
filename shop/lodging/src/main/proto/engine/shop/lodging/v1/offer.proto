@@ -57,6 +57,9 @@ message OfferSummary {
 
   // If true, this offer requires a loyalty membership id to book. 
   bool is_loyalty_membership_id_required = 7;
+
+  // Optionally, if this offer represents a negotiated rate specifically configured for your credential, the details of that rate will be included here.
+  .engine.shop.lodging.v1.RateData rate_data = 8;
 }
 
 // OfferAmenities represent the value added by the individual offer to be evaluated against other offers.
@@ -77,4 +80,18 @@ message OfferAmenities {
 
   // Textual descriptions for display purposes of assorted amenities of the offer or booking that have not been explicitly hoisted to their own attribute.
   repeated string other_amenities = 9999;
+}
+
+// RateData contains rate information if and only if an Offer corresponds to a rate negotiated and contracted with the calling credential.
+message RateData {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Shop_Lodging_RateData_v1"
+    }
+  };
+
+  // The rate code associated with the Offer.
+  // For example, if a Partner has negotiated a rate code of "123", and an Offer corresponds to that rate code, this field will be "123".
+  // Contact Engine to load any rates codes for your credential
+  string rate_code = 1;
 }
