@@ -1,7 +1,9 @@
 
 [ActionAvailability]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#engine-common-v1-ActionAvailability
+[AppliedPaymentInfo]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-book-common.html#appliedpaymentinfo
 [BestOffer]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-shop-lodging-service-v1-BestOffer
 [BookError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-book-lodging-service-v1-BookError
+[BookRequest]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#bookrequest
 [BookingDetails]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-book-lodging.html#engine-book-lodging-v1-BookingDetails
 [BookingDetails.booking_id]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-book-lodging.html#engine-book-lodging-v1-BookingDetails
 [BookingMetadata]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-book-lodging.html#bookingmetadata
@@ -18,6 +20,7 @@
 [GenerateFolioError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#generatefolioerror
 [GeoPoint]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#geopoint
 [Image]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#image
+[InvalidPaymentError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#invalidpaymenterror
 [LodgingBookingService.Book]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#lodgingbookingservice
 [LodgingBookingService.ConfirmOffer]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#lodgingbookingservice
 [LodgingBookingService.GenerateFolio]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#lodgingbookingservice
@@ -30,20 +33,22 @@
 [LodgingShoppingService.FindAvailability]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#lodgingshoppingservice
 [Offer]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#offer
 [OfferSummary]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-shop-lodging.html#engine-shop-lodging-v1-OfferSummary
+[PaymentInfo]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#paymentinfo
 [PostalAddress]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#postaladdress
 [PreviewCancellationError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-book-lodging-service-v1-PreviewCancellationError
 [Price.fees]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#engine-common-v1-Price
 [Price.line_items]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#engine-common-v1-Price
-[Price.sub_total]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.0.html#engine-common-v1-Price
+[Price.sub_total]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#engine-common-v1-Price
 [Price.taxes]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#engine-common-v1-Price
 [Property]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-content.html#engine-content-v1-lodging-Property
-[Quote]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-book-lodging.html##engine-book-lodging-v1-Quote
+[Quote]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-book-lodging.html#engine-book-lodging-v1-Quote
 [RadiusSearch]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#radiussearch
 [Refund]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#refund
 [ReservationDetails]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-book-lodging.html#engine-book-lodging-v1-ReservationDetails
 [ResponsiveProperty]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#responsiveproperty-1
 [RoomGroup]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#roomgroup
 [RoomDescription]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-shop-lodging.html#engine-shop-lodging-v1-RoomDescription
+[RoomGuests]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-book-lodging.html#engine-book-lodging-v1-RoomGuests
 [RoomGuests.primary_guest]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-book-lodging.html#engine-book-lodging-v1-RoomGuests
 [SubmitCancellationError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#submitcancellationerror
 

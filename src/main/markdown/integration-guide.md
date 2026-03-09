@@ -111,7 +111,7 @@ x-envoy-upstream-service-time: 80
 
 ### HTTP/JSON
 
-A subset of the Engine Partner APIs have REST-inspired HTTP/JSON implementations as defined in our published [Swagger Definitions](./HTTP/content-service-swagger.json).
+A subset of the Engine Partner APIs have REST-inspired HTTP/JSON implementations as defined in our published [Swagger API Definition].
 HTTP/JSON provides a simpler integration at the cost of additional latency and increased payload sizes.
 
 For more information:

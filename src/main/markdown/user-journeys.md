@@ -160,7 +160,7 @@ flowchart
 
 {: .api}
 <!-- markdownlint-disable MD033 -->
-> `ContentService.ListProperties`<sup>[gRPC][ContentService.ListProperties] [Swagger](/swagger-ui/index.html#/ContentService/ContentService_ListProperties)</sup>
+> `ContentService.ListProperties`<sup>[gRPC][ContentService.ListProperties] [Swagger](/engine-partner-api/swagger-ui/index.html#/ContentService/ContentService_ListProperties)</sup>
 >
 > _An endpoint that allows a client to enumerate the properties nearest a point of interest_
 
@@ -218,7 +218,7 @@ The streaming endpoint for FindBestOffers is only available via the [gRPC][gRPC 
 
 {: .api}
 <!-- markdownlint-disable-next-line MD033 -->
-> `LodgingShoppingService.FindBestOffers`<sup>[gRPC][LodgingShoppingService.FindBestOffers] [Swagger](/swagger-ui/index.html#/LodgingShoppingService/LodgingShoppingService_FindBestOffers)</sup>
+> `LodgingShoppingService.FindBestOffers`<sup>[gRPC][LodgingShoppingService.FindBestOffers] [Swagger](/engine-partner-api/swagger-ui/index.html#/LodgingShoppingService/LodgingShoppingService_FindBestOffers)</sup>
 >
 > _An endpoint that returns pairs of [Property] and [BestOffer] records_
 
@@ -231,7 +231,7 @@ Unlike the [Streaming][FindBestOffersStreaming] offering, all results are dedupl
 
 {: .api}
 <!-- markdownlint-disable-next-line MD033 -->
-> `LodgingShoppingService.FindAvailability`<sup>[gRPC][LodgingShoppingService.FindAvailability] [Swagger](http://127.0.0.1:4000/swagger-ui/index.html#/LodgingShoppingService/LodgingShoppingService_FindAvailability)</sup>
+> `LodgingShoppingService.FindAvailability`<sup>[gRPC][LodgingShoppingService.FindAvailability] [Swagger](/engine-partner-api/swagger-ui/index.html#/LodgingShoppingService/LodgingShoppingService_FindAvailability)</sup>
 >
 > _An endpoint that allows a client to list the rates available for a [Property], broken down by room type and amenity_
 
@@ -255,7 +255,7 @@ However, if a room has a unique name, like "The Honeymoon Suite", it would be in
 
 {: .api}
 <!-- markdownlint-disable-next-line MD033 -->
-> `LodgingBookingService.ConfirmOffer`<sup>[gRPC][LodgingBookingService.ConfirmOffer] [Swagger](/swagger-ui/index.html#/LodgingBookingService/LodgingBookingService_ConfirmOffer)</sup>
+> `LodgingBookingService.ConfirmOffer`<sup>[gRPC][LodgingBookingService.ConfirmOffer] [Swagger](/engine-partner-api/swagger-ui/index.html#/LodgingBookingService/LodgingBookingService_ConfirmOffer)</sup>
 >
 > _An endpoint that allows a client to confirm pricing, availability, and conditions of an [Offer] prior to purchasing_
 
@@ -273,11 +273,11 @@ Occasionally, changes to availability may cause an [Offer] to no longer be avail
 
 {: .api}
 <!-- markdownlint-disable-next-line MD033 -->
-> `LodgingBookingService.Book`<sup>[gRPC][LodgingBookingService.Book] [Swagger](/swagger-ui/index.html#/LodgingBookingService/LodgingBookingService_Book)</sup>
+> `LodgingBookingService.Book`<sup>[gRPC][LodgingBookingService.Book] [Swagger](/engine-partner-api/swagger-ui/index.html#/LodgingBookingService/LodgingBookingService_Book)</sup>
 >
 > _An endpoint that allows a client to purchase an [Offer]_
 
-Given one of the following a `continuation_token` from [ConfirmOffer][ConfirmOffer], create a [BookingDetails] and purchase your stay.
+Given a `continuation_token` from [ConfirmOffer][ConfirmOffer], create a [BookingDetails] and purchase your stay.
 
 At this point, you must provide the details of the [RoomGuests] for the stay.
 
@@ -295,7 +295,7 @@ If the [BookingMetadata] is marked as `external`, the item will be displayed on 
 
 {: .api}
 <!-- markdownlint-disable-next-line MD033 -->
-> `LodgingBookingService.SubmitCancellation`<sup>[gRPC][LodgingBookingService.SubmitCancellation] [Swagger](/swagger-ui/index.html#/LodgingBookingService/LodgingBookingService_SubmitCancellation)</sup>
+> `LodgingBookingService.SubmitCancellation`<sup>[gRPC][LodgingBookingService.SubmitCancellation] [Swagger](/engine-partner-api/swagger-ui/index.html#/LodgingBookingService/LodgingBookingService_SubmitCancellation)</sup>
 >
 > _An endpoint to attempt to Cancel a booking_
 
@@ -326,7 +326,7 @@ For each result, consult the `booking_details` and/or `error` field.
 
 {: .api}
 <!-- markdownlint-disable-next-line MD033 -->
-> `LodgingBookingService.GetBookings`<sup>[gRPC][LodgingBookingService.GetBookings] [Swagger](http://127.0.0.1:4000/swagger-ui/index.html#/LodgingBookingService/LodgingBookingService_GetBookings)</sup>
+> `LodgingBookingService.GetBookings`<sup>[gRPC][LodgingBookingService.GetBookings] [Swagger](/engine-partner-api/swagger-ui/index.html#/LodgingBookingService/LodgingBookingService_GetBookings)</sup>
 >
 > _An endpoint to retrieve the details of one or more [BookingDetails]_
 
@@ -338,7 +338,7 @@ For a unified view of records and errors, see [GetBookingsStreaming]
 
 {: .api}
 <!-- markdownlint-disable-next-line MD033 -->
-> `LodgingBookingService.GenerateFolio`<sup>[gRPC][LodgingBookingService.GenerateFolio] [Swagger](http://127.0.0.1:4000/swagger-ui/index.html#/LodgingBookingService/LodgingBookingService_GenerateFolio)</sup>
+> `LodgingBookingService.GenerateFolio`<sup>[gRPC][LodgingBookingService.GenerateFolio] [Swagger](/engine-partner-api/swagger-ui/index.html#/LodgingBookingService/LodgingBookingService_GenerateFolio)</sup>
 >
 > _An endpoint to Generate a PDF Folio representing a [BookingDetails]_
 
@@ -351,7 +351,7 @@ This Folio is not an invoice.
 
 {: .api}
 <!-- markdownlint-disable-next-line MD033 -->
-> `LodgingBookingService.PreviewCancellation`<sup>[gRPC][LodgingBookingService.PreviewCancellation] [Swagger](http://127.0.0.1:4000/swagger-ui/index.html#/LodgingBookingService/LodgingBookingService_PreviewCancellation)</sup>
+> `LodgingBookingService.PreviewCancellation`<sup>[gRPC][LodgingBookingService.PreviewCancellation] [Swagger](/engine-partner-api/swagger-ui/index.html#/LodgingBookingService/LodgingBookingService_PreviewCancellation)</sup>
 >
 > _An endpoint to confirm the amount of [Refund] that will be received upon cancellation_
 
@@ -360,7 +360,7 @@ To submit and process your cancellation, see [SubmitCancellation].
 
 {: .attention}
 Many [Offer] records have [Conditions] that dictate penalties that may be applied to modifications or cancellation.
-These [Condition] have dates associated with them, such that an [Offer] may be fully refundable when purchased, but partially refunded at a later date.
+Each [Condition] has dates associated with them, such that an [Offer] may be fully refundable when purchased, but partially refunded at a later date.
 
 [Book]: #booking-the-stay
 [ConfirmOffer]: #confirming-availability-and-conditions
