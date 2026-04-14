@@ -18,10 +18,10 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: Engine Partner API Documentation
-email: partner-api-support@engine.com
+title: Omni, Powered by Engine -- API Documentation
+email: partnerships@engine.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Documentation and API Definitions for the Engine Partner APIs.
+  Documentation and API Definitions for the Omni API.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 #twitter_username: jekyllrb
@@ -52,7 +52,7 @@ theme: just-the-docs
 #   - vendor/gems/
 #   - vendor/ruby/
 
-logo: "/images/Engine_Logo_Black.png"
+logo: "/images/logo-lockup_omni-powered-by-engine-sm.svg"
 search_enabled: true
 search:
   heading_level: 3
@@ -62,7 +62,9 @@ mermaid:
 aux_links:
   Engine:
     - "//engine.com"
-  "Engine Partner API on GitHub":
+  Omni:
+    - "//omni.engine.com"
+  "Omni on GitHub":
     - "//github.com/engine-public/engine-partner-api"
 aux_links_new_tab: true
 callouts:
@@ -76,7 +78,7 @@ callouts:
     title: Attention
     color: blue
 color_scheme: custom_light
-favicon_ico: "/images/favicon.ico"
+favicon_ico: "/images/engine-favicon.png"
 kramdown:
   html_to_native: true
 back_to_top: true

@@ -11,10 +11,10 @@ The API contracts are defined using protobuf with a subset of the APIs supportin
 ## Protobuf Modules
 Each protobuf module should contain proto definition files in a path corresponding to the defined package. Packages are organized by domain (`shop`, `book`, `content`, `common`), by vertical (`lodging`, `common`), and api version (`v1`).
 - `service/`: Module containing the gRPC service definitions with request, response, and error types.
-- `book/`: Models comprising the Transact and Manage functionality in the Engine Partner API.
-- `content/`: Models that define Content served by the Engine Partner API.
-- `shop/`: Models comprising the Shop functionality in the Engine Partner API.
-- `common/`: Common models shared by verticals in the Engine Partner API.
+- `book/`: Models comprising the Transact and Manage functionality in the Omni API.
+- `content/`: Models that define Content served by the Omni API.
+- `shop/`: Models comprising the Shop functionality in the Omni API.
+- `common/`: Common models shared by verticals in the Omni API.
 
 Examples would include `service/src/main/proto/engine/content/service/v1` and `common/src/main/proto/engine/common/v1`
 

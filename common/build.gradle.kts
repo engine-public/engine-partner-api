@@ -4,7 +4,7 @@ plugins {
     id("com.google.protobuf")
 }
 
-description = "Common models shared by verticals in the Engine Partner API."
+description = "Common models shared by verticals in the Omni API."
 
 dependencies {
     api(projects.grpcEcosystemProtocGenOpenapiv2)

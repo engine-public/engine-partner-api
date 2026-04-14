@@ -4,7 +4,7 @@ plugins {
     id("com.google.protobuf")
 }
 
-description = "Models comprising the Lodging Book and Manage functionality in the Engine Partner API."
+description = "Models comprising the Lodging Book and Manage functionality in the Omni API."
 
 dependencies {
     api(projects.grpcEcosystemProtocGenOpenapiv2)

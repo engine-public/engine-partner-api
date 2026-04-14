@@ -6,11 +6,11 @@ permalink: /versioning.html
 <!-- markdownlint-disable-next-line MD025 -->
 # API Versioning
 
-The Engine Partner API follows [Semantic Versioning 2.0.0](https://semver.org).
+The Omni API follows [Semantic Versioning 2.0.0](https://semver.org).
 
 ## Breaking Changes
 
-When required, breaking changes to the Engine Partner API will be released along with a major version number increase.
+When required, breaking changes to the Omni API will be released along with a major version number increase.
 Upon introduction of the breaking change, the API will be forked by version number such that the prior version will be available until the support window expires.
 Please see the [Deprecation Policy] for full details.
 
@@ -28,7 +28,7 @@ When it is necessary to remove Messages, Fields, Enums, or Enum constants, a min
 
 ## Minor Changes
 
-Minor and Patch changes will be introduced by the [Engine] team to add new features and functionality to our [Engine Partner API].
+Minor and Patch changes will be introduced by the Omni team to add new features and functionality to our API.
 
 {: .attention}
 Minor changes will always be wire compatible with all prior minor revisions of the current Major version.
@@ -46,16 +46,13 @@ Minor changes include:
 
 ## Patch Changes
 
-For the purposes of the [Engine Partner API], patch releases will include updates to documentation and comments only.
+For the purposes of the Omni API, patch releases will include updates to documentation and comments only.
 
 ## Support for deprecated versions
 
-Older versions of the [Engine Partner API] may be deprecated when new versions are announced.
+Older versions of the API may be deprecated when new versions are announced.
 A minimum of 6-month notice will be given prior to deprecation.
 
 | Deprecated Versions           | End Of Life Date  | Changelog                                                                       |
 |-------------------------------|-------------------|---------------------------------------------------------------------------------|
 | `0.*.*`, `1.*.*`, `2.*-pre.*` | September 1, 2026 | [2.0.0](https://github.com/engine-public/engine-partner-api/releases/tag/2.0.0) |
-
-[Engine Partner API]: https://github.com/engine-public/engine-partner-api
-[Deprecation Policy]: #support-for-deprecated-versions

@@ -8,7 +8,7 @@ plugins {
     id("com.google.protobuf")
 }
 
-description = "The Engine Partner API gRPC and OpenAPI service definitions."
+description = "The Omni API gRPC and OpenAPI service definitions."
 
 dependencies {
     api(projects.enginePartnerApiContent)

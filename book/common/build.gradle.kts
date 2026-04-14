@@ -4,7 +4,7 @@ plugins {
     id("com.google.protobuf")
 }
 
-description = "Models comprising the Book and Manage functionality shared between use-cases in the Engine Partner API."
+description = "Models comprising the Book and Manage functionality shared between use-cases in the Omni API."
 
 dependencies {
     api(projects.grpcEcosystemProtocGenOpenapiv2)

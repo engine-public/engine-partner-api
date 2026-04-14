@@ -44,7 +44,7 @@ fun calculateVersion(): String {
 
 group = "com.engine"
 version = calculateVersion()
-description = "engine.com Partner API Definitions"
+description = "Definitions for the Omni travel API."
 
 val distDir = project.layout.buildDirectory.dir("dist")
 val stagingDir = project.layout.buildDirectory.dir("staging")
@@ -52,7 +52,7 @@ val mavenStagingDir = stagingDir.map { it.dir("maven-central") }
 
 configure<JReleaserExtension> {
     project {
-        description = "Engine Partner API"
+        description = project.description
         copyright = "Copyright ${Calendar.getInstance().get(Calendar.YEAR)} HotelEngine, Inc., d/b/a Engine"
         license = "Apache-2.0"
     }
@@ -201,7 +201,7 @@ subprojects {
         manifest {
             attributes(
                 "Name" to project.name,
-                "Specification-Title" to "Engine Partner API -- ${project.projectDir.name.toUpperCaseAsciiOnly()}",
+                "Specification-Title" to "Omni -- ${project.projectDir.name.toUpperCaseAsciiOnly()}",
                 "Specification-Version" to version,
                 "Specification-Vendor" to "HotelEngine, Inc., d/b/a Engine",
             )
@@ -287,13 +287,12 @@ afterEvaluate {
                             mapOf(
                                 "swagger" to "2.0",
                                 "info" to mapOf(
-                                    "title" to "Engine Partner API",
+                                    "title" to "Omni, Powered by Engine",
                                     "description" to project.description,
                                     "version" to project.version.toString(),
                                     "contact" to mapOf(
-                                        "name" to "Engine Partner API Support",
-                                        "url" to "https://engine-public.github.io/engine-partner-api",
-                                        "email" to "partner-api-support@engine.com"
+                                        "name" to "Omni API Support",
+                                        "url" to "https://omni.engine.com/",
                                     ),
                                     "license" to mapOf(
                                         "name" to "Apache License Version 2.0",
@@ -313,7 +312,7 @@ afterEvaluate {
 
     val mergeSwagger = tasks.register("mergeSwagger") {
         group = "swagger"
-        description = "Merges all of the generated swagger service files into a single Engine Partner API swagger definition."
+        description = "Merges all of the generated swagger service files into a single Omni swagger definition."
 
         val swaggerFiles = fileTree(projects.enginePartnerApiService.dependencyProject.layout.buildDirectory.dir("generated/source/proto/main/openapiv2")) {
             include("**/service.swagger.json")

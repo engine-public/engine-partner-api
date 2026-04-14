@@ -4,7 +4,7 @@ plugins {
     id("com.google.protobuf")
 }
 
-description = "Models that define Content served by the Engine Partner API."
+description = "Models that define Content served by the Omni API."
 
 dependencies {
     api(projects.enginePartnerApiCommon)

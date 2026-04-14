@@ -20,8 +20,8 @@ permalink: /integration-guide.html
 
 ## Authentication
 
-Authentication to the Engine Partner APIs is managed via [Mutual TLS (mTLS)](https://en.wikipedia.org/wiki/Mutual_authentication#mTLS).
-Please contact the Engine Partner Integration team to have a private key provisioned for access to the APIs.
+Authentication to the Omni API is managed via [Mutual TLS (mTLS)](https://en.wikipedia.org/wiki/Mutual_authentication#mTLS).
+Please contact the Omni team to have a private key provisioned for access to the APIs.
 
 ## Integration Choices
 
@@ -29,13 +29,13 @@ Please contact the Engine Partner Integration team to have a private key provisi
 
 ### gRPC
 
-The Engine Partner APIs are available via [gRPC](https://grpc.io).
+The Omni API is available via [gRPC](https://grpc.io).
 The proto definitions are available to compile any of the supported language bindings.
 Engine publishes pre-compiled client bindings for the following language:
 
 * [JVM](https://central.sonatype.com/artifact/com.engine/engine-partner-api-service) (Java/Kotlin)
 
-Please contact the Engine Partner Integration team to request new client bindings libraries.
+Please contact the Omni team to request new client bindings libraries.
 
 For more information:
 
@@ -111,7 +111,7 @@ x-envoy-upstream-service-time: 80
 
 ### HTTP/JSON
 
-A subset of the Engine Partner APIs have REST-inspired HTTP/JSON implementations as defined in our published [Swagger API Definition].
+A subset of the Omni API has REST-inspired HTTP/JSON implementations as defined in our published [Swagger API Definition].
 HTTP/JSON provides a simpler integration at the cost of additional latency and increased payload sizes.
 
 For more information:
