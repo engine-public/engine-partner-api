@@ -1,0 +1,27 @@
+<div id="main-header" class="main-header">
+  <div class="main-header-version" aria-label="Version">
+    {% capture _api_ver_raw %}{% include version.txt %}{% endcapture %}
+    {% assign _api_ver = _api_ver_raw | strip %}
+    {% if _api_ver == "" %}
+      {% assign _api_ver = site.api_version | default: "0.0.0-pre.0" %}
+    {% endif %}
+    {% assign _first = _api_ver | slice: 0, 1 %}
+    {% if _first == "v" or _first == "V" %}
+      {% assign _vn = _api_ver | slice: 1, 256 %}
+    {% else %}
+      {% assign _vn = _api_ver %}
+    {% endif %}
+    <span class="main-header-version-text">v{{ _vn }}</span>
+  </div>
+  <div class="main-header-cluster">
+    {% if site.search_enabled != false %}
+      {% include components/search_header.html %}
+    {% else %}
+      <div></div>
+    {% endif %}
+    {% include header_custom.html %}
+    {% if site.aux_links %}
+      {% include components/aux_nav.html %}
+    {% endif %}
+  </div>
+</div>

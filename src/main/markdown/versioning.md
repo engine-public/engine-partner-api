@@ -1,6 +1,8 @@
 ---
 title: Versioning
 permalink: /versioning.html
+parent: Resources
+nav_order: 1
 ---
 
 <!-- markdownlint-disable-next-line MD025 -->

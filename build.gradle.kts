@@ -39,7 +39,7 @@ fun calculateVersion(): String {
                 null
             }
         }
-        ?: "0.0.0-pre.0" // temporary fallback version
+        ?: "0.0.0-pre.0" // dev-only when ENGINE_BUILD_VERSION unset; never ship as real semver
 }
 
 group = "com.engine"
@@ -771,6 +771,7 @@ afterEvaluate {
             "jekyll",
             "serve",
             "--baseurl", baseUrl,
+            "--livereload",
         )
     }
 

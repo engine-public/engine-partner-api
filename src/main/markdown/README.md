@@ -1,7 +1,8 @@
 ---
-title: Omni, Powered by Engine
+title: Overview & core concepts
 permalink: /
-nav_exclude: true
+parent: Getting Started
+nav_order: 1
 ---
 
 {% include README.md %}

@@ -52,6 +52,9 @@ theme: just-the-docs
 #   - vendor/gems/
 #   - vendor/ruby/
 
+# Fallback if _includes/version.txt is missing (Gradle overwrites version.txt on build)
+api_version: "0.0.0-pre.0"
+
 logo: "/images/logo-lockup_omni-powered-by-engine-sm.svg"
 search_enabled: true
 search:
@@ -81,5 +84,3 @@ color_scheme: custom_light
 favicon_ico: "/images/engine-favicon.png"
 kramdown:
   html_to_native: true
-back_to_top: true
-back_to_top_text: "Back to top"

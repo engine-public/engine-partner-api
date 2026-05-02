@@ -1,6 +1,8 @@
 ---
-title: Integration Guide
+title: Integration guide
 permalink: /integration-guide.html
+parent: Getting Started
+nav_order: 2
 ---
 
 <!-- markdownlint-disable-next-line MD025 -->

@@ -1,12 +1,575 @@
+// Sidebar nav — .sb-section, .sb-title, .sb-link, .sb-child (Omni custom nav)
+@import "../_omni_tokens";
+
+body {
+  background-color: $omni-surface; // atlas: backgroundPrimary; gray lives in .side-bar
+}
+
+// Header search (Omni layout)
+$omni-search-field-w: 240px;
+
+// Header: version (left) | cluster search + aux (right) — see _includes/components/header.html
+.main-header {
+  justify-content: space-between;
+  gap: 1rem;
+  padding-left: 12px;
+  padding-right: 12px;
+  min-width: 0;
+
+  @media (min-width: 50rem) {
+    align-items: center;
+  }
+}
+
+.main-header-version {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  margin: 0.5rem;
+}
+
+.main-header-version-text {
+  display: inline-block;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: $omni-text-muted;
+  background: $omni-nav-selected-bg;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.main-header-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 0 1 auto;
+  justify-content: flex-end;
+
+  @media (min-width: 50rem) {
+    flex-wrap: nowrap;
+  }
+}
+
+.main-header .search {
+  flex: 1 1 auto;
+  min-width: 0;
+
+  @media (min-width: 50rem) {
+    flex: 0 1 $omni-search-field-w;
+    flex-grow: 0;
+    max-width: $omni-search-field-w;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    // override just-the-docs .search { height: 100% !important } @ mq(md)
+    height: auto !important;
+    min-height: 0;
+    padding: 0;
+    z-index: 3;
+  }
+}
+
+.main-header .aux-nav {
+  flex-shrink: 0;
+
+  @media (min-width: 50rem) {
+    align-self: center;
+    height: auto;
+    padding-right: 0;
+  }
+}
+
+.main-header .search-input-wrap {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  @media (min-width: 50rem) {
+    position: relative;
+    width: 100%;
+    max-width: $omni-search-field-w;
+    height: auto;
+    min-height: 32px;
+    overflow: visible;
+    border: 1px solid $omni-border;
+    border-radius: 6px;
+    box-shadow: none;
+    background-color: $omni-surface;
+    transition: border-color 0.15s ease;
+  }
+}
+
+.main-header .search-input-wrap:focus-within {
+  @media (min-width: 50rem) {
+    border-color: $omni-accent-blue;
+  }
+}
+
+.main-header .search-input {
+  min-width: 0;
+
+  @media (min-width: 50rem) {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 30px;
+    padding: 6px 12px 6px 32px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: $omni-text;
+    background-color: transparent;
+    border: 0;
+    border-radius: 6px;
+    font-family: inherit;
+    transition: border-color 0.15s ease;
+  }
+
+  &::placeholder {
+    @media (min-width: 50rem) {
+      color: $omni-text-muted;
+    }
+  }
+
+  &:focus {
+    outline: none;
+
+    + .search-label .search-icon {
+      @media (min-width: 50rem) {
+        color: $omni-accent-blue;
+      }
+    }
+  }
+}
+
+.main-header .search-label {
+  @media (min-width: 50rem) {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding-left: 0;
+    height: auto;
+    pointer-events: none;
+  }
+
+  .search-icon {
+    @media (min-width: 50rem) {
+      width: 14px;
+      height: 14px;
+      color: $omni-text-muted;
+    }
+  }
+}
+
+.main-header .search-results {
+  @media (min-width: 50rem) {
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    width: auto;
+    max-width: none;
+    box-sizing: border-box;
+    border: 1px solid $omni-border;
+    border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    background-color: #fff;
+    // override .search-results { max-height:… !important } in theme search.scss @ mq(md)
+    max-height: min(70vh, 28rem) !important;
+  }
+}
+
 h4 {
   text-transform: none;
 }
 
 .blockDiagramHeader {
   .label-container {
-    fill: black !important;
+    fill: black !important; // mermaid node fill vs SVG attrs
   }
-  a {
+}
+
+// Header cells: white text, underlined at rest, underline removed on hover.
+// Selector matches the (1,3,2) specificity of `#main-content main a:not(...)`
+// below by re-applying the same :not() filters under the .blockDiagramHeader class.
+#main-content main .blockDiagramHeader a:not(.nav-list-link):not(.anchor-heading):not(.btn) {
+  color: white;
+  text-decoration: underline;
+
+  &:hover,
+  &:focus {
     color: white;
+    text-decoration: none;
+  }
+}
+
+// Body cells: brand purple, no underline at rest, muted-purple underline on hover.
+// Same specificity-matching trick as the header rule above.
+#main-content main .blockDiagramCell a:not(.nav-list-link):not(.anchor-heading):not(.btn) {
+  color: $omni-accent-purple;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    color: $omni-accent-purple;
+    text-decoration: underline;
+    text-decoration-color: rgba(114, 83, 237, 0.45);
+  }
+}
+
+// Content links match mock (`a { color: var(--accent-blue); }`)
+#main-content main a:not(.nav-list-link):not(.anchor-heading):not(.btn) {
+  color: $omni-accent-blue;
+}
+
+.side-bar {
+  border-right: 1px solid $omni-border;
+  padding-bottom: 2.5rem;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $omni-border;
+    border-radius: 3px;
+  }
+}
+
+.side-bar .site-header {
+  border-bottom-color: $omni-border;
+}
+
+.side-bar .site-title {
+  color: $omni-text;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.side-bar .site-title:hover {
+  background-image: none;
+  opacity: 0.85;
+}
+
+.side-bar .site-button {
+  color: $omni-text-secondary;
+}
+
+.side-bar .site-button:hover {
+  background-image: none;
+  background-color: $omni-nav-hover-bg;
+}
+
+.side-bar .site-footer {
+  color: $omni-text-muted;
+  font-size: 12px;
+  border-top: 1px solid $omni-border-light;
+  padding-top: 12px;
+  margin-top: auto;
+}
+
+.side-bar .site-footer a {
+  color: $omni-text-secondary;
+}
+
+// stock just-the-docs nav + JS: section label is a <span> (not a link); do NOT use
+// display:grid on the section <li> — that breaks the theme's position:absolute expander
+// for nested items (e.g. Developer guides → gRPC → proto pages).
+// Visual target: Atlas web-sidenav (NavItem + NavExpandableMenu) — 44px parent rows,
+// 36px sub-links, md radius, 1px border rail, 100ms chevron transition.
+$atlas-chevron-ease: 100ms ease-in-out;
+
+#site-nav {
+  padding: 8px 4px 12px;
+
+  > ul.nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  // Smaller glyph, same row height: shrink `svg` only (theme rotates `svg` — do not transform the button).
+  .nav-list-expander svg {
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    box-sizing: border-box;
+    transition: transform $atlas-chevron-ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-list-expander svg {
+      transition: none;
+    }
+  }
+
+  // Nested block: 1px rail + indent (atlas navExpandableMenu border + inset).
+  .nav-list-item > ul.nav-list {
+    margin: 0.375rem 0 0 0.5rem; // top: clears grouping header / row bg from rail start
+    padding: 0 0 0 0.75rem; // 12px
+    border-left: 1px solid $omni-nav-rail-border;
+  }
+
+  .nav-list-item:has(> .nav-list-expander) {
+    border-radius: $omni-radius-md;
+  }
+
+  // Parent / accordion row (atlas 44px min-height, pad ~12+16+room for chevron)
+  // Neutral text — theme $link-color is blue; section titles overridden below.
+  .nav-list-item:has(> .nav-list-expander) > .nav-list-link:not(.omni-nav-section-title),
+  .nav-list-item:has(> .nav-list-expander) > .nav-list-link.nav-list-external:not(.omni-nav-section-title),
+  .nav-list-item:has(> .nav-list-expander) > span.nav-list-link:not(.omni-nav-section-title) {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: $omni-nav-row-h;
+    line-height: 1.3;
+    padding: 0.5rem 2.75rem 0.5rem 0.75rem; // right clears top-level chevron column ($omni-nav-row-h)
+    background-image: none !important;
+    border-radius: $omni-radius-md;
+    color: $omni-text-secondary;
+    transition:
+      color $atlas-chevron-ease,
+      background-color $atlas-chevron-ease;
+  }
+
+  // Nested accordion rows (e.g. gRPC): align row + chevron box to $omni-nav-sublink-h
+  ul.nav-list ul.nav-list > .nav-list-item:has(> .nav-list-expander) > .nav-list-link:not(.omni-nav-section-title),
+  ul.nav-list ul.nav-list > .nav-list-item:has(> .nav-list-expander) > .nav-list-link.nav-list-external:not(.omni-nav-section-title),
+  ul.nav-list ul.nav-list > .nav-list-item:has(> .nav-list-expander) > span.nav-list-link:not(.omni-nav-section-title) {
+    min-height: $omni-nav-sublink-h;
+    padding: 0.5rem $omni-nav-sublink-h 0.5rem 0.75rem;
+  }
+
+  .nav-list-item:has(> .nav-list-expander) > a.nav-list-link:hover,
+  .nav-list-item:has(> .nav-list-expander) > a.nav-list-link:focus {
+    color: $omni-text;
+    background-color: $omni-nav-hover-bg;
+    background-image: none !important;
+  }
+
+  .nav-list-item:has(> .nav-list-expander) > a.nav-list-link.active {
+    color: $omni-text;
+    font-weight: 600;
+  }
+
+  // Child links (no chevron) under a nested list — atlas ~36px sub-items.
+  .nav-list .nav-list-item:not(:has(> .nav-list-expander)) > .nav-list-link {
+    min-height: $omni-nav-sublink-h;
+    padding: 0.5rem 0.75rem;
+    line-height: 1.35;
+    background-image: none !important;
+    border-radius: $omni-radius-md;
+    transition:
+      color $atlas-chevron-ease,
+      background-color $atlas-chevron-ease;
+  }
+
+  // Keep theme geometry (right:0, fixed width/height) — never top/bottom stretch: expanded `li` is tall
+  // and would paint the chevron mid-subtree. Only colors + no gradient hover.
+  .nav-list-item:has(> .nav-list-expander) > .nav-list-expander {
+    top: 0;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: $omni-nav-sublink-h;
+    min-height: $omni-nav-sublink-h;
+    height: $omni-nav-sublink-h;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0;
+    padding-right: 0;
+    border: 0;
+    border-radius: $omni-radius-md;
+    background: transparent;
+    color: $omni-text-secondary;
+
+    &:hover,
+    &:focus {
+      background-image: none !important;
+      background-color: transparent;
+    }
+  }
+
+  > ul.nav-list > li.nav-list-item:has(> .nav-list-expander) > .nav-list-expander {
+    width: $omni-nav-row-h;
+    min-height: $omni-nav-row-h;
+    height: $omni-nav-row-h;
+  }
+}
+
+#site-nav > ul.nav-list > li.omni-nav-section-item {
+  margin: 0;
+  padding: 0;
+
+  &:not(:last-child) {
+    margin-bottom: 0.5rem; // 8px — group spacing near atlas gap
+  }
+}
+
+// .sb-title look; hover + hit area aligned to atlas 44px row (neutral, no $link-color blue)
+#site-nav li.omni-nav-section-item > .nav-list-link.omni-nav-section-title {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: $omni-nav-row-h;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: $omni-text-muted;
+  line-height: 1.2;
+  margin: 0;
+  border: 0;
+  border-radius: $omni-radius-md;
+  padding: 0.5rem 2.75rem 0.5rem 0.75rem;
+  cursor: pointer;
+  text-decoration: none;
+  background-color: transparent;
+  background-image: none;
+
+  &:hover {
+    color: $omni-text;
+    background-color: transparent;
+    background-image: none;
+  }
+}
+
+// Expanded section row: beat theme + a { color: $link-color } + any blue-tint fills
+#site-nav li.omni-nav-section-item.active > .nav-list-link.omni-nav-section-title {
+  color: $omni-text !important;
+  font-weight: 800;
+  background-color: $omni-nav-selected-bg !important;
+  background-image: none !important;
+}
+
+#site-nav .nav-list .nav-list-item .nav-list-link:not(.omni-nav-section-title) {
+  font-size: 14px;
+  color: $omni-text-secondary;
+  background-image: none;
+  // selected state: soft fill like atlas; no thick left bar (atlas is bg-only)
+  border-left: 0;
+
+  &:hover,
+  &:focus {
+    color: $omni-text;
+    background-color: $omni-nav-hover-bg;
+    background-image: none;
+  }
+
+  &.active {
+    color: $omni-text;
+    font-weight: 600;
+    background-color: $omni-nav-selected-bg;
+    background-image: none;
+  }
+}
+
+// Deeper list items: slightly smaller type, more muted
+#site-nav .nav-list .nav-list-item > .nav-list .nav-list-item .nav-list-link {
+  font-size: 13px;
+  color: $omni-text-muted;
+
+  &:hover,
+  &:focus {
+    color: $omni-text-secondary;
+    background-color: $omni-nav-hover-bg;
+  }
+
+  &.active {
+    color: $omni-text;
+    font-weight: 600;
+    background-color: $omni-nav-selected-bg;
+  }
+}
+
+// Top-level (direct under site-nav root) chevrons — match foregroundSecondary / primary
+#site-nav > ul.nav-list > .nav-list-item:has(> .nav-list-expander) > .nav-list-expander {
+  color: $omni-text;
+}
+
+#site-nav
+  .nav-list
+  .nav-list
+  .nav-list-item:has(> .nav-list-expander)
+  > .nav-list-expander {
+  color: $omni-text-muted;
+}
+
+// JTD .nav-category-list sets nested .nav-list-link + expander to $link-color (blue) — neutral
+#site-nav
+  .nav-list.nav-category-list
+  > .nav-list-item
+  > .nav-list
+  > .nav-list-item
+  > .nav-list-link {
+  color: $omni-text-secondary;
+
+  &:hover,
+  &:focus {
+    color: $omni-text;
+  }
+
+  &.active {
+    color: $omni-text;
+  }
+}
+
+#site-nav
+  .nav-list.nav-category-list
+  > .nav-list-item
+  > .nav-list
+  > .nav-list-item
+  > .nav-list-expander {
+  color: $omni-text-secondary;
+}
+
+// Page footer (Omni layout)
+.main-content > footer.main-content-footer {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  max-width: none;
+}
+
+.omni-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  border-top: 1px solid $omni-border;
+  padding: 20px 24px;
+  font-size: 12px;
+  color: $omni-text-muted;
+  box-sizing: border-box;
+}
+
+.omni-footer-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.omni-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.omni-footer-links a {
+  color: $omni-text-muted;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    color: $omni-text;
   }
 }

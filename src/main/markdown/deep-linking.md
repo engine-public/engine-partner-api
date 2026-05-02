@@ -1,6 +1,8 @@
 ---
-title: Deep Linking
+title: Deep linking
 permalink: /deep-linking.html
+parent: Getting Started
+nav_order: 4
 ---
 
 <!-- markdownlint-disable-next-line MD025 -->

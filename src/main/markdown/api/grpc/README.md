@@ -1,5 +1,7 @@
 ---
 title: gRPC
 permalink: /api/grpc/index.html
-parent: API Definitions
+parent: Developer Guides
+has_children: true
+nav_order: 3
 ---

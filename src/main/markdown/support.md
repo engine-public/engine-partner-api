@@ -1,6 +1,8 @@
 ---
-title: Support
+title: Support & contact
 permalink: /support.html
+parent: Resources
+nav_order: 3
 ---
 
 <!-- markdownlint-disable-next-line MD025 -->

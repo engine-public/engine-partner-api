@@ -1,2 +1,10 @@
+@import "../_omni_tokens";
+// Omni light theme: map tokens to just-the-docs variables
+$sidebar-color: $omni-sidebar-bg;
+$border-color: $omni-border;
+$link-color: $omni-accent-blue;
+$nav-child-link-color: $omni-text-muted;
+$feedback-color: $omni-surface;
+
 @import "./color_schemes/light";
 $content-width: 80rem;

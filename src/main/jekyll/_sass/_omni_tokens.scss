@@ -1,0 +1,23 @@
+// Single source for Omni $omni-* values (import from color_schemes and custom)
+$omni-accent-blue: #2563eb;
+$omni-accent-blue-light: #eff4ff;
+$omni-accent-purple: #7253ed; // brand link color used in mermaid diagrams
+$omni-text: #1a1a1a;
+$omni-text-secondary: #555555;
+$omni-text-muted: #888888;
+$omni-border: #e0e0e0;
+$omni-border-light: #ebebeb;
+$omni-surface: #ffffff;
+$omni-bg: #f7f7f7;
+// Atlas light (theme/tokens/light): secondary surface + row states
+$omni-sidebar-bg: #f3f5fc; // backgroundSecondary
+// Atlas sidenav computed matches (NavItem / expandable rail)
+$omni-nav-hover-bg: #8f8f8f1f; // translucent gray overlay on hover
+// Softer than #e4e4e4, still reads vs #f5f5f5 + hover overlay
+$omni-nav-selected-bg: #ededed;
+$omni-nav-rail-border: #c7c7c7; // nested menu left rail (darker than $omni-border-light)
+$omni-nav-pressed-bg: #dddfe5; // backgroundSecondaryActive
+// Atlas web sidenav: ~NavItem / NavExpandableMenu
+$omni-radius-md: 16px; // nav rows / pill-ish controls
+$omni-nav-row-h: 2.75rem; // 44px — expander / parent row
+$omni-nav-sublink-h: 2.25rem; // 36px — child links

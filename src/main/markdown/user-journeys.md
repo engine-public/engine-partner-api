@@ -1,6 +1,8 @@
 ---
-title: User Journeys
+title: User journeys
 permalink: /user-journeys.html
+parent: Getting Started
+nav_order: 3
 ---
 {::options toc_levels="1..3" /}
 
@@ -71,6 +73,7 @@ columns 4
     bs_sc["<a href="#submitcancellation">LodgingBookingService.SubmitCancellation</a>"]:2
 
 class p,r,t,m blockDiagramHeader
+class cs_lp,ss_fbo,ss_fa,bs_co,bs_b,bs_gb,bs_gf,bs_pc,bs_sc blockDiagramCell
 ```
 
 ## Process Flow

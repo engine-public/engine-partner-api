@@ -1,6 +1,8 @@
 ---
-title: Rate Limits
+title: Rate limits
 permalink: /rate-limits.html
+parent: Resources
+nav_order: 2
 ---
 
 <!-- markdownlint-disable-next-line MD025 -->
