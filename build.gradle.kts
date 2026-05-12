@@ -28,6 +28,22 @@ plugins {
 buildscript {
     dependencies {
         classpath(buildscript.gson)
+        // Constrain vulnerable transitive plugin dependencies. Expressed as
+        // constraints (rather than direct classpath deps) because we aren't
+        // actually depending on these libraries — we're just bounding the
+        // versions that plugins resolved via the `plugins { }` DSL may pull in.
+        // The `plugins { }` DSL resolves via `pluginManagement` in settings.gradle.kts
+        // and bypasses any `resolutionStrategy` block here, so constraints on the
+        // buildscript classpath are the cleanest lever available. Not part of our
+        // runtime stack; only on the plugin classpath.
+        constraints {
+            classpath("org.codehaus.plexus:plexus-utils:3.6.1") {
+                because("CVE-2025-67030 — https://github.com/engine-public/engine-partner-api/security/dependabot/22")
+            }
+            classpath("org.apache.tika:tika-core:3.2.2") {
+                because("CVE-2025-66516 — https://github.com/engine-public/engine-partner-api/security/dependabot/10")
+            }
+        }
     }
 }
 
@@ -212,10 +228,17 @@ subprojects {
 allprojects {
     afterEvaluate {
         configurations.all {
-            resolutionStrategy {
-                // CVE-2024-12798: https://github.com/engine-public/engine-partner-api/security/dependabot/1
-                // CVE-2024-12801: https://github.com/engine-public/engine-partner-api/security/dependabot/2
-                force("ch.qos.logback:logback-core:[1.3.15,1.4[")
+            resolutionStrategy.eachDependency {
+                if (requested.group == "ch.qos.logback" && requested.name == "logback-core") {
+                    // Widened upper bound to include 1.5.x so we also satisfy
+                    // CVE-2026-1225 (https://github.com/engine-public/engine-partner-api/security/dependabot/12).
+                    useVersion("[1.3.15,1.6[")
+                    because(
+                        "CVE-2024-12798 — https://github.com/engine-public/engine-partner-api/security/dependabot/1; " +
+                            "CVE-2024-12801 — https://github.com/engine-public/engine-partner-api/security/dependabot/2; " +
+                            "CVE-2026-1225 — https://github.com/engine-public/engine-partner-api/security/dependabot/12"
+                    )
+                }
             }
         }
     }

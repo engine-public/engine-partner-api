@@ -18,6 +18,9 @@ on:
         required: false
         description: "The maven central token provisioned to upload artifacts."
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest

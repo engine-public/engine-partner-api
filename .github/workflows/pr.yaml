@@ -5,6 +5,9 @@ on:
   pull_request:
     branches: [ "*" ]
 
+permissions:
+  contents: read
+
 jobs:
   build:
     uses: ./.github/workflows/build.yaml
