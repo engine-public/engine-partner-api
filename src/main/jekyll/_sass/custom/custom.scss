@@ -7,6 +7,8 @@ body {
 
 // Header search (Omni layout)
 $omni-search-field-w: 240px;
+// Wider than input but capped so right-aligned header search stays on-screen
+$omni-search-dropdown-w: 480px;
 
 // Header: version (left) | cluster search + aux (right) — see _includes/components/header.html
 .main-header {
@@ -169,10 +171,11 @@ $omni-search-field-w: 240px;
 .main-header .search-results {
   @media (min-width: 50rem) {
     top: calc(100% + 4px);
-    left: 0;
+    // Anchor to input’s right (search sits in header’s right cluster) so panel grows left
+    left: auto;
     right: 0;
-    width: auto;
-    max-width: none;
+    width: $omni-search-dropdown-w;
+    max-width: calc(100vw - 32px);
     box-sizing: border-box;
     border: 1px solid $omni-border;
     border-radius: 6px;

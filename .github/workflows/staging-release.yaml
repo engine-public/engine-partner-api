@@ -26,6 +26,13 @@ on:
           Only used for internal releases.
         required: true
         type: boolean
+      update_staging_pages:
+        description: |
+          Publish the built docs site to GitHub Pages (staging).
+          Enable only when you intend to refresh the Pages deployment for this workflow run and ref.
+        required: true
+        type: boolean
+        default: false
 concurrency:
   group: staging-release-${{ inputs.release_type == 'internal release' && 'internal' || inputs.dev_release_label }}
   cancel-in-progress: true
@@ -146,7 +153,7 @@ jobs:
           gh release upload "${{ needs.pre-check.outputs.build_version }}" build/dist/*
 
   pages:
-    if: ${{ github.ref_name == 'main' }}
+    if: ${{ github.ref_name == 'main' || inputs.update_staging_pages == 'true' || inputs.update_staging_pages == true }}
     permissions:
       id-token: write
       pages: write
