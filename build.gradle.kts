@@ -68,7 +68,7 @@ val mavenStagingDir = stagingDir.map { it.dir("maven-central") }
 
 configure<JReleaserExtension> {
     project {
-        description = project.description
+        description = rootProject.description
         copyright = "Copyright ${Calendar.getInstance().get(Calendar.YEAR)} HotelEngine, Inc., d/b/a Engine"
         license = "Apache-2.0"
     }
