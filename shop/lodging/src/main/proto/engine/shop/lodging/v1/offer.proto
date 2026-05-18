@@ -23,6 +23,7 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 import "engine/common/v1/amenities.proto";
 import "engine/common/v1/conditions.proto";
 import "engine/common/v1/price.proto";
+import "engine/common/v1/sell_type.proto";
 
 option go_package = "engine.com/engine-partner-api/v1/shop/lodging";
 option java_package = "com.engine.shop.v1.lodging";
@@ -43,6 +44,8 @@ message OfferSummary {
   string description = 2;
 
   // The pricing details for the Offer.
+  // This price indicates the amount owed to Engine at the time of booking.
+  // Refer to [OfferSummary.sell_type] for details on how the offer may be priced to the customer.
   .engine.common.v1.PriceWithPerUnit price = 3;
 
   // Amenities that may only apply to this Offer.
@@ -60,6 +63,11 @@ message OfferSummary {
 
   // Optionally, if this offer represents a negotiated rate specifically configured for your credential, the details of that rate will be included here.
   .engine.shop.lodging.v1.RateData rate_data = 8;
+
+  // The sell type for this offer.
+  // Defines how the seller is compensated and the pricing guidelines for this offer.
+  // See [SellType] for details on available model types and their pricing rules.
+  .engine.common.v1.SellType sell_type = 9;
 }
 
 // OfferAmenities represent the value added by the individual offer to be evaluated against other offers.

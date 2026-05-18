@@ -1,0 +1,102 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.common.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "engine/common/v1/currency.proto";
+
+option go_package = "engine.com/engine-partner-api/common/v1";
+option java_package = "com.engine.common.v1";
+option java_multiple_files = true;
+
+// The sell type of an offer.
+// Defines seller compensation and pricing guidelines for this offer.
+// The type determines whether the seller earns through commission, markup margin, or other contractual arrangements.
+message SellType {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Common_SellType_v1"
+    }
+  };
+
+  oneof type {
+    // Indicates this offer uses a commissionable sell type.
+    // Offers with this type must be sold at the exact price quoted by Engine.
+    // The seller earns a commission specified in [CommissionableModel].
+    // See [CommissionableModel] for details.
+    .engine.common.v1.CommissionableModel commissionable = 1;
+
+    // Indicates this offer uses a net sell type.
+    // Offers with this type are expected to be marked up by the seller.
+    // The seller earns the margin between the net price and the marked-up price.
+    // See [NetModel] for details.
+    .engine.common.v1.NetModel net = 2;
+
+    // Indicates this offer uses a fixed sell type.
+    // Offers with this type must be sold at the exact price quoted by Engine.
+    // Compensation terms are defined exclusively by the seller's agreement with Engine.
+    // See [FixedModel] for details.
+    .engine.common.v1.FixedModel fixed = 3;
+  }
+}
+
+// Details for a commissionable pricing model.
+// Under this model, offers must be sold at the exact price quoted by Engine without markup.
+// The seller receives a fixed commission amount for each sale.
+// This model does not override your agreement with Engine.
+// Refer to your agreement or contact your Engine sales support team for questions.
+message CommissionableModel {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Common_CommissionableModel_v1"
+    }
+  };
+
+  // The commission amount the seller will receive for selling this offer.
+  .engine.common.v1.CurrencyValue commission_value = 1;
+}
+
+// Details for a net pricing model.
+// Under this model, offers are provided at a net price which the seller is expected to mark up.
+// The seller's earnings consist of the margin between the net price and the final price charged to the customer.
+// The markup amount and strategy are determined by the seller within the terms of their agreement.
+// Net rates can be sold at any price no lower than [OfferSummary.price.price.total] and no higher than [OfferSummary.price.price.strike].
+// This model does not override your agreement with Engine.
+// Refer to your agreement or contact your Engine sales support team for questions.
+message NetModel {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Common_NetModel_v1"
+    }
+  };
+}
+
+// Details for a fixed pricing model.
+// Under this model, offers must be sold at the exact price quoted by Engine without markup.
+// The seller does not receive commission for offers indicated with this pricing model.
+// Compensation terms are defined exclusively by the seller's agreement with Engine.
+// Refer to your agreement or contact your Engine sales support team for questions.
+message FixedModel {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Common_FixedModel_v1"
+    }
+  };
+}

@@ -54,4 +54,10 @@ message AppliedCardPayment {
       title: "Book_Common_AppliedCardPayment_v1"
     }
   };
+
+  // The last four digits of the payment card number used for the transaction.
+  string last_four = 1;
+
+  // The brand or network of the payment card (e.g. "Visa", "Mastercard", "American Express").
+  string card_brand = 2;
 }
