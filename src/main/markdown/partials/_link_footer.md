@@ -65,5 +65,15 @@
 [Proto File Zip]: @JEKYLL_BASE_URL@/downloads/proto.zip
 [Swagger API Definition]: @JEKYLL_BASE_URL@/swagger-ui/index.html
 
+[Overview & core concepts]: @JEKYLL_BASE_URL@/
+[Integration paths]: @JEKYLL_BASE_URL@/integration-paths.html
+[Swift integration]: @JEKYLL_BASE_URL@/swift-integration.html
+[Omni Swift]: @JEKYLL_BASE_URL@/swift-integration.html
+[Halo integration]: @JEKYLL_BASE_URL@/halo-integration.html
+[Omni Halo]: @JEKYLL_BASE_URL@/halo-integration.html
+[User journeys]: @JEKYLL_BASE_URL@/user-journeys.html
+[Integration guide]: @JEKYLL_BASE_URL@/integration-guide.html
+[Deep linking]: @JEKYLL_BASE_URL@/deep-linking.html
+
 [Engine]: https://www.engine.com
 [Status.details]: https://cloud.google.com/tasks/docs/reference/rpc/google.rpc#google.rpc.Status

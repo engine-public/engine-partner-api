@@ -1,7 +1,7 @@
 ---
 title: Deep linking
 permalink: /deep-linking.html
-parent: Getting Started
+parent: Developer Guides
 nav_order: 4
 ---
 
@@ -19,13 +19,13 @@ nav_order: 4
 </details>
 <!-- markdownlint-restore -->
 
-## Deep Linking into the Engine Members Web experience
+## Deep Linking into the Engine Web Experience
 
 ---
 
 ### Book a room for a given property
 
-This link will take you directly to the room and rate selection page within our Members web experience.
+This link will take you directly to the room and rate selection page within our Engine Web Experience.
 
 <!-- markdownlint-disable-next-line MD033 -->
 <h4><a name="book-a-room-for-a-given-property-url" />URL</h4>
@@ -73,7 +73,7 @@ Once the customer has signed in or created their new account, they will be redir
 
 | name         | required | description                                                                                                                                        | default                                                                       |
 |--------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
-| redirect_url | no       | A URL-encoded deep link into the Engine Members Web Experience, for example, [Book a room for a given property](#book-a-room-for-a-given-property) | If no `redirect_url` is provided, the customer will be sent to the Dashboard. |
+| redirect_url | no       | A URL-encoded deep link into the Engine Web Experience, for example, [Book a room for a given property](#book-a-room-for-a-given-property)         | If no `redirect_url` is provided, the customer will be sent to the Dashboard. |
 
 ---
 

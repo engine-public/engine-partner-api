@@ -186,6 +186,20 @@ $omni-search-dropdown-w: 480px;
   }
 }
 
+// Lift Swagger UI's <hgroup class="main"> (the spec info.title/description block
+// rendered at the top of #swagger-ui) above the just-the-docs search overlay
+// while the search dropdown is open, so the title isn't dimmed by the
+// translucent black scrim. The theme's `.search-overlay` is
+// `position: fixed; z-index: 1` (see just-the-docs _sass/search.scss), so
+// `position: relative; z-index: 2` is enough to render the hgroup on top of
+// it. JTD toggles `html.search-active` on open/close
+// (assets/js/just-the-docs.js -> documentElement.classList.add('search-active')),
+// so this stays inert on every other page state.
+.search-active #swagger-ui hgroup.main {
+  position: relative;
+  z-index: 2;
+}
+
 h4 {
   text-transform: none;
 }
@@ -575,4 +589,17 @@ $atlas-chevron-ease: 100ms ease-in-out;
   &:focus {
     color: $omni-text;
   }
+}
+
+// Warning callout overrides — flatten the default just-the-docs warning
+// treatment (red `border-left` accent + red-tinted background) to a neutral
+// grey card. Currently only used on /halo-integration.html (search for
+// `{: .warning }` in src/main/markdown — halo-integration.md is the sole
+// consumer), but the override is keyed off the theme's own
+// `p.warning, blockquote.warning` selector pair so any future `.warning`
+// callouts pick up the same treatment.
+p.warning,
+blockquote.warning {
+  background-color: #e5e5e5;
+  border-left: 0;
 }
