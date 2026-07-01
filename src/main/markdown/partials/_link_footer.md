@@ -16,7 +16,11 @@
 [Conditions]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#conditions
 [ConfirmOfferError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-book-lodging-service-v1-ConfirmOfferError
 [ContentService.ListProperties]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#contentservice
+[ExternalCatalogIdentifiers]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-content.html#engine-content-v1-lodging-ExternalCatalogIdentifiers
+[ExternalCatalogIdentifiers.catalog_identifiers]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-content.html#engine-content-v1-lodging-ExternalCatalogIdentifiers
+[ExternalCatalogIdentifierList]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-content.html#engine-content-v1-lodging-ExternalCatalogIdentifierList
 [FindAvailabilityPropertyRequest]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#findavailabilitypropertyrequest
+[FindBestOffersError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-shop-lodging-service-v1-FindBestOffersError
 [FixedModel]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#engine-common-v1-FixedModel
 [GetBookingsError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-book-lodging-service-v1-GetBookingsError
 [GetBookingsStreamingError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-book-lodging-service-v1-GetBookingsStreamingError
@@ -24,6 +28,7 @@
 [GeoPoint]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#geopoint
 [Image]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#image
 [InvalidPaymentError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#invalidpaymenterror
+[InvalidSortError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-service-common-v1-InvalidSortError
 [LodgingBookingService.Book]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#lodgingbookingservice
 [LodgingBookingService.ConfirmOffer]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#lodgingbookingservice
 [LodgingBookingService.GenerateFolio]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#lodgingbookingservice
@@ -58,6 +63,7 @@
 [RoomDescription]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-shop-lodging.html#engine-shop-lodging-v1-RoomDescription
 [RoomGuests]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-book-lodging.html#engine-book-lodging-v1-RoomGuests
 [RoomGuests.primary_guest]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-book-lodging.html#engine-book-lodging-v1-RoomGuests
+[PropertyIdSearch]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-shop-lodging-service-v1-PropertyIdSearch
 [SubmitCancellationError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#submitcancellationerror
 
 [gRPC API Definition]: @JEKYLL_BASE_URL@/api/grpc/index.html

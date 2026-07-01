@@ -24,6 +24,7 @@ import "engine/common/v1/geo.proto";
 import "engine/common/v1/sales_channel.proto";
 import "engine/common/v1/traveler.proto";
 import "engine/content/v1/lodging/property.proto";
+import "engine/service/common/v1/error.proto";
 import "engine/shop/lodging/v1/offer.proto";
 
 option go_package = "engine.com/engine-partner-api/v1/shop/lodging/service";
@@ -66,6 +67,9 @@ message FindBestOffersRequestCriteria {
   oneof inclusion_type {
     // Check the availability of up to `max_property_candidates` hotels nearest the center of the provided radius.
     .engine.shop.lodging.service.v1.RadiusSearch point_and_radius = 1;
+
+    // Check the availability of properties as identified by the provided Engine Property IDs.
+    .engine.shop.lodging.service.v1.PropertyIdSearch property_id = 8;
   }
 
   // An ISO-8601-compliant date on which you will check in to the property.
@@ -105,6 +109,7 @@ message FindBestOffersRequestCriteria {
   // The maximum number of properties to be considered for Offers.
   // Properties with no availability will count against this limit, but may not be returned if there is no availability.
   // May not exceed 250.
+  // This limit is not honored when Property IDs are provided via [property_ids].
   optional int32 max_property_candidates = 98 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     minimum: 1,
     maximum: 250,
@@ -124,6 +129,7 @@ enum FindBestOffersSortMode {
 
   // Properties are returned in order of increasing distance.
   // In case of ties, Property names are sorted lexically.
+  // Only valid when candidate properties are identified via [RadiusSearch] (`point_and_radius`).
   FIND_BEST_OFFERS_SORT_MODE_DISTANCE = 1;
 }
 
@@ -149,6 +155,23 @@ message RadiusSearch {
   .engine.common.v1.Distance radius = 101;
 }
 
+// A list of Engine Property IDs to shop for Best Offers.
+message PropertyIdSearch {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Shop_Lodging_Service_PropertyIdSearch_v1"
+    }
+  };
+
+  // The list of Engine Property IDs.
+  // Minimum: 1
+  // Maximum: 250
+  repeated string property_ids = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    min_items: 1,
+    max_items: 250,
+  }];
+}
+
 
 // The results of a [LodgingShoppingService.FindBestOffers] search.
 message FindBestOffersResponse {
@@ -160,6 +183,22 @@ message FindBestOffersResponse {
 
   // The full list of offers responsive your search.
   repeated .engine.shop.lodging.service.v1.PropertyBestOffer offers = 1;
+}
+
+
+// Error details of a failed [LodgingShoppingService.FindBestOffers] call.
+message FindBestOffersError {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Shop_Lodging_Service_FindBestOffersError_v1"
+    }
+  };
+
+  oneof error {
+    // Defined when the operation returns with a status of INVALID_ARGUMENT and [FindBestOffersRequest.sort_mode]
+    // is not valid for the given search criteria.
+    .engine.service.common.v1.InvalidSortError invalid_sort = 1;
+  }
 }
 
 

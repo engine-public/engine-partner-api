@@ -161,6 +161,23 @@ message PropertyAmenity {
 }
 
 //
+// A list of external catalog identifiers for a single catalog key.
+//
+message ExternalCatalogIdentifierList {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Content_ExternalCatalogIdentifierList_v1"
+    }
+  };
+
+  //
+  // Supplier property identifiers for the associated catalog key.
+  // May contain multiple identifiers when more than one external record is mapped to the Engine record.
+  //
+  repeated string identifiers = 1;
+}
+
+//
 // External catalog identifiers for property mapping.
 //
 message ExternalCatalogIdentifiers {
@@ -170,8 +187,13 @@ message ExternalCatalogIdentifiers {
     }
   };
 
-//
-// GIATA identifier for this property.
-//
+  //
+  // GIATA identifier for this property.
+  //
   optional string giata_identifier = 1;
+
+  //
+  // Catalog identifiers keyed by source keys.
+  //
+  map<string, .engine.content.v1.lodging.ExternalCatalogIdentifierList> catalog_identifiers = 2;
 }

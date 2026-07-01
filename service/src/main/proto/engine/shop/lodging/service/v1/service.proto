@@ -35,6 +35,7 @@ service LodgingShoppingService {
   // Identifies a set of candidate Properties that match the provided criteria.
   // Once the appropriate properties have been identified, the Best Offer available for each property is selected and augmented with the details of other available Offers.
   // Best Offers are not exhaustive of all available offers for a property.
+  // In case of error, the status will contain a [FindBestOffersError] within the [Status.details] field.
   rpc FindBestOffers(.engine.shop.lodging.service.v1.FindBestOffersRequest)
       returns (.engine.shop.lodging.service.v1.FindBestOffersResponse) {
     option (google.api.http) = {
@@ -44,6 +45,19 @@ service LodgingShoppingService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       summary: "Search for the Best Offer available for a set of Properties."
       description: "Identifies a set of candidate properties that match the provided criteria.  Once the appropriate properties have been identified, the Best Offer available for each property is selected and augmented with the details of other available Offers."
+      responses: [
+        {
+          key: "400",
+          value: {
+            description: "Error details for gRPC Status of INVALID_ARGUMENT(3)."
+            schema: {
+              json_schema: {
+                ref: ".engine.shop.lodging.service.v1.FindBestOffersError"
+              }
+            }
+          }
+        }
+      ]
     };
   };
 
