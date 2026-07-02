@@ -1,0 +1,196 @@
+---
+# Trusted half of the Meticulous integration.
+#
+# Triggered by `workflow_run` of `Meticulous Build`, which means GitHub
+# runs THIS workflow file from the default branch — PR-authored changes
+# to this file do not take effect until merged. That is what makes it
+# safe to expose `secrets.METICULOUS_API_TOKEN` here even when the
+# triggering build came from a PR.
+#
+# This job intentionally does NOT check out the repository or execute
+# any code from the PR. It only:
+#   1. Downloads the static assets the build workflow produced.
+#   2. Validates and copies them into a symlink-free directory.
+#   3. POSTs the sanitized copy to Meticulous keyed by the original commit SHA.
+#
+# PR-produced artifacts are treated as untrusted input. The Meticulous
+# upload action resolves symlinks when archiving, so symlinks that escape
+# `site/` could exfiltrate runner-local files during this privileged run.
+# We reject symlinks, verify path containment, and upload only from a
+# materialized copy of regular files.
+#
+# See `meticulous-build.yml` for the untrusted half.
+#
+# A guard job exits early when prerequisites are not met (correct repository
+# context, non-fork pull requests, upstream build artifact present, upstream
+# build succeeded, and Meticulous secrets configured), so Meticulous steps
+# are skipped without failing the workflow run.
+
+name: Meticulous Upload
+
+on:
+  workflow_run:
+    workflows: ["Meticulous Build"]
+    types: [completed]
+
+# These permissions match what Meticulous's report-diffs-action needs
+# to post status checks and feedback comments on the originating PR.
+permissions:
+  actions: read
+  contents: read
+  issues: write
+  pull-requests: write
+  statuses: read
+  id-token: write
+
+env:
+  METICULOUS_REPOSITORY: HotelEngine/engine-partner-api-staging
+
+jobs:
+  guard:
+    name: API Docs / Check prerequisites
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+    steps:
+      - name: Check prerequisites
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HAS_METICULOUS_API_TOKEN: ${{ secrets.METICULOUS_API_TOKEN != '' }}
+          HAS_METICULOUS_RECORDING_TOKEN: ${{ secrets.METICULOUS_RECORDING_TOKEN != '' }}
+          UPSTREAM_SUCCEEDED: ${{ github.event.workflow_run.conclusion == 'success' }}
+          PR_HEAD_REPO: ${{ github.event.workflow_run.pull_requests[0].head.repo.full_name }}
+          UPSTREAM_RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          if [ "${{ github.repository }}" != "$METICULOUS_REPOSITORY" ] || \
+             [ "${{ github.event.workflow_run.repository.full_name }}" != "$METICULOUS_REPOSITORY" ]; then
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping Meticulous Upload because the workflow is not both running and triggered from $METICULOUS_REPOSITORY."
+            echo "  github.repository=${{ github.repository }}"
+            echo "  github.event.workflow_run.repository.full_name=${{ github.event.workflow_run.repository.full_name }}"
+            exit 0
+          fi
+
+          if [ -n "$PR_HEAD_REPO" ] && [ "$PR_HEAD_REPO" != "$METICULOUS_REPOSITORY" ]; then
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping Meticulous Upload for fork pull requests."
+            echo "  workflow_run.pull_requests[0].head.repo.full_name=$PR_HEAD_REPO"
+            exit 0
+          fi
+
+          if [ "$UPSTREAM_SUCCEEDED" != "true" ]; then
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping Meticulous Upload because the triggering Meticulous Build workflow did not succeed."
+            exit 0
+          fi
+
+          artifact_count=$(gh api \
+            "/repos/${{ github.repository }}/actions/runs/${UPSTREAM_RUN_ID}/artifacts" \
+            --jq '[.artifacts[] | select(.name == "engine-partner-api-docs")] | length' \
+            2>/dev/null || echo 0)
+          if [ "${artifact_count:-0}" -eq 0 ]; then
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping Meticulous Upload because the triggering Meticulous Build run did not upload engine-partner-api-docs."
+            exit 0
+          fi
+
+          if [ "$HAS_METICULOUS_API_TOKEN" != "true" ] || [ "$HAS_METICULOUS_RECORDING_TOKEN" != "true" ]; then
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping Meticulous Upload because METICULOUS_API_TOKEN and/or METICULOUS_RECORDING_TOKEN is not configured."
+            exit 0
+          fi
+
+          echo "should_run=true" >> "$GITHUB_OUTPUT"
+
+  upload:
+    name: API Docs / Meticulous
+    needs: guard
+    if: needs.guard.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download built site from triggering run
+        # https://github.com/actions/download-artifact/releases/tag/v4.3.0
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: engine-partner-api-docs
+          path: site
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sanitize artifact for upload
+        run: |
+          set -euo pipefail
+          site_root=$(cd site && pwd)
+
+          if find site -type l -print | grep -q .; then
+            echo "::error::Artifact contains symlinks, which are not allowed."
+            find site -type l -ls
+            exit 1
+          fi
+
+          while IFS= read -r -d '' path; do
+            resolved=$(realpath "$path")
+            case "$resolved" in
+              "$site_root"|"$site_root"/*) ;;
+              *)
+                echo "::error::Artifact path escapes site root: $path -> $resolved"
+                exit 1
+                ;;
+            esac
+          done < <(find site -print0)
+
+          rm -rf site-trusted
+          while IFS= read -r -d '' file; do
+            rel="${file#site/}"
+            dest="site-trusted/$rel"
+            mkdir -p "$(dirname "$dest")"
+            cp -- "$file" "$dest"
+          done < <(find site -type f -print0)
+
+          file_count=$(find site-trusted -type f | wc -l | tr -d ' ')
+          if [ "$file_count" -eq 0 ]; then
+            echo "::error::Sanitized artifact is empty."
+            exit 1
+          fi
+          echo "Copied $file_count regular files into site-trusted/"
+
+      - name: Read commit SHA from artifact
+        id: commit
+        # Belt-and-suspenders: refuse to proceed unless the artifact's
+        # claimed SHA matches the SHA of the upstream workflow_run. A
+        # malicious PR build cannot then impersonate a different commit
+        # on Meticulous's side.
+        #
+        # On PR-triggered upstream runs, `workflow_run.head_sha` is the
+        # synthetic merge commit (GitHub mirrors the upstream's
+        # GITHUB_SHA, which on pull_request is refs/pull/N/merge).
+        # The PR branch tip lives in `workflow_run.pull_requests[0].
+        # head.sha`, which is what the build workflow records. So
+        # prefer that field, and fall back to `head_sha` for push /
+        # workflow_dispatch runs (where `pull_requests` is empty).
+        env:
+          PR_HEAD_SHA: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
+          RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          sha_file=site-trusted/.meticulous-commit-sha
+          if [ ! -f "$sha_file" ] || [ -L "$sha_file" ]; then
+            echo "::error::Missing or invalid .meticulous-commit-sha in artifact"
+            exit 1
+          fi
+          sha=$(cat "$sha_file")
+          expected="${PR_HEAD_SHA:-$RUN_HEAD_SHA}"
+          if [ "$sha" != "$expected" ]; then
+            echo "::error::Artifact commit SHA ($sha) does not match expected upstream SHA ($expected)"
+            exit 1
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          rm "$sha_file"
+
+      - name: Send assets to Meticulous for testing
+        # commit sha for alwaysmeticulous/report-diffs-action/upload-assets@v1.73.0
+        uses: alwaysmeticulous/report-diffs-action/upload-assets@b3c2a025ca3fc594f73c9ebac4a151a7175c1153
+        with:
+          api-token: ${{ secrets.METICULOUS_API_TOKEN }}
+          app-directory: site-trusted
+          commit-sha: ${{ steps.commit.outputs.sha }}

@@ -87,6 +87,7 @@ jobs:
     secrets: inherit
     with:
       build_version: ${{ needs.pre-check.outputs.build_version }}
+      inject_meticulous_recording_token: true
 
   release:
     permissions:

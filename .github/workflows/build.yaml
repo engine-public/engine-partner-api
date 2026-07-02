@@ -7,6 +7,11 @@ on:
         description: "The version to build.  It must be semver-compliant, and must not be for a tag that already exists."
         required: false
         type: string
+      inject_meticulous_recording_token:
+        description: "When true, inject METICULOUS_RECORDING_TOKEN into the Jekyll site before build. Only staging-release should opt in; PR and production release builds must leave this false."
+        required: false
+        type: boolean
+        default: false
     secrets:
       JRELEASER_GPG_SECRET_KEY:
         required: false
@@ -39,7 +44,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '26'
 
       - uses: ruby/setup-ruby@d697be2f83c6234b20877c3b5eac7a7f342f0d0c # https://github.com/ruby/setup-ruby/releases/tag/v1.269.0
         with:
@@ -65,6 +70,36 @@ jobs:
         run: |
           test -f build/version.txt
           echo "version=$(cat build/version.txt)" >> $GITHUB_OUTPUT
+
+      # Meticulous recorder — write the recording token to a generated file
+      # under `build/` before the site is built. Gradle copies
+      # `build/jekyll/_data/meticulous.yml` into the staged Jekyll site
+      # when present. The token is read by
+      # `src/main/jekyll/_includes/head_custom.html`, which conditionally
+      # emits the `<script src="https://snippet.meticulous.ai/...">` tag.
+      #
+      # Notes on safety:
+      #   * The recording token is shipped to every browser that loads
+      #     the deployed docs site, so it is intrinsically public; the
+      #     `secrets.*` storage is centralized config, not confidential.
+      #   * This reusable workflow always runs with `github.event_name`
+      #     of `workflow_call`, so callers must opt in via
+      #     `inject_meticulous_recording_token`. PR builds leave it false
+      #     so the token never enters PR-controlled execution contexts
+      #     and PR builds produce a recorder-free site.
+      - name: Inject Meticulous recording token
+        if: inputs.inject_meticulous_recording_token
+        env:
+          TOKEN: ${{ secrets.METICULOUS_RECORDING_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::warning::METICULOUS_RECORDING_TOKEN secret is not set; skipping injection"
+            exit 0
+          fi
+          mkdir -p build/jekyll/_data
+          # Single-quote the value to neutralize any YAML-meaningful chars.
+          escaped=$(printf '%s' "$TOKEN" | sed "s/'/''/g")
+          printf "recording_token: '%s'\n" "$escaped" > build/jekyll/_data/meticulous.yml
 
       - name: Build
         env:

@@ -1,0 +1,172 @@
+---
+# Untrusted half of the Meticulous integration.
+#
+# Runs on pull_request, push to main, and workflow_dispatch. Builds the
+# API docs site and uploads `build/dist/site` as a workflow artifact for
+# the trusted `Meticulous Upload` workflow to consume.
+#
+# IMPORTANT: This workflow MUST NOT have access to any repository secrets,
+# because PR authors can modify the steps that execute here. The upload
+# of built assets to Meticulous (which uses METICULOUS_API_TOKEN) lives
+# in `meticulous-upload.yml`, which runs via `workflow_run` from the
+# default-branch context where PR-authored changes do not apply.
+#
+# Job-level `if` conditions may reference secrets only to gate execution;
+# no step in this workflow receives secret values.
+#
+# A guard job exits early when prerequisites are not met (correct repository
+# context, non-fork pull requests, and Meticulous secrets configured), so
+# Meticulous steps are skipped without failing the workflow run. Secret
+# presence is checked via boolean expressions in the step env — no secret
+# values are passed to steps. Fork PRs are skipped because secrets are
+# unavailable in that context and Meticulous Upload must not run without
+# a build artifact.
+
+name: Meticulous Build
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request: {}
+  # workflow_dispatch lets Meticulous re-run on a base commit if no
+  # existing run is available for comparison.
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+env:
+  METICULOUS_REPOSITORY: HotelEngine/engine-partner-api-staging
+
+jobs:
+  guard:
+    name: API Docs / Check prerequisites
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+    steps:
+      - name: Check prerequisites
+        id: check
+        env:
+          HAS_METICULOUS_API_TOKEN: ${{ secrets.METICULOUS_API_TOKEN != '' }}
+          HAS_METICULOUS_RECORDING_TOKEN: ${{ secrets.METICULOUS_RECORDING_TOKEN != '' }}
+          PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          if [ "${{ github.repository }}" != "$METICULOUS_REPOSITORY" ] || \
+             [ "${{ github.event.repository.full_name }}" != "$METICULOUS_REPOSITORY" ]; then
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping Meticulous Build because the workflow is not both running and triggered from $METICULOUS_REPOSITORY."
+            echo "  github.repository=${{ github.repository }}"
+            echo "  github.event.repository.full_name=${{ github.event.repository.full_name }}"
+            exit 0
+          fi
+
+          if [ "${{ github.event_name }}" = "pull_request" ] && \
+             [ "$PR_HEAD_REPO" != "$METICULOUS_REPOSITORY" ]; then
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping Meticulous Build for fork pull requests."
+            echo "  pull_request.head.repo.full_name=$PR_HEAD_REPO"
+            exit 0
+          fi
+
+          if [ "$HAS_METICULOUS_API_TOKEN" != "true" ] || [ "$HAS_METICULOUS_RECORDING_TOKEN" != "true" ]; then
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping Meticulous Build because METICULOUS_API_TOKEN and/or METICULOUS_RECORDING_TOKEN is not configured."
+            exit 0
+          fi
+
+          echo "should_run=true" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: API Docs / Build
+    needs: guard
+    if: needs.guard.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      # Check out the PR-head commit (not the synthetic merge ref). The
+      # default `pull_request` checkout uses refs/pull/N/merge, which
+      # mixes the PR branch with the current base. We later record this
+      # commit's SHA in `.meticulous-commit-sha`, and the upload workflow
+      # passes that SHA to Meticulous — so the tree we build MUST match
+      # the SHA we report or Meticulous will attribute visuals to a
+      # commit that doesn't represent what was actually built.
+      # On push / workflow_dispatch, `pull_request.head.sha` is empty and
+      # we fall back to GITHUB_SHA (the pushed commit).
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-tags: "true"
+          fetch-depth: 0
+
+      - name: Setup golang
+        # https://github.com/actions/setup-go/releases/tag/v5.6.0
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version: "1.22.2"
+
+      - name: Setup node
+        # https://github.com/actions/setup-node/releases/tag/v4.4.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "26"
+
+      - name: Setup Ruby
+        # https://github.com/ruby/setup-ruby/releases/tag/v1.269.0
+        uses: ruby/setup-ruby@d697be2f83c6234b20877c3b5eac7a7f342f0d0c
+        with:
+          ruby-version: "3.3"
+
+      - name: Setup JDK
+        # https://github.com/actions/setup-java/releases/tag/v4.8.0
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9
+        with:
+          java-version: "21"
+          distribution: "corretto"
+
+      - name: Setup Gradle
+        # https://github.com/gradle/actions/releases/tag/v5.0.0
+        uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2
+
+      - name: Determine build version
+        run: ./gradlew writeVersion
+
+      - name: Read version file
+        id: getversion
+        run: |
+          test -f build/version.txt
+          echo "version=$(cat build/version.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Build API docs site
+        env:
+          ENGINE_BUILD_VERSION: ${{ steps.getversion.outputs.version }}
+          JEKYLL_BASE_URL: ${{ vars.JEKYLL_BASE_URL }}
+        run: ./gradlew buildApiDefinitionDistribution buildSite
+
+      # Capture the PR-head commit SHA so the trusted upload workflow can
+      # associate the assets with the right commit. Notes:
+      #   * On `pull_request`, GITHUB_SHA is the synthetic merge commit
+      #     (refs/pull/N/merge), NOT the PR head. We must use
+      #     `github.event.pull_request.head.sha` instead so the value
+      #     matches `github.event.workflow_run.head_sha` on the upload
+      #     side and so Meticulous associates diffs with the commit that
+      #     actually appears on the PR in GitHub.
+      #   * On `push` / `workflow_dispatch`, no PR exists, so fall back
+      #     to GITHUB_SHA (the pushed commit).
+      - name: Save commit SHA
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          sha="${PR_HEAD_SHA:-$GITHUB_SHA}"
+          echo "$sha" > build/dist/site/.meticulous-commit-sha
+
+      - name: Upload built site
+        # https://github.com/actions/upload-artifact/releases/tag/v4.6.2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: engine-partner-api-docs
+          path: build/dist/site
+          retention-days: 1
+          if-no-files-found: error

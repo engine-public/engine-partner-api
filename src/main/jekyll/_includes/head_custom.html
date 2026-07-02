@@ -8,3 +8,20 @@
 {%- assign _omni_section_pages = site.html_pages | where_exp: "p", "p.omni_section_header == true" -%}
 <script type="application/json" id="omni-nav-section-urls">[{% for p in _omni_section_pages %}{{ p.url | relative_url | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}]</script>
 <script src="{{ '/assets/js/omni-nav-sections.js' | relative_url }}" defer></script>
+
+{%- comment -%}
+  Meticulous recorder script. The recording token is written by deploy
+  workflows to `build/jekyll/_data/meticulous.yml` and copied into the
+  staged Jekyll site by Gradle when present. When absent (PR builds,
+  local dev) the script is omitted and Meticulous records nothing. The
+  token is not a secret — it is intentionally shipped to every browser
+  that loads the docs site — but injecting only on deploy events keeps
+  it out of PR-controlled execution contexts as defense in depth.
+{%- endcomment -%}
+{%- assign _meticulous_token = site.data.meticulous.recording_token -%}
+{%- if _meticulous_token and _meticulous_token != "" -%}
+<script
+  data-recording-token="{{ _meticulous_token }}"
+  data-is-production-environment="false"
+  src="https://snippet.meticulous.ai/v1/meticulous.js"></script>
+{%- endif -%}

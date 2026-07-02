@@ -764,6 +764,19 @@ afterEvaluate {
         includeEmptyDirs = false
     }
 
+    val stageMeticulousData = tasks.register<Copy>("stageMeticulousData") {
+        group = "site"
+        dependsOn(stageSiteJekyll)
+        onlyIf {
+            layout.buildDirectory.file("jekyll/_data/meticulous.yml").get().asFile.exists()
+        }
+        from(layout.buildDirectory.dir("jekyll/_data")) {
+            include("meticulous.yml")
+        }
+        into(stagingSiteDir.map { it.dir("_data") })
+        includeEmptyDirs = false
+    }
+
     val stageSite = tasks.register("stageSite") {
         group = "site"
         dependsOn(stageSiteDownloads)
@@ -772,6 +785,7 @@ afterEvaluate {
         dependsOn(stageSiteLiquidIncludes)
         dependsOn(stageSiteGrpcDocRedirects)
         dependsOn(stageSiteJekyll)
+        dependsOn(stageMeticulousData)
     }
 
     val bundleCommand = resolveCommand("bundle")
