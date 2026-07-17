@@ -170,3 +170,6 @@ jobs:
           path: build/dist/site
           retention-days: 1
           if-no-files-found: error
+          # upload-artifact v4.4+ excludes dotfiles by default; the trusted
+          # upload workflow reads .meticulous-commit-sha from the artifact.
+          include-hidden-files: true

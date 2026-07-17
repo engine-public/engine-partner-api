@@ -1,0 +1,9 @@
+{
+  "name": "meticulous-upload",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@alwaysmeticulous/client": "2.289.2",
+    "@alwaysmeticulous/remote-replay-launcher": "2.289.2"
+  }
+}

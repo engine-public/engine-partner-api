@@ -7,17 +7,21 @@
 # safe to expose `secrets.METICULOUS_API_TOKEN` here even when the
 # triggering build came from a PR.
 #
-# This job intentionally does NOT check out the repository or execute
-# any code from the PR. It only:
+# This job intentionally does NOT check out or execute code from the PR
+# beyond a sparse checkout of the trusted upload script from the default
+# branch. It only:
 #   1. Downloads the static assets the build workflow produced.
 #   2. Validates and copies them into a symlink-free directory.
-#   3. POSTs the sanitized copy to Meticulous keyed by the original commit SHA.
+#   3. Uploads the sanitized copy via @alwaysmeticulous/remote-replay-launcher.
 #
-# PR-produced artifacts are treated as untrusted input. The Meticulous
-# upload action resolves symlinks when archiving, so symlinks that escape
-# `site/` could exfiltrate runner-local files during this privileged run.
-# We reject symlinks, verify path containment, and upload only from a
-# materialized copy of regular files.
+# PR-produced artifacts are treated as untrusted input. They are extracted
+# under ${{ runner.temp }} (never into GITHUB_WORKSPACE) so they cannot
+# overwrite the trusted upload script. We also reject symlinks, verify path
+# containment, and upload only from a materialized copy of regular files.
+#
+# The official upload-assets GitHub Action refuses workflow_run events, so
+# we call Meticulous's npm packages directly from a small trusted script
+# checked into this repository.
 #
 # See `meticulous-build.yml` for the untrusted half.
 #
@@ -108,24 +112,39 @@ jobs:
     needs: guard
     if: needs.guard.outputs.should_run == 'true'
     runs-on: ubuntu-latest
+    # Keep untrusted workflow_run artifacts outside GITHUB_WORKSPACE so they
+    # cannot overwrite the trusted upload script (CodeQL actions/artifact-poisoning).
+    env:
+      ARTIFACT_DIR: ${{ runner.temp }}/meticulous-artifact
+      SITE_TRUSTED_DIR: ${{ runner.temp }}/site-trusted
     steps:
+      - name: Checkout upload script
+        # Load the trusted upload script from the default branch only.
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          sparse-checkout: |
+            .github/scripts/meticulous-upload
+          sparse-checkout-cone-mode: false
+
       - name: Download built site from triggering run
         # https://github.com/actions/download-artifact/releases/tag/v4.3.0
+        # Path must literally start with ${{ runner.temp }} so CodeQL's
+        # actions/artifact-poisoning query treats it as sanitized.
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: engine-partner-api-docs
-          path: site
+          path: ${{ runner.temp }}/meticulous-artifact
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Sanitize artifact for upload
         run: |
           set -euo pipefail
-          site_root=$(cd site && pwd)
+          site_root=$(cd "$ARTIFACT_DIR" && pwd)
 
-          if find site -type l -print | grep -q .; then
+          if find "$ARTIFACT_DIR" -type l -print | grep -q .; then
             echo "::error::Artifact contains symlinks, which are not allowed."
-            find site -type l -ls
+            find "$ARTIFACT_DIR" -type l -ls
             exit 1
           fi
 
@@ -138,22 +157,22 @@ jobs:
                 exit 1
                 ;;
             esac
-          done < <(find site -print0)
+          done < <(find "$ARTIFACT_DIR" -print0)
 
-          rm -rf site-trusted
+          rm -rf "$SITE_TRUSTED_DIR"
           while IFS= read -r -d '' file; do
-            rel="${file#site/}"
-            dest="site-trusted/$rel"
+            rel="${file#"$ARTIFACT_DIR"/}"
+            dest="$SITE_TRUSTED_DIR/$rel"
             mkdir -p "$(dirname "$dest")"
             cp -- "$file" "$dest"
-          done < <(find site -type f -print0)
+          done < <(find "$ARTIFACT_DIR" -type f -print0)
 
-          file_count=$(find site-trusted -type f | wc -l | tr -d ' ')
+          file_count=$(find "$SITE_TRUSTED_DIR" -type f | wc -l | tr -d ' ')
           if [ "$file_count" -eq 0 ]; then
             echo "::error::Sanitized artifact is empty."
             exit 1
           fi
-          echo "Copied $file_count regular files into site-trusted/"
+          echo "Copied $file_count regular files into $SITE_TRUSTED_DIR/"
 
       - name: Read commit SHA from artifact
         id: commit
@@ -173,7 +192,7 @@ jobs:
           PR_HEAD_SHA: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
           RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
-          sha_file=site-trusted/.meticulous-commit-sha
+          sha_file="$SITE_TRUSTED_DIR/.meticulous-commit-sha"
           if [ ! -f "$sha_file" ] || [ -L "$sha_file" ]; then
             echo "::error::Missing or invalid .meticulous-commit-sha in artifact"
             exit 1
@@ -187,10 +206,22 @@ jobs:
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
           rm "$sha_file"
 
-      - name: Send assets to Meticulous for testing
-        # commit sha for alwaysmeticulous/report-diffs-action/upload-assets@v1.73.0
-        uses: alwaysmeticulous/report-diffs-action/upload-assets@b3c2a025ca3fc594f73c9ebac4a151a7175c1153
+      - name: Setup node
+        # https://github.com/actions/setup-node/releases/tag/v4.4.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          api-token: ${{ secrets.METICULOUS_API_TOKEN }}
-          app-directory: site-trusted
-          commit-sha: ${{ steps.commit.outputs.sha }}
+          node-version: "24"
+
+      - name: Install Meticulous upload dependencies
+        working-directory: .github/scripts/meticulous-upload
+        # Skip lifecycle scripts so a compromised dependency cannot implant
+        # code during install that later reads METICULOUS_API_TOKEN.
+        run: npm ci --ignore-scripts
+
+      - name: Send assets to Meticulous for testing
+        working-directory: .github/scripts/meticulous-upload
+        env:
+          METICULOUS_API_TOKEN: ${{ secrets.METICULOUS_API_TOKEN }}
+          APP_DIRECTORY: ${{ runner.temp }}/site-trusted
+          COMMIT_SHA: ${{ steps.commit.outputs.sha }}
+        run: node upload.mjs
