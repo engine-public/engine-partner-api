@@ -114,9 +114,8 @@ jobs:
     runs-on: ubuntu-latest
     # Keep untrusted workflow_run artifacts outside GITHUB_WORKSPACE so they
     # cannot overwrite the trusted upload script (CodeQL actions/artifact-poisoning).
-    env:
-      ARTIFACT_DIR: ${{ runner.temp }}/meticulous-artifact
-      SITE_TRUSTED_DIR: ${{ runner.temp }}/site-trusted
+    # Do not set ${{ runner.temp }} in job-level env — that context is invalid
+    # there and silently prevents this workflow_run workflow from scheduling.
     steps:
       - name: Checkout upload script
         # Load the trusted upload script from the default branch only.
@@ -138,6 +137,9 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Sanitize artifact for upload
+        env:
+          ARTIFACT_DIR: ${{ runner.temp }}/meticulous-artifact
+          SITE_TRUSTED_DIR: ${{ runner.temp }}/site-trusted
         run: |
           set -euo pipefail
           site_root=$(cd "$ARTIFACT_DIR" && pwd)
@@ -189,6 +191,7 @@ jobs:
         # prefer that field, and fall back to `head_sha` for push /
         # workflow_dispatch runs (where `pull_requests` is empty).
         env:
+          SITE_TRUSTED_DIR: ${{ runner.temp }}/site-trusted
           PR_HEAD_SHA: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
           RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
