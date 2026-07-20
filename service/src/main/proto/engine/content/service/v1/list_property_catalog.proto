@@ -1,0 +1,114 @@
+//
+// Copyright 2025 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.content.service.v1;
+
+option go_package = "engine.com/engine-partner-api/v1/content/service";
+option java_package = "com.engine.content.v1.service";
+option java_multiple_files = true;
+
+import "engine/content/v1/lodging/property.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+// A request to retrieve one page of the property catalog.
+message ListPropertyCatalogRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "ListPropertyCatalogRequest_v1"
+    }
+  };
+
+  oneof request_type {
+    // The parameters and filters to retrieve the first page of the catalog.
+    .engine.content.service.v1.ListPropertyCatalogRequestDetails request = 1;
+
+    // Optionally, a `page_token` retrieved from a previous call.
+    string page_token = 2;
+  }
+}
+
+// Parameters and filters to be applied to a property catalog request.
+message ListPropertyCatalogRequestDetails {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "ListPropertyCatalogRequestDetails_v1"
+    }
+  };
+
+  // The maximum number of records to be returned in a page.
+  // Default: 100
+  // Minimum: 1
+  // Maximum: 250
+  optional int32 page_size = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    default: "100",
+    minimum: 1,
+    maximum: 250
+  }];
+
+  // Optionally, return only properties updated after this timestamp.
+  // When omitted, the full catalog is returned.
+  // Conforms to ISO-8601, see https://en.wikipedia.org/wiki/ISO_8601
+  optional string updated_after = 2;
+}
+
+// A response to a [CatalogService.ListPropertyCatalog] request.
+message ListPropertyCatalogResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "ListPropertyCatalogResponse_v1"
+    }
+  };
+
+  // The catalog entries returned by the request.
+  // It will contain up to [ListPropertyCatalogRequestDetails].page_size records.
+  repeated .engine.content.service.v1.PropertyCatalogEntry entries = 1;
+
+  // Optionally, an opaque token to be passed into the next [ListPropertyCatalogRequest] to retrieve the next page.
+  optional string next_page_token = 90;
+}
+
+// The state of a property within the catalog.
+enum PropertyCatalogState {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_enum) = {
+    title: "PropertyCatalogState_v1"
+  };
+
+  // The state is unknown or unspecified.
+  PROPERTY_CATALOG_STATE_UNSPECIFIED = 0;
+
+  // The property is active within the catalog
+  PROPERTY_CATALOG_STATE_ACTIVE = 1;
+
+  // The property is inactive within the catalog.
+  PROPERTY_CATALOG_STATE_INACTIVE = 2;
+}
+
+// A single entry in the property catalog, wrapping a [Property] together with its state.
+message PropertyCatalogEntry {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "PropertyCatalogEntry_v1"
+    }
+  };
+
+  // The [PropertyCatalogState] of this entry within the catalog.
+  .engine.content.service.v1.PropertyCatalogState state = 1;
+
+  // The [Property] content for this entry.
+  .engine.content.v1.lodging.Property property = 2;
+}

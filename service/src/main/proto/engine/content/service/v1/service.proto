@@ -20,6 +20,7 @@ package engine.content.api.v1;
 
 import "engine/content/service/v1/list_properties.proto";
 import "engine/content/service/v1/get_properties.proto";
+import "engine/content/service/v1/list_property_catalog.proto";
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
@@ -66,6 +67,21 @@ service ContentService {
           }
         }
       ]
+    };
+  }
+}
+
+service CatalogService {
+  // Retrieves one page of the lodging properties catalog.
+  rpc ListPropertyCatalog(.engine.content.service.v1.ListPropertyCatalogRequest)
+      returns (.engine.content.service.v1.ListPropertyCatalogResponse) {
+    option (google.api.http) = {
+      post: "/content/v1/catalog/property"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "List the full property catalog."
+      description: "Retrieves one page of the lodging properties catalog."
     };
   }
 }

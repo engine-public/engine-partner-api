@@ -8,6 +8,7 @@
 [BookingDetails]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-book-lodging.html#engine-book-lodging-v1-BookingDetails
 [BookingDetails.booking_id]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-book-lodging.html#engine-book-lodging-v1-BookingDetails
 [BookingMetadata]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-book-lodging.html#bookingmetadata
+[CatalogService.ListPropertyCatalog]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#catalogservice
 [CommissionableModel]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#engine-common-v1-CommissionableModel
 [Condition]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#engine-common-v1-Condition
 [Condition.after_timestamp]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#engine-common-v1-Condition
@@ -29,6 +30,9 @@
 [Image]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#image
 [InvalidPaymentError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#invalidpaymenterror
 [InvalidSortError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-service-common-v1-InvalidSortError
+[ListPropertyCatalogRequest]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#listpropertycatalogrequest
+[ListPropertyCatalogRequestDetails]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#listpropertycatalogrequestdetails
+[ListPropertyCatalogResponse]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#listpropertycatalogresponse
 [LodgingBookingService.Book]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#lodgingbookingservice
 [LodgingBookingService.ConfirmOffer]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#lodgingbookingservice
 [LodgingBookingService.GenerateFolio]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#lodgingbookingservice
@@ -54,6 +58,8 @@
 [Price.taxes]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#engine-common-v1-Price
 [SellType]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#engine-common-v1-SellType
 [Property]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-content.html#engine-content-v1-lodging-Property
+[PropertyCatalogEntry]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#propertycatalogentry
+[PropertyCatalogState]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#propertycatalogstate
 [Quote]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-book-lodging.html#engine-book-lodging-v1-Quote
 [RadiusSearch]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#radiussearch
 [Refund]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#refund
