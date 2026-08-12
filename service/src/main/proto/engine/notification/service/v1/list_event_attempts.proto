@@ -1,0 +1,96 @@
+//
+// Copyright 2026 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.notification.service.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "engine/notification/v1/event_delivery_attempt.proto";
+import "engine/notification/v1/event_delivery_attempt_status.proto";
+import "engine/notification/service/v1/error.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/notification/service";
+option java_package = "com.engine.notification.v1.service";
+option java_multiple_files = true;
+
+// Lists event delivery attempts for an event subscription. Attempt history is retained for 7 days.
+message ListSubscriptionEventAttemptsRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_ListSubscriptionEventAttemptsRequest_v1"
+    }
+  };
+
+  // The subscription id for which to pull event delivery attempts. See [NotificationManagementService.Subscribe] and
+  // [NotificationManagementService.ListSubscriptions]
+  string subscription_id = 1;
+  // Inclusive start of the query window, ISO 8601 timestamp (e.g. `2026-04-01T00:00:00Z`).
+  // See https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations
+  // If not set, will default to 24 hours before `window_end`.
+  // If set or calculated to include more than 7 days of history, will not throw an error
+  // but returned results will be limited to the history limit.
+  optional string window_start = 2;
+  // Exclusive end of the query window, ISO 8601 timestamp.
+  // See https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations
+  // Must be after `window_start` when both are set.
+  // If not set, defaults to current time.
+  // If set more than 7 days before the current time, rejected with gRPC INVALID_ARGUMENT(3) / HTTP 400 and a
+  // [ListSubscriptionEventAttemptsError] whose `invalid_time_window` field is set.
+  optional string window_end = 3;
+  // Filter by attempt outcome. Omitting or setting to the unspecified enum value will include all statuses.
+  optional .engine.notification.v1.EventDeliveryAttemptStatus status = 4;
+  // Maximum number of records to return. Defaults to 50; maximum is 100.
+  optional int32 limit = 5 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    default: "50",
+    minimum: 1,
+    maximum: 100
+  }];
+  // Opaque pagination token returned by a prior response. Omit to start from the first page.
+  optional string page_token = 6;
+}
+
+// Paginated list of event delivery attempts for the requested subscription.
+message ListSubscriptionEventAttemptsResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_ListSubscriptionEventAttemptsResponse_v1"
+    }
+  };
+
+  // Event delivery attempt records for the page, ordered by `attempted_at` (descending).
+  repeated .engine.notification.v1.EventDeliveryAttempt attempts = 1;
+  // Opaque token used to fetch the next page of attempts. If omitted, there are no additional pages.
+  optional string next_page_token = 2;
+}
+
+// Error details of a failed [NotificationManagementService.ListSubscriptionEventAttempts] call.
+message ListSubscriptionEventAttemptsError {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_ListSubscriptionEventAttemptsError_v1"
+    }
+  };
+
+  oneof error {
+    // The requested event subscription does not exist.
+    .engine.notification.service.v1.SubscriptionNotFound subscription_not_found = 1;
+
+    // The requested time window is invalid, e.g. `window_end` is not after `window_start`, or
+    // `window_end` is more than 7 days before the current time.
+    .engine.notification.service.v1.InvalidTimeWindow invalid_time_window = 2;
+  }
+}

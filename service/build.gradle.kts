@@ -14,6 +14,7 @@ dependencies {
     api(projects.enginePartnerApiContent)
     api(projects.enginePartnerApiShopLodging)
     api(projects.enginePartnerApiBookLodging)
+    api(projects.enginePartnerApiNotification)
 
     api(libs.grpc.core)
     api(libs.grpc.kotlin)

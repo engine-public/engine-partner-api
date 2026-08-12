@@ -1,0 +1,40 @@
+//
+// Copyright 2026 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.notification.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/notification";
+option java_package = "com.engine.notification.v1";
+option java_multiple_files = true;
+
+// Event that occurred for a given entity.
+enum EventType {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_enum) = {
+    title: "Notification_EventType_v1"
+  };
+
+  EVENT_TYPE_UNSPECIFIED = 0;
+  // The entity was created
+  EVENT_TYPE_CREATED = 1;
+  // The entity was updated.
+  EVENT_TYPE_UPDATED = 2;
+  // The entity was canceled.
+  EVENT_TYPE_CANCELED = 3;
+}

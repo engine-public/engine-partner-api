@@ -1,0 +1,56 @@
+//
+// Copyright 2026 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.notification.webhook.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "engine/notification/v1/entity_type.proto";
+import "engine/notification/v1/event_type.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/notification/webhook";
+option java_package = "com.engine.notification.v1.webhook";
+option java_multiple_files = true;
+
+// A single event subscription.
+message Subscription {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Webhook_Subscription_v1"
+    }
+  };
+
+  // The subscription id associated with this subscription.
+  string subscription_id = 1;
+  // The entity type this subscription is subscribed to.
+  .engine.notification.v1.EntityType entity_type = 2;
+  // Event types this subscription delivers.
+  // If left empty when a new subscription is created or updated, this field will automatically be materialized with all defined event types for this entity type (i.e. "subscribe to all event types"). When queried, this field will list the specific event types provided or materialized during the create or last update.
+  repeated .engine.notification.v1.EventType event_types = 3;
+  // Current HTTPS callback URI for delivery. Engine POSTs signed [Event] payloads to this URI.
+  string callback_uri = 4;
+  // Text associated to provide more context about the given subscription.
+  // This information can help provide additional context about the intent of this particular subscription
+  // as part of a larger set of subscriptions, for example. Limited to 120 characters.
+  // The description can be updated in [UpdateSubscriptionRequest].
+  string description = 5;
+  // Whether the subscription is currently enabled for delivery.
+  // When false, no deliveries are sent. Re-enabling the subscription resumes delivery for new
+  // events only; events that occurred while disabled are not automatically sent.
+  bool enabled = 6;
+}

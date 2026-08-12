@@ -1,0 +1,160 @@
+//
+// Copyright 2026 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.notification.service.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "engine/notification/v1/entity_type.proto";
+import "engine/notification/v1/event_type.proto";
+import "engine/notification/service/v1/error.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/notification/service";
+option java_package = "com.engine.notification.v1.service";
+option java_multiple_files = true;
+
+// Subscribe to receive notifications for one or more event types for a given entity at a webhook URI.
+message SubscribeRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_SubscribeRequest_v1"
+    }
+  };
+
+  // Entity domain this subscription applies to. Required: a request with `ENTITY_TYPE_UNSPECIFIED`
+  // is rejected with gRPC INVALID_ARGUMENT(3) / HTTP 400 and a [SubscribeError] whose
+  // `invalid_entity_type` field is set.
+  .engine.notification.v1.EntityType entity_type = 1;
+
+  // Events that trigger delivery for the given entity type.
+  // Omit or send an empty list to subscribe to all event types for this entity_type.
+  // When present, the list must not contain `EVENT_TYPE_UNSPECIFIED`; if it does, the call is rejected
+  // with gRPC INVALID_ARGUMENT(3) / HTTP 400 and a [SubscribeError] whose `invalid_event_type` field is set.
+  repeated .engine.notification.v1.EventType event_types = 2;
+
+  // The notification delivery channel for this subscription.
+  // Exactly one channel must be provided. Webhook is the only channel available currently.
+  oneof notification_type {
+    // Delivery via an HTTPS webhook endpoint.
+    .engine.notification.service.v1.SubscribeWebhookNotification webhook = 3;
+  }
+
+  // Text associated to provide more context about the given subscription.
+  // This information can help provide additional context about the intent of this particular subscription
+  // as part of a larger set of subscriptions, for example.
+  // The description can be updated in [UpdateSubscriptionRequest].
+  // Required: Must be non-blank after trimming whitespace. Limited to 120 characters. Rejected with gRPC INVALID_ARGUMENT(3) / HTTP 400
+  // and a [SubscribeError] whose `invalid_description` field is set.
+  string description = 4 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    min_length: 1,
+    max_length: 120
+  }];
+
+  // Whether the subscription is enabled for delivery. Defaults to true when omitted.
+  // While disabled, the subscription is retained but receives no deliveries until re-enabled via
+  // [NotificationManagementService.UpdateSubscription]. Re-enabling resumes delivery for new events only;
+  // events that occurred while disabled are not automatically sent.
+  optional bool enabled = 5 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    default: "true"
+  }];
+}
+
+// Webhook-specific fields for a [NotificationManagementService.Subscribe] request.
+message SubscribeWebhookNotification {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_SubscribeWebhookNotification_v1"
+    }
+  };
+
+  // The HTTPS URI Engine will POST signed webhook payloads to. Must be reachable from Engine infrastructure.
+  // This URI must be an HTTPS endpoint and start with "https://".
+  string callback_uri = 1;
+  // Base64-encoded secret key used for HMAC signature verification on inbound webhook deliveries.
+  // If not provided, the server will generate one and return it in [SubscribeResponseWebhookNotification.secret].
+  // The decoded key must be 24-75 bytes (32-100 base64 characters).
+  optional string secret = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    min_length: 32,
+    max_length: 100
+  }];
+}
+
+// Subscribe response from [NotificationManagementService.Subscribe]
+message SubscribeResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_SubscribeResponse_v1"
+    }
+  };
+
+  // Opaque identifier for this event subscription.
+  string subscription_id = 1;
+
+  // Channel-specific details produced when the subscription was created.
+  // Mirrors the [notification_type] selected in the [SubscribeRequest].
+  oneof notification_type {
+    // Details for a subscription delivered via an HTTPS webhook endpoint.
+    .engine.notification.service.v1.SubscribeResponseWebhookNotification webhook = 2;
+  }
+}
+
+// Webhook-specific fields returned from a [NotificationManagementService.Subscribe] request.
+message SubscribeResponseWebhookNotification {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_SubscribeResponseWebhookNotification_v1"
+    }
+  };
+
+  // The Base64-encoded HMAC signing secret used to sign request payloads to the subscription's webhook URI.
+  // If a secret was provided in [SubscribeWebhookNotification] this will be the same value. If the secret was
+  // omitted this will be a generated secret from the server.
+  //
+  // This secret is only available in this response and cannot be fetched later. It must be stored by the caller in
+  // order to verify inbound webhook deliveries.
+  string secret = 1;
+}
+
+// Error details of a failed [NotificationManagementService.Subscribe] call.
+message SubscribeError {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_SubscribeError_v1"
+    }
+  };
+
+  oneof error {
+    // `entity_type` was unspecified or is not a recognized entity domain.
+    .engine.notification.service.v1.InvalidEntityType invalid_entity_type = 1;
+
+    // `callback_uri` is missing, malformed, or not an HTTPS URI.
+    .engine.notification.service.v1.InvalidCallbackUri invalid_callback_uri = 2;
+
+    // The supplied `secret` is not valid base64 or decodes to a length outside the accepted range.
+    .engine.notification.service.v1.InvalidSecret invalid_secret = 3;
+
+    // No `notification_type` channel was provided.
+    .engine.notification.service.v1.MissingNotificationType missing_notification_type = 4;
+
+    // `event_types` contained `EVENT_TYPE_UNSPECIFIED` or is not a recognized event.
+    .engine.notification.service.v1.InvalidEventType invalid_event_type = 5;
+
+    // `description` was missing, blank, or exceeded the accepted length.
+    .engine.notification.service.v1.InvalidDescription invalid_description = 6;
+  }
+}
+

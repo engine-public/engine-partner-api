@@ -433,6 +433,7 @@ afterEvaluate {
             "engine-partner-api-book-lodging-$version.md" to Regex("""\[(engine\.book\.lodging\.v1\.(?:.*?))\]\((#.*?)\)"""),
             "engine-partner-api-common-$version.md" to Regex("""\[(engine\.common\.v1\.(?:.*?))\]\((#.*?)\)"""),
             "engine-partner-api-content-$version.md" to Regex("""\[(engine\.content\.v1\.(?:.*?))\]\((#.*?)\)"""),
+            "engine-partner-api-notification-$version.md" to Regex("""\[(engine\.notification\.(?:webhook\.)?v1\.(?:.*?))\]\((#.*?)\)"""),
             "engine-partner-api-service-$version.md" to Regex("""\[(engine\.service\.v1\.(?:.*?))\]\((#.*?)\)"""),
             "engine-partner-api-shop-lodging-$version.md" to Regex("""\[(engine\.shop\.lodging\.v1\.(?:.*?))\]\((#.*?)\)"""),
         )

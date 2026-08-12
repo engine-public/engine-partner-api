@@ -1,0 +1,47 @@
+//
+// Copyright 2026 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.notification.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "engine/notification/v1/entity_type.proto";
+import "engine/notification/v1/event_type.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/notification";
+option java_package = "com.engine.notification.v1";
+option java_multiple_files = true;
+
+// A notification event describing a change to an entity. This is the payload delivered to a
+// subscriber when a subscribed event occurs over a delivery channel (e.g. webhook).
+message Event {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Event_v1"
+    }
+  };
+
+  // Identifier of the entity the event occurred for (e.g. the booking id).
+  string entity_id = 1;
+  // The entity domain the event applies to. See [EntityType].
+  .engine.notification.v1.EntityType entity_type = 2;
+  // The event that occurred for the entity. See [EventType].
+  .engine.notification.v1.EventType event_type = 3;
+  // When the event occurred, ISO 8601 timestamp (e.g. `2026-06-01T16:15:24.611576Z`).
+  // See https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations
+  string event_timestamp = 4;
+}

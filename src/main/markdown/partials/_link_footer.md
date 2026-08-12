@@ -17,6 +17,13 @@
 [Conditions]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-common.html#conditions
 [ConfirmOfferError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-book-lodging-service-v1-ConfirmOfferError
 [ContentService.ListProperties]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#contentservice
+[EntityType]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-notification.html#engine-notification-v1-EntityType
+[Event]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-notification.html#engine-notification-v1-Event
+[EventDeliveryAttempt]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-notification.html#engine-notification-v1-EventDeliveryAttempt
+[EventDeliveryAttemptStatus]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-notification.html#engine-notification-v1-EventDeliveryAttemptStatus
+[WebhookEventDeliveryAttempt]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-notification.html#engine-notification-webhook-v1-WebhookEventDeliveryAttempt
+[WebhookEventDeliveryAttempt.response_status_code]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-notification.html#engine-notification-webhook-v1-WebhookEventDeliveryAttempt
+[EventType]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-notification.html#engine-notification-v1-EventType
 [ExternalCatalogIdentifiers]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-content.html#engine-content-v1-lodging-ExternalCatalogIdentifiers
 [ExternalCatalogIdentifiers.catalog_identifiers]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-content.html#engine-content-v1-lodging-ExternalCatalogIdentifiers
 [ExternalCatalogIdentifierList]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-content.html#engine-content-v1-lodging-ExternalCatalogIdentifierList
@@ -71,6 +78,43 @@
 [RoomGuests.primary_guest]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-book-lodging.html#engine-book-lodging-v1-RoomGuests
 [PropertyIdSearch]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-shop-lodging-service-v1-PropertyIdSearch
 [SubmitCancellationError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#submitcancellationerror
+[RotateSecretResponse.secret]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-notification-service-v1-RotateSecretResponse
+[SubscribeRequest]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-notification-service-v1-SubscribeRequest
+[SubscribeResponse]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-notification-service-v1-SubscribeResponse
+[ListSubscriptionsRequest]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-notification-service-v1-ListSubscriptionsRequest
+[ListSubscriptionsResponse]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-notification-service-v1-ListSubscriptionsResponse
+[SubscribeWebhookNotification]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-notification-service-v1-SubscribeWebhookNotification
+[Subscription]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-notification.html#engine-notification-webhook-v1-Subscription
+[Subscription.callback_uri]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-notification.html#engine-notification-webhook-v1-Subscription
+[UpdateSubscriptionRequest]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-notification-service-v1-UpdateSubscriptionRequest
+[SubscribeError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-notification-service-v1-SubscribeError
+[UpdateSubscriptionError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-notification-service-v1-UpdateSubscriptionError
+[DeleteSubscriptionError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-notification-service-v1-DeleteSubscriptionError
+[RotateSecretError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-notification-service-v1-RotateSecretError
+[ListSubscriptionEventAttemptsError]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-notification-service-v1-ListSubscriptionEventAttemptsError
+[ListSubscriptionEventAttemptsRequest]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-notification-service-v1-ListSubscriptionEventAttemptsRequest
+[ListSubscriptionEventAttemptsResponse]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-notification-service-v1-ListSubscriptionEventAttemptsResponse
+[SubscriptionNotFound]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-notification-service-v1-SubscriptionNotFound
+[InvalidTimeWindow]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-notification-service-v1-InvalidTimeWindow
+[NotificationManagementService]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#notificationmanagementservice
+[NotificationManagementService.Subscribe]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#notificationmanagementservice
+[Subscribe]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#notificationmanagementservice
+[NotificationManagementService.UpdateSubscription]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#notificationmanagementservice
+[NotificationManagementService.RotateSecret]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#notificationmanagementservice
+[SubscribeWebhookNotification.secret]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-notification-service-v1-SubscribeWebhookNotification
+[NotificationManagementService.DeleteSubscription]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#notificationmanagementservice
+[NotificationManagementService.ListSubscriptions]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#notificationmanagementservice
+[NotificationManagementService.ListSubscriptionEventAttempts]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#notificationmanagementservice
+[SubscribeResponseWebhookNotification.secret]: @JEKYLL_BASE_URL@/api/grpc/engine-partner-api-service.html#engine-notification-service-v1-SubscribeResponseWebhookNotification
+
+[GetBookings (REST)]: @JEKYLL_BASE_URL@/swagger-ui/index.html#/LodgingBookingService/LodgingBookingService_GetBookings
+[NotificationManagementService (REST)]: @JEKYLL_BASE_URL@/swagger-ui/index.html#/NotificationManagementService
+[Subscribe (REST)]: @JEKYLL_BASE_URL@/swagger-ui/index.html#/NotificationManagementService/NotificationManagementService_Subscribe
+[UpdateSubscription (REST)]: @JEKYLL_BASE_URL@/swagger-ui/index.html#/NotificationManagementService/NotificationManagementService_UpdateSubscription
+[DeleteSubscription (REST)]: @JEKYLL_BASE_URL@/swagger-ui/index.html#/NotificationManagementService/NotificationManagementService_DeleteSubscription
+[ListSubscriptions (REST)]: @JEKYLL_BASE_URL@/swagger-ui/index.html#/NotificationManagementService/NotificationManagementService_ListSubscriptions
+[RotateSecret (REST)]: @JEKYLL_BASE_URL@/swagger-ui/index.html#/NotificationManagementService/NotificationManagementService_RotateSecret
+[ListSubscriptionEventAttempts (REST)]: @JEKYLL_BASE_URL@/swagger-ui/index.html#/NotificationManagementService/NotificationManagementService_ListSubscriptionEventAttempts
 
 [gRPC API Definition]: @JEKYLL_BASE_URL@/api/grpc/index.html
 [Protobuf Descriptor Set]: @JEKYLL_BASE_URL@/downloads/descriptor_set.desc

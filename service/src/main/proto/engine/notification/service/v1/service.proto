@@ -1,0 +1,230 @@
+//
+// Copyright 2026 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.notification.service.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "engine/notification/service/v1/subscribe.proto";
+import "engine/notification/service/v1/update_subscription.proto";
+import "engine/notification/service/v1/delete_subscription.proto";
+import "engine/notification/service/v1/list_subscriptions.proto";
+import "engine/notification/service/v1/list_event_attempts.proto";
+import "engine/notification/service/v1/rotate_secret.proto";
+import "engine/notification/service/v1/error.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/notification/service";
+option java_package = "com.engine.notification.v1.service";
+option java_multiple_files = true;
+
+// A service to register and manage event subscriptions for event notifications.
+//
+// In case of error, failed calls return a per-endpoint error type (e.g. [SubscribeError]) within the
+// [Status.details] field.
+service NotificationManagementService {
+  // Creates a new event subscription for one or more events.
+  //
+  // In case of error, the status will contain a [SubscribeError] within the [Status.details] field.
+  rpc Subscribe(.engine.notification.service.v1.SubscribeRequest)
+      returns (.engine.notification.service.v1.SubscribeResponse) {
+    option (google.api.http) = {
+      post: "/notification/v1/subscription"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Create an event subscription for an entity and one or more event types."
+      responses: [
+        {
+          key: "400"
+          value: {
+            description: "Error details for gRPC Status of INVALID_ARGUMENT(3)."
+            schema: {
+              json_schema: {
+                ref: ".engine.notification.service.v1.SubscribeError"
+              }
+            }
+          }
+        }
+      ]
+    };
+  }
+
+  // Update an existing subscription's details.
+  //
+  // This method does not allow changing an existing subscription's entity type. To change an entity
+  // type you must create a new subscription and/or delete the old one.
+  //
+  // In case of error, the status will contain an [UpdateSubscriptionError] within the [Status.details] field.
+  rpc UpdateSubscription(.engine.notification.service.v1.UpdateSubscriptionRequest)
+      returns (.engine.notification.service.v1.UpdateSubscriptionResponse) {
+    option (google.api.http) = {
+      put: "/notification/v1/subscription/{subscription_id}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Update an existing event subscription details."
+      responses: [
+        {
+          key: "400"
+          value: {
+            description: "Error details for gRPC Status of INVALID_ARGUMENT(3)."
+            schema: {
+              json_schema: {
+                ref: ".engine.notification.service.v1.UpdateSubscriptionError"
+              }
+            }
+          }
+        },
+        {
+          key: "404"
+          value: {
+            description: "Error details for gRPC Status of NOT_FOUND(5)."
+            schema: {
+              json_schema: {
+                ref: ".engine.notification.service.v1.UpdateSubscriptionError"
+              }
+            }
+          }
+        }
+      ]
+    };
+  }
+
+  // Delete an event subscription.
+  // Once deleted, no further events will be delivered to this subscription.
+  // If the URI associated with this subscription is associated with any other event subscriptions,
+  // it will still receive events from those other subscriptions.
+  //
+  // In case of error, the status will contain a [DeleteSubscriptionError] within the [Status.details] field.
+  rpc DeleteSubscription(.engine.notification.service.v1.DeleteSubscriptionRequest)
+      returns (.engine.notification.service.v1.DeleteSubscriptionResponse) {
+    option (google.api.http) = {
+      delete: "/notification/v1/subscription/{subscription_id}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Delete an existing event subscription."
+      responses: [
+        {
+          key: "404"
+          value: {
+            description: "Error details for gRPC Status of NOT_FOUND(5)."
+            schema: {
+              json_schema: {
+                ref: ".engine.notification.service.v1.DeleteSubscriptionError"
+              }
+            }
+          }
+        }
+      ]
+    };
+  }
+
+  // Returns all event subscriptions.
+  rpc ListSubscriptions(.engine.notification.service.v1.ListSubscriptionsRequest)
+      returns (.engine.notification.service.v1.ListSubscriptionsResponse) {
+    option (google.api.http) = {
+      get: "/notification/v1/subscription"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "List existing event subscriptions."
+    };
+  }
+
+  // Rotate the HMAC signing secret for event payload signature verification.
+  //
+  // The previous secret remains in-effect for 24 hours after rotation.
+  //
+  // A subscription may be rotated at most 10 times within any rolling 24-hour window. Requests that
+  // exceed this cap fail with gRPC INVALID_ARGUMENT(3) / HTTP 400 and a [RotateSecretError].
+  // The cap relaxes as prior rotations age past 24 hours.
+  //
+  // In case of error, the status will contain a [RotateSecretError] within the [Status.details] field.
+  rpc RotateSecret(.engine.notification.service.v1.RotateSecretRequest)
+      returns (.engine.notification.service.v1.RotateSecretResponse) {
+    option (google.api.http) = {
+      post: "/notification/v1/subscription/{subscription_id}/secret/rotate"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Rotate the HMAC signing secret for an existing event subscription."
+      responses: [
+        {
+          key: "400"
+          value: {
+            description: "Error details for gRPC Status of INVALID_ARGUMENT(3). Returned when the supplied secret is malformed, or when the subscription has already been rotated 10 times within the prior 24 hours."
+            schema: {
+              json_schema: {
+                ref: ".engine.notification.service.v1.RotateSecretError"
+              }
+            }
+          }
+        },
+        {
+          key: "404"
+          value: {
+            description: "Error details for gRPC Status of NOT_FOUND(5)."
+            schema: {
+              json_schema: {
+                ref: ".engine.notification.service.v1.RotateSecretError"
+              }
+            }
+          }
+        }
+      ]
+    };
+  }
+
+  // Lists event delivery attempts for a subscription over a time window of up to 7 days.
+  //
+  // In case of error, the status will contain a [ListSubscriptionEventAttemptsError] within the [Status.details] field.
+  rpc ListSubscriptionEventAttempts(.engine.notification.service.v1.ListSubscriptionEventAttemptsRequest)
+      returns (.engine.notification.service.v1.ListSubscriptionEventAttemptsResponse) {
+    option (google.api.http) = {
+      post: "/notification/v1/subscription/{subscription_id}/attempts"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "List event delivery attempts for an existing event subscription."
+      responses: [
+        {
+          key: "400"
+          value: {
+            description: "Error details for gRPC Status of INVALID_ARGUMENT(3)."
+            schema: {
+              json_schema: {
+                ref: ".engine.notification.service.v1.ListSubscriptionEventAttemptsError"
+              }
+            }
+          }
+        },
+        {
+          key: "404"
+          value: {
+            description: "Error details for gRPC Status of NOT_FOUND(5)."
+            schema: {
+              json_schema: {
+                ref: ".engine.notification.service.v1.ListSubscriptionEventAttemptsError"
+              }
+            }
+          }
+        }
+      ]
+    };
+  }
+}

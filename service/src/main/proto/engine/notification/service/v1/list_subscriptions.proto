@@ -1,0 +1,58 @@
+//
+// Copyright 2026 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.notification.service.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "engine/notification/webhook/v1/subscription.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/notification/service";
+option java_package = "com.engine.notification.v1.service";
+option java_multiple_files = true;
+
+// A request for a list of subscriptions. See [NotificationManagementService.ListSubscriptions].
+message ListSubscriptionsRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_ListSubscriptionsRequest_v1"
+    }
+  };
+
+  // Maximum number of subscriptions to return. Defaults to 50; maximum is 100.
+  optional int32 limit = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    default: "50",
+    minimum: 1,
+    maximum: 100
+  }];
+  // Opaque pagination token returned by a prior response. Omit to start from the first page.
+  optional string page_token = 2;
+}
+
+// A paginated list of event subscriptions returned from [NotificationManagementService.ListSubscriptions].
+message ListSubscriptionsResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_ListSubscriptionsResponse_v1"
+    }
+  };
+
+  // Event subscriptions for the current page. Paginate with [next_page_token].
+  repeated .engine.notification.webhook.v1.Subscription subscriptions = 1;
+  // Opaque token used to fetch the next page of subscriptions. If omitted, there are no additional pages.
+  optional string next_page_token = 2;
+}

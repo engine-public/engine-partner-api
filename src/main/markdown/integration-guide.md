@@ -3,6 +3,7 @@ title: Integration guide
 permalink: /integration-guide.html
 parent: Developer Guides
 nav_order: 1
+has_children: true
 ---
 
 <!-- markdownlint-disable-next-line MD025 -->
@@ -170,3 +171,9 @@ curl --verbose --key /path/to/private.key --cert /path/to/cert.pem 'https://part
   "nextPageToken": "00C0586FDED6BA8C58403E5C9118C197E540A00000000010000000001"
 }
 ```
+
+---
+
+## Webhooks
+
+Engine can deliver notifications for changes to bookings via a standard HTTP webhook call by subscribing to specific entity and event types. See [Webhooks](webhooks.md) for more details.

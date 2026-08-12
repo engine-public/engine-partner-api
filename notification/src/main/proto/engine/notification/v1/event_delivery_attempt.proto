@@ -1,0 +1,59 @@
+//
+// Copyright 2026 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.notification.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "engine/notification/v1/event.proto";
+import "engine/notification/v1/event_delivery_attempt_status.proto";
+import "engine/notification/webhook/v1/webhook_event_delivery_attempt.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/notification";
+option java_package = "com.engine.notification.v1";
+option java_multiple_files = true;
+
+// A single event delivery attempt for an event subscription.
+message EventDeliveryAttempt {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_EventDeliveryAttempt_v1"
+    }
+  };
+
+  // Unique identifier for this event delivery attempt.
+  string attempt_id = 1;
+  // The identifier associated with the message being delivered. Sent as the
+  // `webhook-id` request header for webhook deliveries.
+  string message_id = 2;
+  // Subscription this attempt belongs to.
+  string subscription_id = 3;
+
+  // Details for the specific delivery attempt based on delivery type (e.g. webhook)
+  oneof delivery_attempt_type {
+    .engine.notification.webhook.v1.WebhookEventDeliveryAttempt webhook = 4;
+  }
+
+  // The event payload that was delivered to the delivery channel.
+  .engine.notification.v1.Event payload = 5;
+  // Event delivery attempt outcome.
+  .engine.notification.v1.EventDeliveryAttemptStatus status = 6;
+  // Timestamp of this attempt, ISO 8601 (e.g. `2026-04-01T12:00:00Z`).
+  // See https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations
+  string attempted_at = 7;
+}

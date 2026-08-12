@@ -6,12 +6,13 @@ This repository contains protobuf contracts and generated artifacts (Swagger/Ope
 The API contracts are defined using protobuf with a subset of the APIs supporting HTTP/JSON interactions using the gRPC-Gateway protoc-gen-openapiv2 protoc compiler to generate the OpenAPI specification according to the included `google.api.http` and `grpc.gateway.protoc_gen_openapiv2` annotations.
 
 ## Protobuf Modules
-Each protobuf module should contain proto definition files in a path corresponding to the defined package. Packages are organized by domain (`shop`, `book`, `content`, `common`), by vertical (`lodging`, `common`), and api version (`v1`).
+Each protobuf module should contain proto definition files in a path corresponding to the defined package. Packages are organized by domain (`shop`, `book`, `content`, `common`, `notification`), by vertical (`lodging`, `common`), and api version (`v1`).
 - `service/`: Module containing the gRPC service definitions with request, response, and error types.
 - `book/`: Models comprising the Transact and Manage functionality in the Engine Partner API.
 - `content/`: Models that define Content served by the Engine Partner API.
 - `shop/`: Models comprising the Shop functionality in the Engine Partner API.
 - `common/`: Common models shared by verticals in the Engine Partner API.
+- `notification/`: Notification/webhook subscription management and delivery attempts (`engine.notification.service.v1`, `engine.notification.v1`).
 
 Examples would include `service/src/main/proto/engine/content/service/v1` and `common/src/main/proto/engine/common/v1`
 

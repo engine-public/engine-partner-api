@@ -1,0 +1,132 @@
+//
+// Copyright 2026 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.notification.service.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/notification/service";
+option java_package = "com.engine.notification.v1.service";
+option java_multiple_files = true;
+
+// The requested event subscription does not exist. Reused across the endpoints that operate on an
+// existing subscription (e.g. [NotificationManagementService.UpdateSubscription],
+// [NotificationManagementService.DeleteSubscription], [NotificationManagementService.RotateSecret],
+// [NotificationManagementService.ListSubscriptionEventAttempts]).
+message SubscriptionNotFound {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_SubscriptionNotFound_v1"
+    }
+  };
+
+  // The subscription id from the request that could not be found.
+  string subscription_id = 1;
+}
+
+// `callback_uri` is malformed or not an HTTPS URI.
+message InvalidCallbackUri {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_InvalidCallbackUri_v1"
+    }
+  };
+
+  // The callback URI that failed validation.
+  string callback_uri = 1;
+}
+
+// The requested time window is invalid, e.g. `window_end` is not after `window_start`.
+message InvalidTimeWindow {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_InvalidTimeWindow_v1"
+    }
+  };
+
+  // Inclusive start of the query window in ISO 8601 timestamp format.
+  // See https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations
+  optional string window_start = 1;
+  // Exclusive end of the query window in ISO 8601 timestamp format.
+  // See https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations
+  optional string window_end = 2;
+}
+
+// The supplied `secret` is not valid base64 or decodes to a length outside the accepted range.
+message InvalidSecret {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_InvalidSecret_v1"
+    }
+  };
+
+  // Why the secret failed validation, e.g. "invalid_base64" or "length_out_of_range".
+  string reason = 1;
+}
+
+// The subscription's secrets have already been rotated the maximum number of times within the rolling 24-hour window.
+message SecretRotationLimitReached {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_SecretRotationLimitReached_v1"
+    }
+  };
+
+  // ISO 8601 timestamp when the oldest 24-hour window rotation falls off and another rotation will be permitted.
+  // See https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations
+  string retry_after = 1;
+}
+
+// `entity_type` was unspecified (`ENTITY_TYPE_UNSPECIFIED`) or is not a recognized entity domain.
+message InvalidEntityType {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_InvalidEntityType_v1"
+    }
+  };
+}
+
+// `event_types` contained `EVENT_TYPE_UNSPECIFIED` or is not a recognized event.
+message InvalidEventType {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_InvalidEventType_v1"
+    }
+  };
+}
+
+// The supplied `description` is missing, blank, or exceeds the accepted length.
+message InvalidDescription {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_InvalidDescription_v1"
+    }
+  };
+
+  // Why the description failed validation, e.g. "blank" or "too_long".
+  string reason = 1;
+}
+
+// No `notification_type` channel was provided in [SubscribeRequest].
+message MissingNotificationType {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_MissingNotificationType_v1"
+    }
+  };
+}

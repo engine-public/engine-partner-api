@@ -1,0 +1,124 @@
+//
+// Copyright 2026 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.notification.service.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "engine/notification/v1/event_type.proto";
+import "engine/notification/service/v1/error.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/notification/service";
+option java_package = "com.engine.notification.v1.service";
+option java_multiple_files = true;
+
+// The request object for [NotificationManagementService.UpdateSubscription].
+message UpdateSubscriptionRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_UpdateSubscriptionRequest_v1"
+    }
+  };
+
+  // The subscription to update using the subscription_id returned from [NotificationManagementService.Subscribe]
+  // or [NotificationManagementService.ListSubscriptions].
+  string subscription_id = 1;
+
+  // Replaces the event types this subscription delivers. Omit to leave the existing event types unchanged.
+  // When present, the supplied set fully replaces the prior set (it is not merged). Provide the message with an
+  // empty `values` list to deliver all event types for the subscription's entity type.
+  optional .engine.notification.service.v1.EventTypeUpdate event_types = 2;
+
+  // Channel-specific fields to update.
+  // If omitted, will leave the existing channel configuration unchanged.
+  oneof notification_type {
+    // Updates to a subscription delivered via an HTTPS webhook endpoint.
+    .engine.notification.service.v1.UpdateWebhookNotification webhook = 3;
+  }
+
+  // Text associated to provide more context about the given subscription.
+  // This information can help provide additional context about the intent of this particular subscription
+  // as part of a larger set of subscriptions, for example.
+  // If omitted, will leave the existing subscription description unchanged.
+  // If present, must be non-blank after trimming whitespace. Limited to 120 characters. Rejected with gRPC INVALID_ARGUMENT(3) / HTTP 400
+  // and an [UpdateSubscriptionError] whose `invalid_description` field is set.
+  optional string description = 4 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    max_length: 120
+  }];
+
+  // Whether the subscription is enabled for delivery.
+  // While disabled, the subscription is retained but receives no deliveries. Re-enabling resumes
+  // delivery for new events only; events that occurred while disabled are not automatically sent.
+  // If omitted, will leave the existing subscription value unchanged.
+  optional bool enabled = 5;
+}
+
+// A replacement set of event types for [UpdateSubscriptionRequest.event_types].
+// Wrapping the repeated field lets the request distinguish "leave unchanged" (field omitted)
+// from "replace with this set" (field present), including replacing with all event types (empty `values`).
+message EventTypeUpdate {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_EventTypeUpdate_v1"
+    }
+  };
+
+  // Event types that trigger delivery for the subscription. An empty list delivers all event types.
+  // Must not contain `EVENT_TYPE_UNSPECIFIED`; if it does, the call is rejected with gRPC INVALID_ARGUMENT(3) / HTTP 400
+  // and an [UpdateSubscriptionError] whose `invalid_event_type` field is set.
+  repeated .engine.notification.v1.EventType values = 1;
+}
+
+// Webhook-specific fields for a [NotificationManagementService.UpdateSubscription] request.
+message UpdateWebhookNotification {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_UpdateWebhookNotification_v1"
+    }
+  };
+
+  // The HTTPS URI Engine will POST signed webhook payloads to. Must be reachable from Engine infrastructure.
+  // This URI must be an HTTPS endpoint and start with "https://".
+  // If omitted or an empty string, will leave the existing subscription URI unchanged.
+  optional string callback_uri = 1;
+}
+
+// Acknowledges a successful update; no payload is returned.
+message UpdateSubscriptionResponse {}
+
+// Error details of a failed [NotificationManagementService.UpdateSubscription] call.
+message UpdateSubscriptionError {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Notification_Service_UpdateSubscriptionError_v1"
+    }
+  };
+
+  oneof error {
+    // The requested event subscription does not exist.
+    .engine.notification.service.v1.SubscriptionNotFound subscription_not_found = 1;
+
+    // `callback_uri` was provided but is malformed or not an HTTPS URI.
+    .engine.notification.service.v1.InvalidCallbackUri invalid_callback_uri = 2;
+
+    // `event_types` contained `EVENT_TYPE_UNSPECIFIED` or is not a recognized event.
+    .engine.notification.service.v1.InvalidEventType invalid_event_type = 3;
+
+    // `description` was blank or exceeded the accepted length.
+    .engine.notification.service.v1.InvalidDescription invalid_description = 4;
+  }
+}
