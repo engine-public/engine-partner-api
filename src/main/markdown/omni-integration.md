@@ -1,13 +1,15 @@
 ---
-title: Halo integration
-permalink: /halo-integration.html
+title: Omni integration
+permalink: /omni-integration.html
+redirect_from:
+  - /halo-integration.html
 parent: Integration paths
 grand_parent: Getting Started
 nav_order: 2
 ---
 
 <!-- markdownlint-disable-next-line MD025 -->
-# Omni Halo
+# Omni
 
 Full control over the hotel booking experience.
 Build shopping, checkout, payments, and post-booking management entirely within your platform using the complete Omni API surface via gRPC or HTTP/JSON.
@@ -26,14 +28,14 @@ Build shopping, checkout, payments, and post-booking management entirely within 
 
 {: .warning }
 **Higher complexity.**
-Omni Halo requires significantly more engineering investment.
+A full Omni API integration requires significantly more engineering investment.
 Your team handles mTLS authentication, rate shopping, offer confirmation, booking, payment processing, cancellation management, and error handling.
 
 ## How it works
 
 ```mermaid
 ---
-title: Omni Halo — Complete Lifecycle
+title: Omni — Complete Lifecycle
 ---
 sequenceDiagram
     autonumber
@@ -82,7 +84,7 @@ Stale offers will result in booking failures.
 
 ## Onboarding roadmap
 
-Omni Halo is a deeper integration.
+A full Omni API integration is a deeper integration.
 Expect a longer timeline to account for mTLS setup, full booking lifecycle implementation, and comprehensive UAT.
 
 | Phase   | Stage          | Typical duration |
@@ -130,4 +132,4 @@ Next steps:
 
 * [Integration guide] — protocol setup, authentication, and request/response examples
 * [User journeys] — full process map and per-endpoint guidance
-* [Omni Swift] — compare with the turnkey deep linking path
+* [Omni Go] — compare with the turnkey deep linking path

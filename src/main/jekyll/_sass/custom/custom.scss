@@ -593,8 +593,8 @@ $atlas-chevron-ease: 100ms ease-in-out;
 
 // Warning callout overrides — flatten the default just-the-docs warning
 // treatment (red `border-left` accent + red-tinted background) to a neutral
-// grey card. Currently only used on /halo-integration.html (search for
-// `{: .warning }` in src/main/markdown — halo-integration.md is the sole
+// grey card. Currently only used on /omni-integration.html (search for
+// `{: .warning }` in src/main/markdown — omni-integration.md is the sole
 // consumer), but the override is keyed off the theme's own
 // `p.warning, blockquote.warning` selector pair so any future `.warning`
 // callouts pick up the same treatment.

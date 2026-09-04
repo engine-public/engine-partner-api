@@ -123,10 +123,10 @@
 
 [Overview & core concepts]: @JEKYLL_BASE_URL@/
 [Integration paths]: @JEKYLL_BASE_URL@/integration-paths.html
-[Swift integration]: @JEKYLL_BASE_URL@/swift-integration.html
-[Omni Swift]: @JEKYLL_BASE_URL@/swift-integration.html
-[Halo integration]: @JEKYLL_BASE_URL@/halo-integration.html
-[Omni Halo]: @JEKYLL_BASE_URL@/halo-integration.html
+[Omni Go integration]: @JEKYLL_BASE_URL@/omni-go-integration.html
+[Omni Go]: @JEKYLL_BASE_URL@/omni-go-integration.html
+[Omni integration]: @JEKYLL_BASE_URL@/omni-integration.html
+[Omni]: @JEKYLL_BASE_URL@/omni-integration.html
 [User journeys]: @JEKYLL_BASE_URL@/user-journeys.html
 [Integration guide]: @JEKYLL_BASE_URL@/integration-guide.html
 [Deep linking]: @JEKYLL_BASE_URL@/deep-linking.html

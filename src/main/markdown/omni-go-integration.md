@@ -1,13 +1,15 @@
 ---
-title: Swift integration
-permalink: /swift-integration.html
+title: Omni Go integration
+permalink: /omni-go-integration.html
+redirect_from:
+  - /swift-integration.html
 parent: Integration paths
 grand_parent: Getting Started
 nav_order: 1
 ---
 
 <!-- markdownlint-disable-next-line MD025 -->
-# Omni Swift
+# Omni Go
 
 Engine manages the transaction lifecycle for your customers' bookings.
 You build the discovery experience, then redirect users to a co-branded checkout experience via deep links.
@@ -30,7 +32,7 @@ Depending on your customer profile, customers may be offered the opportunity to 
 
 ```mermaid
 ---
-title: Omni Swift — Data Flow
+title: Omni Go — Data Flow
 ---
 sequenceDiagram
     autonumber
@@ -81,14 +83,14 @@ Full URL patterns, parameter tables, and code examples are in the [Deep linking]
 | `ContentService.ListProperties`                | Retrieve property listings by geo-coordinates, postal address, or freeform text to populate your discovery experience |
 
 Checkout, payments, cancellations, and post-booking support are handled entirely by Engine.
-No shopping or booking lifecycle API calls are required for Omni Swift.
+No shopping or booking lifecycle API calls are required for Omni Go.
 
 ## Onboarding roadmap
 
 ### 01 — Partnership & planning
 
 Contact [omni-partnerships@engine.com](mailto:omni-partnerships@engine.com).
-Sign the partnership agreement, confirm Omni Swift as your integration path, and receive your partner slug.
+Sign the partnership agreement, confirm Omni Go as your integration path, and receive your partner slug.
 
 **Done when:** Partnership agreement signed, partner slug issued.
 
@@ -117,4 +119,4 @@ Switch deep links to production URLs, soft-launch with a subset of users, then r
 
 To begin the partnership process, contact [omni-partnerships@engine.com](mailto:omni-partnerships@engine.com) directly.
 
-To compare with the full-API integration path, see [Omni Halo].
+To compare with the full-API integration path, see [Omni].
