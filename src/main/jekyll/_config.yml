@@ -29,7 +29,11 @@ url: "" # the base hostname & protocol for your site, e.g. http://example.com
 
 # Build settings
 theme: just-the-docs
-#plugins:
+# jekyll-redirect-from powers the `redirect_from:` front matter that keeps the
+# pre-rename /swift-integration.html and /halo-integration.html URLs working.
+# It ships with the github-pages gem but is only loaded when named here.
+plugins:
+  - jekyll-redirect-from
 #  - jekyll-feed
 
 # Exclude from processing.

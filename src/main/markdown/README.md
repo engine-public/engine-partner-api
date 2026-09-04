@@ -182,11 +182,11 @@ grpcurl -protoset descriptor_set.desc \
 
 The Omni API offers two integration approaches, depending on how much of the booking experience you want to build yourself:
 
-* **[Omni Swift]** — Turnkey deep linking.
+* **[Omni Go]** — Turnkey deep linking.
   You build the discovery experience, then redirect customers to a co-branded Engine checkout.
   Engine handles payment, confirmation, cancellations, and post-booking support.
   Fastest time to market.
-* **[Omni Halo]** — Full API integration.
+* **[Omni]** — Full API integration.
   Build shopping, checkout, payments, and management entirely within your platform via gRPC or HTTP/JSON.
   Complete control over every screen.
 
