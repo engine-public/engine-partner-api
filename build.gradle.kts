@@ -43,6 +43,9 @@ buildscript {
             classpath("org.apache.tika:tika-core:3.2.2") {
                 because("CVE-2025-66516 — https://github.com/engine-public/engine-partner-api/security/dependabot/10")
             }
+            classpath("org.bouncycastle:bcprov-jdk18on:1.85") {
+                because("GHSA-9pwp-9qqc-pr26 / CVE-2026-8763 — https://github.com/engine-public/engine-partner-api/security/dependabot/65")
+            }
         }
     }
 }
