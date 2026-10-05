@@ -827,5 +827,29 @@ afterEvaluate {
             distDir.map { it.dir("site") }.get().asFile.absolutePath,
             "--baseurl", baseUrl,
         )
+        finalizedBy("writeLlmsFiles")
+    }
+
+    // Markdown copies of every page plus llms.txt / llms-full.txt for LLMs and agents.
+    // URLs are absolute against the GitHub Pages origin; omni-docs-reverse-proxy rewrites
+    // them to the public origin (omni.engine.com/docs) when serving text responses.
+    tasks.register("writeLlmsFiles") {
+        group = "site"
+        description = "Writes .md copies of each docs page plus llms.txt and llms-full.txt into the built site."
+        dependsOn(stageSite)
+        mustRunAfter("buildSite")
+        val contentDir = stagingSiteDir.map { it.dir("content") }
+        val siteDir = distDir.map { it.dir("site") }
+        val headerFile = project.layout.projectDirectory.dir("src/main/markdown/templates").file("_llms_header.md")
+        val siteUrl = (System.getenv("JEKYLL_SITE_URL") ?: "https://engine-public.github.io") + baseUrl
+        val downloads = listOf(
+            "OpenAPI (Swagger) specification for the HTTP/JSON API" to "downloads/" + artifactRenamer("engine-partner-api.swagger.json"),
+            "Protobuf definitions (zip)" to "downloads/" + artifactRenamer("protos.zip"),
+        )
+        inputs.dir(contentDir)
+        inputs.file(headerFile)
+        doLast {
+            LlmsFiles.write(contentDir.get().asFile, siteDir.get().asFile, siteUrl, headerFile.asFile, downloads)
+        }
     }
 }
