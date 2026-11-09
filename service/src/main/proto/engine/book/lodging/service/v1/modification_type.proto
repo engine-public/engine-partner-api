@@ -1,0 +1,111 @@
+//
+// Copyright 2026 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.book.lodging.service.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/book/lodging/service";
+option java_package = "com.engine.book.lodging.v1.service";
+option java_multiple_files = true;
+
+// A guest name submitted as part of a modification request. Loyalty and guest type are not
+// modifiable through this API.
+message GuestName {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Lodging_Service_GuestName_v1"
+    }
+  };
+
+  // The guest's given (first) name.
+  string given_name = 1;
+
+  // The guest's family (last) name.
+  string family_name = 2;
+}
+
+// Guest names for a single room in a modification request. Mirrors the structure of
+// [RoomGuests], but carries names only.
+message GuestNames {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Lodging_Service_GuestNames_v1"
+    }
+  };
+
+  // The primary guest's name.
+  .engine.book.lodging.service.v1.GuestName primary_guest = 1;
+
+  // Additional guest names for check-in without the [GuestNames.primary_guest] present.
+  // Must not include the primary guest.
+  repeated .engine.book.lodging.service.v1.GuestName additional_guests = 2;
+}
+
+// A request to replace the guest names recorded on a [BookingDetails].
+//
+// Uses the same list structure and ordering as [BookRequest.guests]. The provided list
+// replaces the existing guest names on the booking in full.
+//
+// Only guest names may change; guest counts per room and room count cannot change.
+// [GuestNameModification.guests] must contain the same number of entries as
+// [BookingDetails.guests], in the same room order.
+// For multi-room bookings, the same booking contact name is typically applied to every
+// room's [GuestNames.primary_guest].
+// Per-room different primary names may be rejected by the supplier or routed to support
+// as [SubmitModificationResponse.outcome.pending_support].
+message GuestNameModification {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Lodging_Service_GuestNameModification_v1"
+    }
+  };
+
+  // The full replacement guest name list for the [BookingDetails], ordered to match
+  // [BookRequest.guests]. At least one entry is required.
+  // Each entry must preserve the guest count of the corresponding [RoomGuests] on the booking.
+  repeated .engine.book.lodging.service.v1.GuestNames guests = 1;
+}
+
+// A request to shorten the stay on a [BookingDetails] by adjusting the check-in and/or
+// check-out dates so the resulting stay is strictly shorter than the existing stay.
+//
+// Both dates are required. If a date is not changing, send the same value as on the
+// existing [BookingDetails].
+message StayShorteningModification {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Lodging_Service_StayShorteningModification_v1"
+    }
+  };
+
+  // The new check-in date for the [BookingDetails], formatted as an ISO-8601 calendar date
+  // (`YYYY-MM-DD`). See https://en.wikipedia.org/wiki/ISO_8601#Calendar_dates.
+  //
+  // Must be on or after the existing check-in date. If the check-in date is not changing,
+  // send the same value as on the existing [BookingDetails].
+  string check_in_date = 1;
+
+  // The new check-out date for the [BookingDetails], formatted as an ISO-8601 calendar date
+  // (`YYYY-MM-DD`). See https://en.wikipedia.org/wiki/ISO_8601#Calendar_dates.
+  //
+  // Must be on or before the existing check-out date and strictly after
+  // [StayShorteningModification.check_in_date]. If the check-out date is not changing,
+  // send the same value as on the existing [BookingDetails].
+  string check_out_date = 2;
+}

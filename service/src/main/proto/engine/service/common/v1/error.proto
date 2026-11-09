@@ -32,3 +32,12 @@ message InvalidSortError {
     }
   };
 }
+
+// An error indicating that the requested resource does not exist.
+message NotFoundError {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Service_Common_NotFoundError_v1"
+    }
+  };
+}

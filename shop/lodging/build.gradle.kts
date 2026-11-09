@@ -10,6 +10,7 @@ dependencies {
     api(projects.grpcEcosystemProtocGenOpenapiv2)
     api(projects.enginePartnerApiCommon)
     api(projects.enginePartnerApiContent)
+    api(projects.enginePartnerApiShopCommon)
     api(libs.protobuf.java)
     api(libs.protobuf.kotlin)
 }

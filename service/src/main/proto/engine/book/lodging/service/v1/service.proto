@@ -29,6 +29,8 @@ import "engine/book/lodging/service/v1/get_bookings.proto";
 import "engine/book/lodging/service/v1/get_bookings_streaming.proto";
 import "engine/book/lodging/service/v1/preview_cancellation.proto";
 import "engine/book/lodging/service/v1/submit_cancellation.proto";
+import "engine/book/lodging/service/v1/preview_modification.proto";
+import "engine/book/lodging/service/v1/submit_modification.proto";
 
 option go_package = "engine.com/engine-partner-api/v1/book/lodging/service";
 option java_package = "com.engine.book.lodging.v1.service";
@@ -39,6 +41,8 @@ option java_multiple_files = true;
 service LodgingBookingService {
 
   // Given a `continuation_token` from [LodgingShoppingService.FindBestOffers], [LodgingShoppingService.FindBestOffersStreaming], or [LodgingShoppingService.FindAvailability], confirm the availability of the offer and retrieve any additional information necessary to Book.
+  // Optional add-ons from [Offer.addons] may be selected with [ConfirmOfferRequest.selected_addon_tokens];
+  // confirmed add-ons are returned on [ConfirmOfferResponse.available_addons].
   //
   // In case of error, the status will contain a [ConfirmOfferError] within the [Status.details] field.
   rpc ConfirmOffer(.engine.book.lodging.service.v1.ConfirmOfferRequest)
@@ -80,7 +84,7 @@ service LodgingBookingService {
         {
           key: "400"
           value: {
-            description: "Error details for gRPC Status of INVALID_ARGUMENT(3)."
+            description: "Error details for gRPC Status of INVALID_ARGUMENT(3) or FAILED_PRECONDITION(9)."
             schema: {
               json_schema: {
                 ref: ".engine.book.lodging.service.v1.BookError"
@@ -181,6 +185,87 @@ service LodgingBookingService {
             schema: {
               json_schema: {
                 ref: ".engine.book.lodging.service.v1.SubmitCancellationError"
+              }
+            }
+          }
+        }
+      ]
+    };
+  };
+
+  // Get the expected refund and availability impact of a proposed booking modification.
+  //
+  // Calling PreviewModification is an optional step, but is recommended prior to calling SubmitModification. 
+  // In case of error, the status will contain a [PreviewModificationError] within the [Status.details] field.
+  rpc PreviewModification(.engine.book.lodging.service.v1.PreviewModificationRequest)
+      returns (.engine.book.lodging.service.v1.PreviewModificationResponse) {
+
+    option (google.api.http) = {
+      post: "/book/v1/lodging/booking/preview-modification",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Preview the refund and availability impact of a proposed booking modification."
+      responses: [
+        {
+          key: "400",
+          value: {
+            description: "Error details for gRPC Status of FAILED_PRECONDITION(9)."
+            schema: {
+              json_schema: {
+                ref: ".engine.book.lodging.service.v1.PreviewModificationError"
+              }
+            }
+          }
+        },
+        {
+          key: "404",
+          value: {
+            description: "Error details for gRPC Status of NOT_FOUND(5)."
+            schema: {
+              json_schema: {
+                ref: ".engine.book.lodging.service.v1.PreviewModificationError"
+              }
+            }
+          }
+        }
+      ]
+    };
+  };
+
+  // Submit a modification for a Booking.
+  //
+  // A successful response with [SubmitModificationResponse.outcome.pending_support] indicates
+  // the modification was accepted and routed to support for manual processing. This is not
+  // an error.
+  // In case of error, the status will contain a [SubmitModificationError] within the [Status.details] field.
+  rpc SubmitModification(.engine.book.lodging.service.v1.SubmitModificationRequest)
+      returns (.engine.book.lodging.service.v1.SubmitModificationResponse) {
+    option (google.api.http) = {
+      post: "/book/v1/lodging/booking/submit-modification",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Submit a guest-name change or stay shortening for a booking."
+      responses: [
+        {
+          key: "400",
+          value: {
+            description: "Error details for gRPC Status of FAILED_PRECONDITION(9)."
+            schema: {
+              json_schema: {
+                ref: ".engine.book.lodging.service.v1.SubmitModificationError"
+              }
+            }
+          }
+        },
+        {
+          key: "404",
+          value: {
+            description: "Error details for gRPC Status of NOT_FOUND(5)."
+            schema: {
+              json_schema: {
+                ref: ".engine.book.lodging.service.v1.SubmitModificationError"
               }
             }
           }

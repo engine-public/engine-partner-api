@@ -244,6 +244,7 @@ A FindAvailability request can be initiated with...
 * A `continuation_token` from a [BestOffer] via [LodgingShoppingService.FindBestOffers][FindBestOffers] results.
 
 The response of this endpoint is a list of [RoomGroup] objects, each with the details of that group, and a list of [Offer] objects.
+An [Offer] may include optional [Addon]s that can be selected when confirming the rate.
 
 {: .attention}
 A [RoomGroup] uniquely identifies a type of room in a [Property].
@@ -263,6 +264,7 @@ However, if a room has a unique name, like "The Honeymoon Suite", it would be in
 > _An endpoint that allows a client to confirm pricing, availability, and conditions of an [Offer] prior to purchasing_
 
 Given a `continuation_token` from an [Offer] retrieved from the [RoomGroup] in the results of [FindAvailability], retrieve a purchasable [Quote].
+Use [ConfirmOfferRequest.selected_addon_tokens] to include optional add-ons from shop [Offer.addons]; the confirmed set is returned on [ConfirmOfferResponse.available_addons].
 
 The [Quote] includes the full details of the stay, including which actions may be taken on a [BookingDetails] if the [Quote] is purchased.
 

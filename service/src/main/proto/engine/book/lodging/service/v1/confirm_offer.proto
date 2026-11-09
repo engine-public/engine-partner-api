@@ -22,6 +22,7 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 
 import "engine/book/common/service/v1/error.proto";
 import "engine/book/lodging/v1/quote.proto";
+import "engine/shop/common/v1/addon.proto";
 
 option go_package = "engine.com/engine-partner-api/v1/book/lodging/service";
 option java_package = "com.engine.book.lodging.v1.service";
@@ -43,13 +44,19 @@ message ConfirmOfferRequest {
   // It must adhere to the ISO 4217 three-character alphabetic currency code ("USD", "EUR", etc.).
   // https://www.iso.org/iso-4217-currency-codes.html
   string currency_code = 2;
+
+  // The complete set of add-on tokens to include in this confirmation, taken from shop [Offer.addons]
+  // or from [ConfirmOfferResponse.available_addons] on a prior confirmation.
+  // Tokens left out are not included; an empty list confirms with no add-ons.
+  // Selections are returned on [ConfirmOfferResponse.selected_addon_tokens].
+  repeated string selected_addon_tokens = 3;
 }
 
 // The result of a price and availability check.
 message ConfirmOfferResponse {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
-      title: "Book_Lodging_Service_ConfirmOfferRequest_v1"
+      title: "Book_Lodging_Service_ConfirmOfferResponse_v1"
     }
   };
 
@@ -59,6 +66,18 @@ message ConfirmOfferResponse {
 
   // The full details of the [OfferSummary], [RoomDescription], Dates of Travel, and any notices required for display during the confirmation process.
   .engine.book.lodging.v1.Quote quote = 2;
+
+  // Add-ons offered with this confirmation, including any that were selected.
+  // Match [ConfirmOfferResponse.selected_addon_tokens] to [Addon.addon_token] for display and fees.
+  // Fees may differ from shop-time [Offer.addons]. Empty when no add-ons apply.
+  // Present only on this response; not carried on [ReservationDetails.quote] after booking.
+  repeated .engine.shop.common.v1.Addon available_addons = 3;
+
+  // Tokens of add-ons included in this confirmation, from [ConfirmOfferRequest.selected_addon_tokens].
+  // Empty when none were selected. Match each token to [Addon.addon_token] on
+  // [ConfirmOfferResponse.available_addons] for display and fees.
+  // Present only on this response; not carried on [ReservationDetails.quote] after booking.
+  repeated string selected_addon_tokens = 4;
 }
 
 // Error details of a failed [LodgingBookingService.ConfirmOffer] call.

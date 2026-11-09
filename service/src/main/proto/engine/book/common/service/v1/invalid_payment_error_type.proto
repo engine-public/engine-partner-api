@@ -1,0 +1,42 @@
+//
+// Copyright 2026 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.book.common.service.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/book/common/service";
+option java_package = "com.engine.book.common.v1.service";
+option java_multiple_files = true;
+
+// The category of an invalid payment failure on [InvalidPaymentError].
+enum InvalidPaymentErrorType {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_enum) = {
+    title: "Book_Common_Service_InvalidPaymentErrorType_v1"
+  };
+
+  // Unspecified invalid payment error type.
+  INVALID_PAYMENT_ERROR_TYPE_UNSPECIFIED = 0;
+
+  // The provided payment method is not accepted for this request.
+  INVALID_PAYMENT_ERROR_TYPE_PAYMENT_METHOD_UNSUPPORTED = 1;
+
+  // The provided payment information is invalid.
+  // For example, incorrect card details or missing / unusable payment info.
+  INVALID_PAYMENT_ERROR_TYPE_INVALID_PAYMENT_INFO = 2;
+}

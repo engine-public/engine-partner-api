@@ -23,6 +23,7 @@ import "engine/common/v1/sales_channel.proto";
 import "engine/common/v1/traveler.proto";
 import "engine/shop/lodging/v1/offer.proto";
 import "engine/shop/lodging/v1/room.proto";
+import "engine/shop/common/v1/addon.proto";
 
 option go_package = "engine.com/engine-partner-api/v1/shop/lodging/service";
 option java_package = "com.engine.shop.lodging.v1.service";
@@ -132,4 +133,7 @@ message Offer {
 
   // The details of the Offer to book.
   .engine.shop.lodging.v1.OfferSummary summary = 2;
+
+  // Optional add-ons that may be purchased with this offer.
+  repeated .engine.shop.common.v1.Addon addons = 3;
 }

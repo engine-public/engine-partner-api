@@ -20,6 +20,8 @@ package engine.book.common.service.v1;
 
 import "protoc-gen-openapiv2/options/annotations.proto";
 
+import "engine/book/common/service/v1/invalid_payment_error_type.proto";
+import "engine/book/common/service/v1/payment_processing_error_type.proto";
 import "engine/common/v1/actions.proto";
 
 option go_package = "engine.com/engine-partner-api/v1/book/common/service";
@@ -74,20 +76,40 @@ message CannotCancelError {
   };
 }
 
-// An error indicating that a Booking payment failed due to invalid [PaymentInfo].
+// An error indicating that payment failed due to invalid [PaymentInfo].
+// See [InvalidPaymentErrorType] for the failure category.
 message InvalidPaymentError {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
       title: "Book_Common_Service_InvalidPaymentError_v1"
     }
-  };}
+  };
 
-// An error indicating that a Booking payment failed during processing.
-// These errors are not safe to retry. Contact Member Support for assistance.
+  // The specific category of invalid payment failure.
+  // See [InvalidPaymentErrorType].
+  .engine.book.common.service.v1.InvalidPaymentErrorType invalid_payment_error_type = 1;
+
+  // Optionally, a user-safe message with more specific information regarding the error.
+  // This message is diagnostic in nature and should not be parsed for branching logic.
+  // This message will not contain raw processor or issuer text, card data, or PII.
+  optional string reason = 2;
+}
+
+// An error indicating that payment failed while booking.
+// See [PaymentProcessingErrorType] for the failure category.
 message PaymentProcessingError {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
       title: "Book_Common_Service_PaymentProcessingError_v1"
     }
   };
+
+  // The specific category of payment processing failure.
+  // See [PaymentProcessingErrorType].
+  .engine.book.common.service.v1.PaymentProcessingErrorType payment_processing_error_type = 1;
+
+  // Optionally, a user-safe message with more specific information regarding the error.
+  // This message is diagnostic in nature and should not be parsed for branching logic.
+  // This message will not contain raw processor or issuer text, card data, or PII.
+  optional string reason = 2;
 }

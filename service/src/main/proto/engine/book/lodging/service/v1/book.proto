@@ -38,7 +38,7 @@ message BookRequest {
     }
   };
 
-  // An `continuation_token` from [LodgingBookingService.ConfirmOffer].
+  // A `continuation_token` from [LodgingBookingService.ConfirmOffer].
   string continuation_token = 2;
 
   // The details of the guests staying on the [ReservationDetails].
@@ -87,11 +87,14 @@ message BookError {
     // that requires manual review to determine if it was completed successfully.
     .engine.book.common.service.v1.BookingNeedsReviewError needs_review = 3;
 
-    // Defined when the operation returns with a status of INVALID_ARGUMENT and the provided payment information
-    // is invalid or insufficient to complete the booking.
+    // Defined when the operation returns with a status of INVALID_ARGUMENT or INTERNAL and the provided payment
+    // information is invalid or insufficient to complete the booking.
+    // See [InvalidPaymentErrorType] for the failure category.
     .engine.book.common.service.v1.InvalidPaymentError invalid_payment = 4;
 
-    // Defined when the operation returns with a status of INTERNAL and the payment failed to process.
+    // Defined when the operation returns with a status of INTERNAL or FAILED_PRECONDITION and the payment
+    // failed to process.
+    // See [PaymentProcessingErrorType] for the failure category.
     .engine.book.common.service.v1.PaymentProcessingError payment_processing = 5;
   }
 }

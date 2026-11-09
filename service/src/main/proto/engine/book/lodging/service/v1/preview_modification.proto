@@ -1,0 +1,91 @@
+//
+// Copyright 2026 HotelEngine, Inc., d/b/a Engine
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at:
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package engine.book.lodging.service.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "engine/common/v1/actions.proto";
+import "engine/common/v1/refund.proto";
+import "engine/book/common/service/v1/error.proto";
+import "engine/service/common/v1/error.proto";
+import "engine/book/lodging/service/v1/modification_type.proto";
+
+option go_package = "engine.com/engine-partner-api/v1/book/lodging/service";
+option java_package = "com.engine.book.lodging.v1.service";
+option java_multiple_files = true;
+
+// Requests the expected refund and availability impact of a proposed modification.
+//
+message PreviewModificationRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Lodging_Service_PreviewModificationRequest_v1"
+    }
+  };
+
+  // The identifier of the [BookingDetails] to be modified.
+  string booking_id = 1;
+
+  // The proposed modification to evaluate. Exactly one variant must be set.
+  oneof modification_type {
+    // A change to the guests recorded on the [BookingDetails].
+    .engine.book.lodging.service.v1.GuestNameModification guest_name = 2;
+
+    // A shortening of the stay by adjusting the check-in and/or check-out dates.
+    .engine.book.lodging.service.v1.StayShorteningModification stay_shortening = 3;
+  }
+}
+
+// Returns the expected refund and per-action availability for a proposed modification.
+message PreviewModificationResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Lodging_Service_PreviewModificationResponse_v1"
+    }
+  };
+
+  // Details the means in which actions could be taken against the [BookingDetails] given
+  // the proposed modification.
+  .engine.common.v1.AvailableActions available_actions = 1;
+
+  // Optionally, the refund details if they can be determined for the proposed modification.
+  // If the modification is not possible or cannot be priced through the API, this field
+  // will not be set. See [ActionAvailability] for more information.
+  .engine.common.v1.Refund refund = 2;
+}
+
+// Error details of a failed [LodgingBookingService.PreviewModification] call.
+message PreviewModificationError {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Book_Lodging_Service_PreviewModificationError_v1"
+    }
+  };
+
+  oneof error {
+    // Defined when the operation returns with a status of NOT_FOUND and no [BookingDetails]
+    // exists for the given booking ID.
+    .engine.service.common.v1.NotFoundError not_found = 1;
+
+    // Defined when the operation returns with a status of FAILED_PRECONDITION and the
+    // [BookingDetails] associated with the given booking ID cannot be modified, e.g. the
+    // stay is in the past, it is already cancelled, or a prior modification is pending support.
+    .engine.book.common.service.v1.InvalidStateError invalid_state = 2;
+  }
+}
